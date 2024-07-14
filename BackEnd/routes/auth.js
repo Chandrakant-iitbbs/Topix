@@ -12,21 +12,42 @@ router.use(bodyParser.json());
 // ROUTE 1  
 // Creating a user using : post "/api/v1/auth/createuser". No login required
 router.post('/createuser', async (req, res) => {
-    const { name, email, password,interestedTopics } = req.body;
-    // res.json({ message: req.body });
+    const { name, email, password } = req.body;
     try {
-        let usr = await User.findOne({ email });
-        if (usr) {
+        let user = await User.findOne({ email });
+        if (user) {
             return res.status(400).json({ error: "Sorry a User with this email already exists." });
         }
-        const salt = await bcrypt.genSalt(10);
-        const secPass = await bcrypt.hash(password, salt);
-        usr = await User.create({
-            name,
-            email,
-            password: secPass,
-            interestedTopics
-        });
+
+        user = await User({ name, email, password });
+        user.save();
+        const data = {
+            user: {
+                id: user.id
+            }
+        }
+
+        const auto_token = jwt.sign(data, JWT_secret);
+        res.status(200).json({ auto_token });
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send("Internal server error");
+    }
+});
+
+// ROUTE 2  
+// Authorizing a user using : post "/api/v1/auth/login". No login required
+router.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        let usr = await User.findOne({ email });
+        if (!usr) {
+            return res.status(400).json({ error: "Please try to login with correct credentials" });
+        }
+        const passCompare = await bcrypt.compare(password, usr.password);
+        if (!passCompare) {
+            return res.status(400).json({ error: "Please try to login with correct password" });
+        }
         const data = {
             user: {
                 id: usr.id
@@ -38,6 +59,9 @@ router.post('/createuser', async (req, res) => {
         console.error(error.message);
         res.status(500).send("Internal server error");
     }
-});
+}
+);
+
+
 
 module.exports = router

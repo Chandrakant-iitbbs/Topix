@@ -7,7 +7,6 @@ const UserSchema = new Schema({
     name:{
         type: String,
         required: true,
-        min: [3,"Enter a valid Name"],
     },
     email:{
         type : String,
@@ -17,7 +16,6 @@ const UserSchema = new Schema({
     password:{
         type : String,
         required : true,
-        min : [6,"Enter strong password"]
     },
     interestedTopics:{
         type : [String],
