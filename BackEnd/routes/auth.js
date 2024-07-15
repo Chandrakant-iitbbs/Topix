@@ -85,24 +85,24 @@ router.get('/getuser', Fetchuser, async (req, res) => {
 router.put('/updateuser', Fetchuser, async (req, res) => {
     const { name, email, password,interestedTopics,dp } = req.body;
     try {
-        let newUser;
+        let newUser ={};
         if(name){
-            newUser = {name};
+            newUser.name = name;
         }
         if(email){
-            newUser = {email};
+            newUser.email = email;
         }
         if(password){
             const salt = await bcrypt.genSalt(10);
             const hash = await bcrypt.hash(password, salt);
-            newUser = {password:hash            };
+            newUser.password = hash ;
         }
         if(interestedTopics){
-            newUser = {interestedTopics};
+            newUser.interestedTopics = interestedTopics;
         }
         if(dp){
-            newUser = {dp};
-        }   
+            newUser.dp = dp;
+        } 
 
         let user = await User.findById(req.user.id);
         if (!user) {
