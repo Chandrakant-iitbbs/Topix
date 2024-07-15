@@ -6,6 +6,7 @@ const UserMiddleWare = require('../middleWare/UserMiddleWare');
 
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const Fetchuser = require('../middleWare/FetchUser');
 const JWT_secret = "CK@K@nt";
 
 router.use(bodyParser.json());
@@ -59,6 +60,87 @@ router.post('/login', async (req, res) => {
         }
         const auto_token = jwt.sign(data, JWT_secret);
         res.status(200).json({ auto_token });
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send("Internal server error");
+    }
+}
+);
+
+// ROUTE 3
+// Get logged in user details using : get "/api/v1/auth/getuser". Login required
+router.get('/getuser', Fetchuser, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).select("-password");
+        res.status(200).send(user);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send("Internal server error");
+    }
+}
+)
+
+// ROUTE 4
+// Update user details using : put "/api/v1/auth/updateuser". Login required
+router.put('/updateuser', Fetchuser, async (req, res) => {
+    const { name, email, password,interestedTopics,dp } = req.body;
+    try {
+        let newUser;
+        if(name){
+            newUser = {name};
+        }
+        if(email){
+            newUser = {email};
+        }
+        if(password){
+            const salt = await bcrypt.genSalt(10);
+            const hash = await bcrypt.hash(password, salt);
+            newUser = {password:hash            };
+        }
+        if(interestedTopics){
+            newUser = {interestedTopics};
+        }
+        if(dp){
+            newUser = {dp};
+        }   
+
+        let user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).send("Not Found");
+        }
+        user = await User.findByIdAndUpdate(req.user.id, { $set: newUser }, { new: true });    
+        res.json({ user });
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send("Internal server error");
+    }
+}   
+);
+
+// ROUTE 5
+// Delete user using : delete "/api/v1/auth/deleteuser". Login required
+router.delete('/deleteuser', Fetchuser, async (req, res) => {
+    try {
+        let user = await User.findById(req.user.id
+        );
+        if (!user) {
+            return res.status(404).send("Not Found");
+        }
+        user = await User.findByIdAndDelete(req.user.id);
+        res.json({ "Success": "User has been deleted", user: user });
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send("Internal server error");
+    }
+}
+);
+
+// ROUTE 6
+// Get all users using : get "/api/v1/auth/getallusers". Login required
+router.get('/getallusers', Fetchuser, async (req, res) => {
+    try {
+        const user = await User.find().select("-password");
+        res.status(200).send(user);
     } catch (error) {
         console.error(error.message);
         res.status(500).send("Internal server error");
