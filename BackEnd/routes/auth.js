@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const bodyParser = require('body-parser');
+const UserMiddleWare = require('../middleWare/UserMiddleWare');
 
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -11,7 +12,7 @@ router.use(bodyParser.json());
 
 // ROUTE 1  
 // Creating a user using : post "/api/v1/auth/createuser". No login required
-router.post('/createuser', async (req, res) => {
+router.post('/createuser', UserMiddleWare, async (req, res) => {
     const { name, email, password } = req.body;
     try {
         let user = await User.findOne({ email });
@@ -40,6 +41,9 @@ router.post('/createuser', async (req, res) => {
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
     try {
+        if (!email || !password) {
+            return res.status(400).json({ error: "Please fill all the fields" });
+        }
         let usr = await User.findOne({ email });
         if (!usr) {
             return res.status(400).json({ error: "Please try to login with correct credentials" });
@@ -61,7 +65,5 @@ router.post('/login', async (req, res) => {
     }
 }
 );
-
-
 
 module.exports = router
