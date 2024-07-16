@@ -15,6 +15,7 @@ app.get('/', (req, res) => {
 
 app.use("/api/v1/auth", require("./routes/auth"));
 app.use("/api/v1/ques", require("./routes/ques"));
+app.use("/api/v1/answer", require("./routes/ans"));
 
 app.listen(port, () => {
   console.log(`topix backend listening on port ${port}`);
