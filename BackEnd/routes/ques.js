@@ -6,7 +6,7 @@ const Ques = require('../models/Ques');
 
 // ROUTE 1
 // get all the questions of the user using : Get "/api/v1/ques/getAllQuestions". Login required
-router.get("/getAllQuestions", FetchUser, async (req, res) => {
+router.get("/getAllQuestionsOfUser", FetchUser, async (req, res) => {
     try {
         const questions = await Ques.find({ user: req.user.id });   // fetching all questions of user, where user = req.user.id, where req.user is varified user and this is available because of fetchuser middleware.
         res.json(questions);
@@ -27,12 +27,13 @@ router.post("/addQuestion", FetchUser, async (req, res) => {
             res.status(400).send("Please enter your question");
             return;
         }
-        q.user= req.user.id ;
+        q.user = req.user.id;
         if (question) {
             q.question = question;
         }
         if (alreadyKnew) {
-            q.alreadyKnew = alreadyKnew;}
+            q.alreadyKnew = alreadyKnew;
+        }
         if (tags) {
             q.tags = tags;
         }
@@ -54,7 +55,7 @@ router.post("/addQuestion", FetchUser, async (req, res) => {
 
 router.put("/updateQuestion/:id", FetchUser, async (req, res) => {
     try {
-        const { question, alreadyKnew, tags, rewardPrice } = req.body;   
+        const { question, alreadyKnew, tags, rewardPrice } = req.body;
         const newNode = {};       // Create a newNote object
         if (!question) {
             res.status(400).send("Please enter your question");
@@ -64,7 +65,8 @@ router.put("/updateQuestion/:id", FetchUser, async (req, res) => {
             newNode.question = question;
         }
         if (alreadyKnew) {
-            newNode.alreadyKnew = alreadyKnew;}
+            newNode.alreadyKnew = alreadyKnew;
+        }
         if (tags) {
             newNode.tags = tags;
         }
@@ -130,5 +132,75 @@ router.get("/getQuestion/:id", FetchUser, async (req, res) => {
         res.status(500).send("Internal server error");
     }
 });
+
+// ROUTE 6
+// get all the questions using : Get "/api/v1/ques/getAllQuestions". Login required
+router.get("/getAllQuestions", FetchUser, async (req, res) => {
+    try {
+        const questions = await Ques.find();
+        res.status(200).json(questions);
+    }
+    catch (error) {
+        console.error(error.message);
+        res.status(500).send("Internal server error");
+    }
+});
+
+// ROUTE 7
+// get all the questions in decreasing order of reward price using : Get "/api/v1/ques/getAllQuestionsByReward". Login required
+router.get("/getAllQuestionsByReward", FetchUser, async (req, res) => {
+    try {
+        const questions = await Ques.find().sort({ rewardPrice: -1 });
+        res.status(200).json(questions);
+    }
+    catch (error) {
+        console.error(error.message);
+        res.status(500).send("Internal server error");
+    }
+});
+
+// ROUTE 8
+// get all questions from a particular tag in decreasing order of reward price using : Get "/api/v1/ques/getAllQuestionsByTagByReward". Login required
+router.get("/getAllQuestionsByTagByReward/:tag", FetchUser, async (req, res) => {
+    try {
+        const questions = await Ques.find({ tags: req.params.tag }).sort({ rewardPrice: -1 });
+        res.status(200).json(questions);
+    }
+    catch (error) {
+        console.error(error.message);
+        res.status(500).send("Internal server error");
+    }
+}
+);
+
+// ROUTE 9
+// get all questions from a particular tag using : Get "/api/v1/ques/getAllQuestionsByTag". Login required
+router.get("/getAllQuestionsByTag/:tag", FetchUser, async (req, res) => {
+    try {
+        const questions = await Ques.find({ tags: req.params.tag });
+        res.status(200).json(questions);
+    }
+    catch (error) {
+        console.error(error.message);
+        res.status(500).send("Internal server error");
+    }
+}
+);
+
+// ROUTE 10
+// get all questions in decreasing order of time of creation using : Get "/api/v1/ques/getAllQuestionsByTime". Login required
+router.get("/getAllQuestionsByTime", FetchUser, async (req, res) => {
+    try {
+        const questions = await Ques.find().sort({ date: -1 });
+        res.status(200).json(questions);
+    }
+    catch (error) {
+        console.error(error.message);
+        res.status(500).send("Internal server error");
+    }
+}
+);
+
+
 
 module.exports = router;
