@@ -14,14 +14,18 @@ router.use(bodyParser.json());
 // ROUTE 1  
 // Creating a user using : post "/api/v1/auth/createuser". No login required
 router.post('/createuser', UserMiddleWare, async (req, res) => {
-    const { name, email, password } = req.body;
+    const { name, email, password, dp } = req.body;
     try {
         let user = await User.findOne({ email });
         if (user) {
             return res.status(400).json({ error: "Sorry a User with this email already exists." });
         }
-
-        user = await User({ name, email, password });
+        if (dp) {
+            user = await User({ name, email, password, dp });
+        }
+        else {
+            user = await User({ name, email, password });
+        }
         user.save();
         const data = {
             user: {
@@ -83,38 +87,38 @@ router.get('/getuser', Fetchuser, async (req, res) => {
 // ROUTE 4
 // Update user details using : put "/api/v1/auth/updateuser". Login required
 router.put('/updateuser', Fetchuser, async (req, res) => {
-    const { name, email, password,interestedTopics,dp } = req.body;
+    const { name, email, password, interestedTopics, dp } = req.body;
     try {
-        let newUser ={};
-        if(name){
+        let newUser = {};
+        if (name) {
             newUser.name = name;
         }
-        if(email){
+        if (email) {
             newUser.email = email;
         }
-        if(password){
+        if (password) {
             const salt = await bcrypt.genSalt(10);
             const hash = await bcrypt.hash(password, salt);
-            newUser.password = hash ;
+            newUser.password = hash;
         }
-        if(interestedTopics){
+        if (interestedTopics) {
             newUser.interestedTopics = interestedTopics;
         }
-        if(dp){
+        if (dp) {
             newUser.dp = dp;
-        } 
+        }
 
         let user = await User.findById(req.user.id);
         if (!user) {
             return res.status(404).send("Not Found");
         }
-        user = await User.findByIdAndUpdate(req.user.id, { $set: newUser }, { new: true });    
+        user = await User.findByIdAndUpdate(req.user.id, { $set: newUser }, { new: true });
         res.json({ user });
     } catch (error) {
         console.error(error.message);
         res.status(500).send("Internal server error");
     }
-}   
+}
 );
 
 // ROUTE 5
