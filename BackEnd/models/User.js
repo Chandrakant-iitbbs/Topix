@@ -38,8 +38,8 @@ const UserSchema = new Schema({
         default : 0
     },
     dp:{
-        type:Buffer,
-        default:null
+        type:String
+
     }
 });
 
