@@ -3,35 +3,33 @@ const { Schema } = mongoose;
 
 const QuesSchema = new Schema({
     user: {
-        type : mongoose.Schema.Types.ObjectId, 
-        ref : "user"   // set reference as user.
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user"   // set reference as user.
     },
-    question:{
+    question: {
         type: String,
         required: true,
     },
-    alreadyKnew:{
-        type : String,
+    alreadyKnew: {
+        type: String,
     },
-    rewardPrice:{
-        type : Number,
-        default : 0,
+    rewardPrice: {
+        type: Number,
+        default: 0,
     },
-    tags:{
-        type : [String],
-        default:["General"],
+    tags: {
+        type: [String],
+        default: ["General"],
     },
-    views:{
-        type : Number,
-        default : 0,
-    },
-    date:{
-        type : Date,
-        default : Date.now
+    views: [
+        { type: Schema.Types.ObjectId, ref: "user" }
+    ],
+    date: {
+        type: Date,
+        default: Date.now
     }
 });
 
 
-const Ques = mongoose.model("Ques",QuesSchema)   
-// User.createIndexes();
+const Ques = mongoose.model("Ques", QuesSchema)
 module.exports = Ques;
