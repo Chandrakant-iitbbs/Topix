@@ -39,8 +39,11 @@ const UserSchema = new Schema({
     },
     dp:{
         type:String
-
+    },
+    UPIid:{
+        type : String
     }
+
 });
 
 UserSchema.pre('save',async function (next) {
