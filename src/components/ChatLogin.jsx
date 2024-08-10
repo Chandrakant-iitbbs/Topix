@@ -3,14 +3,16 @@ import { v4 } from "uuid";
 import { Form, Button, Row } from "react-bootstrap";
 
 const ChatLogin = (props) => {
+  const {setId} = props;
   const idref = useRef("");
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(idref.current.value);
+    if (!idref.current.value) return;
+    setId(idref.current.value);
   };
   const createNewId = (e) => {
     e.preventDefault();
-    console.log(v4());
+    setId(v4());
   };
   return (
     <Form className="w-full p-4">
