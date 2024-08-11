@@ -102,7 +102,7 @@ const IsArrayEqual = (a, b) => {
   if (a.length !== b.length) return false;
   a.sort();
   b.sort();
-  return a.forEach((element,index) => {
+  return a.every((element, index) => {
     return element === b[index];
   });
 }
