@@ -2,6 +2,8 @@ import { useState } from "react";
 import Conversations from "./Conversations";
 import Contact from "./Contact";
 import { Button, Col, Nav, Row, Tab } from "react-bootstrap";
+import ContactModal from "./ContactModal";
+import ConversationModal from "./ConversationModal";
 
 const SideBar = (props) => {
   const { id } = props;
@@ -44,22 +46,21 @@ const SideBar = (props) => {
           >
             your id : {id}
           </div>
-          <Button variant="primary"
+          <Button
+            variant="primary"
             onClick={() => {
               setOpenModal(true);
-              alert(openModal);
             }}
-           
           >
             New {isContact ? "Contact" : "Conversation"}
           </Button>
           {openModal ? (
             <>
-              {isContact ? 
-                "Contact modal"
-              : 
-                "Conversation modal"
-              }
+              {isContact ? (
+                <ContactModal show={openModal} setShow={setOpenModal} />
+              ) : (
+                <ConversationModal show={openModal} setShow={setOpenModal} />
+              )}
             </>
           ) : null}
         </Col>
