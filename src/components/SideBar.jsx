@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import Conversations from "./Conversations";
+import Contact from "./Contact";
 import { Button, Col, Nav, Row, Tab } from "react-bootstrap";
 
 const SideBar = (props) => {
@@ -20,7 +22,7 @@ const SideBar = (props) => {
                   >
                     Conversations
                   </Nav.Link>
-                  All Conversations...
+                  <Conversations id={id} isOpen={true} />
                 </Nav.Item>
               </Col>
               <Col>
@@ -28,7 +30,7 @@ const SideBar = (props) => {
                   <Nav.Link style={{ textAlign: "center" }} eventKey="Contact">
                     Contacts
                   </Nav.Link>
-                  All Contacts...
+                  <Contact id={id} />
                 </Nav.Item>
               </Col>
             </Row>
@@ -45,6 +47,7 @@ const SideBar = (props) => {
           <Button variant="primary"
             onClick={() => {
               setOpenModal(true);
+              alert(openModal);
             }}
            
           >
