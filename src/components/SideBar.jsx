@@ -4,9 +4,10 @@ import Contact from "./Contact";
 import { Button, Col, Nav, Row, Tab } from "react-bootstrap";
 import ContactModal from "./ContactModal";
 import ConversationModal from "./ConversationModal";
+import copy from "../Assets/clone-regular.svg";
 
-const SideBar = (props) => {
-  const { id } = props;
+const SideBar = ({id}) => {
+  
   const [isContact, setIsContact] = useState(false);
   const [openModal, setOpenModal] = useState(false);
 
@@ -24,7 +25,7 @@ const SideBar = (props) => {
                   >
                     Conversations
                   </Nav.Link>
-                  <Conversations id={id} isOpen={true} />
+                  <Conversations isOpen={true} />
                 </Nav.Item>
               </Col>
               <Col>
@@ -42,9 +43,11 @@ const SideBar = (props) => {
               display: "flex",
               justifyContent: "center",
               marginTop: "20px",
+              flexWrap:"wrap"
             }}
           >
             your id : {id}
+            <img src={copy} alt="" width="16px" style={{marginLeft:"10px", cursor:"pointer"}} onClick={()=>navigator.clipboard.writeText(id)}/>
           </div>
           <Button
             variant="primary"

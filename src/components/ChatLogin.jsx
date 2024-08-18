@@ -4,7 +4,7 @@ import { Form, Button, Row } from "react-bootstrap";
 
 const ChatLogin = (props) => {
   const {setId} = props;
-  const idref = useRef("");
+  const idref = useRef(null);
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!idref.current.value) return;
@@ -18,7 +18,11 @@ const ChatLogin = (props) => {
     <Form className="w-full p-4">
       <Form.Group controlId="login" className="my-4">
         <Form.Label>Enter id</Form.Label>
-        <Form.Control type="text" placeholder="Enter your id here" />
+        <Form.Control
+          ref={idref}
+          type="text"
+          placeholder="Enter your id here"
+        />
       </Form.Group>
       <Row className="d-flex justify-content-around">
         <Button
@@ -29,7 +33,7 @@ const ChatLogin = (props) => {
           Login
         </Button>
         <Button
-          style={{ width: "20%", minWidth: "100px",justifyContent: "center" }}
+          style={{ width: "20%", minWidth: "100px", justifyContent: "center" }}
           onClick={createNewId}
           className="d-flex"
         >

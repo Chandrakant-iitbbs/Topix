@@ -5,19 +5,16 @@ import { Modal, Form, Button, FormLabel, Row } from "react-bootstrap";
 
 const ConversationModal = (props) => {
   const { show, setShow } = props;
-
-  const { contacts } = useContacts();
+  const [selectedContactIds, setSelectedContactIds] = useState([])
+  const { contacts } = useContacts()
   const { createConversation } = useConversations();
 
   const idref = useRef();
   const nameref = useRef();
-  const [selectedContactIds, setSelectedContactIds] = useState([]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    createConversation(selectedContactIds);
-    console.log(idref.current.value);
-    console.log(nameref.current.value);
+    createConversation(selectedContactIds)
     setShow(false);
   };
 
@@ -46,8 +43,8 @@ const ConversationModal = (props) => {
       </Modal.Header>
       <Modal.Body>
         <Form>
-          {contacts.map((contact) => (
-            <Row style={{ marginLeft: "20px" }}>
+          {contacts.map((contact,index) => (
+            <Row key={index} style={{ marginLeft: "20px" }}>
               <FormLabel
                 id={contact.id}
                 onChange={() => handleCheckBoxChange(contact.id)}

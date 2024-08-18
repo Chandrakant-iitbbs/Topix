@@ -91,7 +91,7 @@ export const ConversationsProvider = (props) => {
       conversations: formattedConversations,
       selectedConversation: formattedConversations[selectedIndex],
       createConversation: createConversation, 
-      selectedIndex: setSelectedIndex
+      setSelectedIndex: setSelectedIndex
     }}>
       {children}
     </ConversationContext.Provider>
