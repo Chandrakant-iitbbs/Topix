@@ -6,6 +6,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import OpenConversation from './components/OpenConversation';
 import useLocalStorage from './hooks/useLocalStorage';
 import SideBar from './components/SideBar';
+import Login from './components/Login';
 function App() {
   const [id, setId] = useLocalStorage("id", "");
 
@@ -32,9 +33,11 @@ function App() {
 
   return (
     <>
+    
       <Router>
         <Routes>
-          <Route path="/" element={id ? sideBar : <ChatLogin setId={setId}/>} />
+          <Route path='/' element={<Login/>} /> 
+          {/* <Route path="/" element={id ? sideBar : <ChatLogin setId={setId}/>} /> */}
           <Route path="/chat" element={openConversation} />
         </Routes>
       </Router>
