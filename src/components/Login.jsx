@@ -5,7 +5,11 @@ import eye2 from "../Assets/eye-slash-regular.svg";
 import { Link } from "react-router-dom";
 
 const Login = () => {
+  const HandleSubmit = (info) => {
+    console.log(info);
+  }
   const [passShow, setPassShow] = useState(false);
+  const [info, setInfo] = useState({ email: "", password: "" });
   return (
     <div
       style={{
@@ -26,7 +30,7 @@ const Login = () => {
             Email
           </Form.Label>
           <Col sm="10">
-            <Form.Control type="eamil" placeholder="Enter your email id" />
+            <Form.Control type="email" placeholder="Enter your email id" onChange={(e)=>setInfo({...info,email:e.target.value})}/>
           </Col>
         </Form.Group>
 
@@ -38,6 +42,7 @@ const Login = () => {
             <Form.Control
               type={passShow ? "text" : "password"}
               placeholder="Enter your password"
+              onChange={(e)=>setInfo({...info,password:e.target.value})}
             />
             <img
               src={passShow ? eye2 : eye1}
@@ -57,6 +62,7 @@ const Login = () => {
         variant="primary"
         type="submit"
         style={{ width: "100%", marginBottom: "1rem" }}
+        onClick={()=>HandleSubmit(info)}
       >
         Login Now
       </Button>
