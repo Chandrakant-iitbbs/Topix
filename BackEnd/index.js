@@ -10,12 +10,13 @@ app.use(cors());
 app.use(express.json());
 
 app.get('/', (req, res) => {
-    res.send('Hi from the backend');
+  res.send('Hi from the backend');
 });
 
 app.use("/api/v1/auth", require("./routes/auth"));
 app.use("/api/v1/ques", require("./routes/ques"));
 app.use("/api/v1/answer", require("./routes/ans"));
+app.use("/api/v1/tags", require("./routes/tags"));
 
 app.listen(port, () => {
   console.log(`topix backend listening on port ${port}`);
