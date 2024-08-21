@@ -41,7 +41,9 @@ const SignUp = () => {
     upiId: "",
     dp: "",
   });
-  const topics = [
+  const [allTags, setAllTags] = useState([
+    "Add a new tag",
+    "General",
     "React",
     "Angular",
     "Vue",
@@ -52,7 +54,7 @@ const SignUp = () => {
     "Django",
     "Flask",
     "PostgreSQL",
-  ];
+  ]);
 
   return (
     <div
@@ -131,11 +133,21 @@ const SignUp = () => {
             <Select
               components={animatedComponents}
               closeMenuOnSelect={false}
-              options={topics.map((topic) => ({ value: topic, label: topic }))}
+              options={allTags.map((topic) => ({
+                value: topic,
+                label: topic,
+              }))}
               isMulti
-              onChange={(e) =>
-                setInfo({ ...info, tags: e.map((item) => item.value) })
-              }
+              onChange={(e) => {
+                if (e[e.length - 1].value === "Add a new tag") {
+                  let newtag = prompt("Enter your tag");
+                  e[e.length - 1].value = newtag;
+                  e[e.length - 1].label = newtag;
+                  let arr1 = allTags.concat(newtag);
+                  setAllTags(arr1);
+                }
+                setInfo({ ...info, tags: allTags });
+              }}
             />
           </Col>
         </Form.Group>
