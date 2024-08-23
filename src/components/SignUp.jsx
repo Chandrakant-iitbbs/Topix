@@ -146,7 +146,7 @@ const SignUp = () => {
                   let arr1 = allTags.concat(newtag);
                   setAllTags(arr1);
                 }
-                setInfo({ ...info, tags: allTags });
+                setInfo({ ...info, tags: e.map((item) => item.value) });
               }}
             />
           </Col>

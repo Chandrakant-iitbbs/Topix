@@ -8,6 +8,7 @@ import useLocalStorage from './hooks/useLocalStorage';
 import SideBar from './components/SideBar';
 import Login from './components/Login';
 import SignUp from './components/SignUp';
+import AskQuestion from './components/AskQuestion';
 function App() {
   const [id, setId] = useLocalStorage("id", "");
 
@@ -39,6 +40,7 @@ function App() {
         <Routes>
           <Route path='/login' element={<Login/>} /> 
           <Route path="/signup" element={<SignUp/>} />
+          <Route path='/askQues' element={<AskQuestion />}/>
           {/* <Route path="/" element={id ? sideBar : <ChatLogin setId={setId}/>} /> */}
           <Route path="/chat" element={openConversation} />
         </Routes>
