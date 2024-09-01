@@ -11,6 +11,7 @@ import SignUp from './components/SignUp';
 import AskQuestion from './components/AskQuestion';
 import NavBar from './components/NavBar';
 import NavBar2 from './components/NavBar2';
+import About from './components/About';
 function App() {
   const [id, setId] = useLocalStorage("id", "");
 
@@ -39,6 +40,7 @@ function App() {
       <Router>
         {/* <NavBar /> */}
         <NavBar2 />
+        <About/>
     
         <Routes>
           <Route exact path='/login' element={<Login />} />
