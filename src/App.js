@@ -1,7 +1,7 @@
 import ChatLogin from './components/ChatLogin';
 import { ContactProvider } from './context/ContactProvider';
 import { ConversationsProvider } from './context/ConversationProvider';
-import {SocketProvider} from './context/SocketProvider';
+import { SocketProvider } from './context/SocketProvider';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import OpenConversation from './components/OpenConversation';
 import useLocalStorage from './hooks/useLocalStorage';
@@ -9,9 +9,10 @@ import SideBar from './components/SideBar';
 import Login from './components/Login';
 import SignUp from './components/SignUp';
 import AskQuestion from './components/AskQuestion';
+import NavBar from './components/NavBar';
+import NavBar2 from './components/NavBar2';
 function App() {
   const [id, setId] = useLocalStorage("id", "");
-
 
   const sideBar = (
     <SocketProvider id={id}>
@@ -35,14 +36,16 @@ function App() {
 
   return (
     <>
-    
       <Router>
+        {/* <NavBar /> */}
+        <NavBar2 />
+    
         <Routes>
-          <Route path='/login' element={<Login/>} /> 
-          <Route path="/signup" element={<SignUp/>} />
-          <Route path='/askQues' element={<AskQuestion />}/>
+          <Route exact path='/login' element={<Login />} />
+          <Route exact path="/signup" element={<SignUp />} />
+          <Route exact path='/askQues' element={<AskQuestion />} />
           {/* <Route path="/" element={id ? sideBar : <ChatLogin setId={setId}/>} /> */}
-          <Route path="/chat" element={openConversation} />
+          <Route exact path="/chat" element={openConversation} />
         </Routes>
       </Router>
 
