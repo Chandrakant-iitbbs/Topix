@@ -14,6 +14,7 @@ import NavBar from './components/NavBar';
 import NavBar2 from './components/NavBar2';
 import About from './components/About';
 import User from './components/User';
+import Users from './components/Users';
 
 const App = () => {
 
@@ -54,11 +55,12 @@ const App = () => {
       <Router>
         <NavBar />
         {/* <NavBar2 /> */}
-
         <Routes>
           <Route exact path="/" element={<About />} />
+          <Route exact path='/about' element={<About />} />
           <Route exact path='/login' element={<Login />} />
           <Route exact path='/user' element={<User isOnline={isOnline} />} />
+          <Route exact path='/users' element={<Users />} />
           <Route exact path="/signup" element={<SignUp />} />
           <Route exact path='/askQues' element={<AskQuestion />} />
           {/* <Route path="/" element={id ? sideBar : <ChatLogin setId={setId}/>} /> */}
