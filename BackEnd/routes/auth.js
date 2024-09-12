@@ -152,4 +152,19 @@ router.get('/getallusers', Fetchuser, async (req, res) => {
 }
 );
 
+// ROUTE 7
+// Get user by id using : get "/api/v1/auth/getuserbyid". Login required
+router.get('/getuserbyid/:id', Fetchuser, async (req, res) => {
+    try {
+        const id = req.params.id;
+        const user = await User.findById(id).select("-password");
+        res.status(200).send(user);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send("Internal server error");
+    }
+}
+);
+
+
 module.exports = router

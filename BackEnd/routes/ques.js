@@ -177,7 +177,12 @@ router.get("/getAllQuestionsByTagByReward/:tag", FetchUser, async (req, res) => 
 // get all questions from a particular tag using : Get "/api/v1/ques/getAllQuestionsByTag". Login required
 router.get("/getAllQuestionsByTag/:tag", FetchUser, async (req, res) => {
     try {
-        const questions = await Ques.find({ tags: req.params.tag });
+        const { tag } = req.params;
+        let tags = tag.split(",");
+        let questions = await Ques.find();
+        questions = questions.filter((ques) => {
+            return tags.every((tag) => ques.tags.includes(tag));
+        });
         res.status(200).json(questions);
     }
     catch (error) {
