@@ -114,6 +114,7 @@ const Questions = () => {
           flexDirection: "row",
           width: "85%",
           justifyContent: "space-between",
+          margin: "10px",
         }}
       >
         <div>
