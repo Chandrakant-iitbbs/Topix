@@ -1,36 +1,13 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import { Form, Row, Col, Button } from "react-bootstrap";
 import eye1 from "../Assets/eye-regular.svg";
 import eye2 from "../Assets/eye-slash-regular.svg";
 import Select from "react-select";
 import makeAnimated from "react-select/animated";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import swal from "sweetalert";
 
 const SignUp = () => {
-  const HandleSubmit = (info) => {
-    console.log(info);
-  };
-
-  const ConvertToBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      const fileReader = new FileReader();
-      fileReader.readAsDataURL(file);
-      fileReader.onload = () => {
-        resolve(fileReader.result);
-      };
-      fileReader.onerror = (error) => {
-        reject(error);
-      };
-    });
-  };
-
-  const HandleImage = async (e) => {
-    const file = e.target.files[0];
-    const base64 = await ConvertToBase64(file);
-    const res = base64.split(",")[1];
-    setInfo({ ...info, dp: res });
-  };
-
   const animatedComponents = makeAnimated();
   const [passShow, setPassShow] = useState(false);
   const [info, setInfo] = useState({
@@ -55,6 +32,94 @@ const SignUp = () => {
     "Flask",
     "PostgreSQL",
   ]);
+  const navigate = useNavigate();
+
+  const ConvertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(file);
+      fileReader.onload = () => {
+        resolve(fileReader.result);
+      };
+      fileReader.onerror = (error) => {
+        reject(error);
+      };
+    });
+  };
+
+  const HandleImage = async (e) => {
+    const file = e.target.files[0];
+    const base64 = await ConvertToBase64(file);
+    const res = base64.split(",")[1];
+    setInfo({ ...info, dp: res });
+  };
+
+  const getTags = async () => {
+    const response = await fetch(
+      "http://localhost:5000/api/v1/tags/getAllTags",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (response.status === 200) {
+      const data = await response.json();
+      setAllTags(data[0].tags);
+    }
+  };
+
+  const addTag = async (tag) => {
+    const response = await fetch("http://localhost:5000/api/v1/tags/addTag", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ tag }),
+    });
+    if (response.status === 200) {
+      const data = await response.json();
+      setAllTags(data.tags);
+    }
+  };
+
+  const HandleSubmit = async (e) => {
+    e.preventDefault();
+    if (info.tags.length === 0) {
+      setInfo({ ...info, tags: ["General"] });
+    }
+    const res = await fetch("http://localhost:5000/api/v1/auth/createuser", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(info),
+    });
+    if (res.status === 200) {
+      const data = await res.json();
+      localStorage.setItem("auth-token", data.auto_token);
+      navigate("/questions");
+      setInfo({
+        name: "",
+        email: "",
+        password: "",
+        tags: [],
+        upiId: "",
+        dp: "",
+      });
+    } else if (res.status === 400) {
+      const data = await res.json();
+      swal({ icon: "error", title: data.error });
+    } else {
+      swal({ icon: "error", title: "Internal server error" });
+    }
+  };
+
+  useEffect(() => {
+    getTags();
+  }, []);
 
   return (
     <div
@@ -131,6 +196,7 @@ const SignUp = () => {
           </Form.Label>
           <Col sm="10">
             <Select
+              value={info.tags.map((item) => ({ value: item, label: item }))}
               components={animatedComponents}
               closeMenuOnSelect={false}
               options={allTags.map((topic) => ({
@@ -139,12 +205,21 @@ const SignUp = () => {
               }))}
               isMulti
               onChange={(e) => {
-                if (e[e.length - 1].value === "Add a new tag") {
+                if (e.length > 0 && e[e.length - 1].value === "Add a new tag") {
                   let newtag = prompt("Enter your tag");
-                  e[e.length - 1].value = newtag;
-                  e[e.length - 1].label = newtag;
-                  let arr1 = allTags.concat(newtag);
-                  setAllTags(arr1);
+                  if (newtag === null) {
+                    swal({
+                      icon: "error",
+                      title: "Tag can't be empty",
+                    });
+                  } else {
+                    newtag = newtag && newtag.trim();
+                    e[e.length - 1].value = newtag;
+                    e[e.length - 1].label = newtag;
+                    if (newtag) {
+                      addTag(newtag);
+                    }
+                  }
                 }
                 setInfo({ ...info, tags: e.map((item) => item.value) });
               }}
@@ -179,7 +254,7 @@ const SignUp = () => {
         variant="primary"
         type="submit"
         style={{ width: "100%", marginBottom: "1rem" }}
-        onClick={() => HandleSubmit(info)}
+        onClick={(e) => HandleSubmit(e)}
       >
         Sign up Now
       </Button>

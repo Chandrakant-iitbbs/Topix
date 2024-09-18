@@ -4,8 +4,8 @@ const tags = require('../models/Tags');
 const Fetchuser = require('../middleWare/FetchUser');
 
 // ROUTE 1
-// get all the tags using : Get "/api/v1/tags/getAllTags". Login required
-router.get("/getAllTags", Fetchuser, async (req, res) => {
+// get all the tags using : Get "/api/v1/tags/getAllTags"
+router.get("/getAllTags", async (req, res) => {
     try {
         const allTags = await tags.find();
         res.status(200).json(allTags);
@@ -17,8 +17,8 @@ router.get("/getAllTags", Fetchuser, async (req, res) => {
 });
 
 // ROUTE 2
-// add a new tag using : POST "/api/v1/tags/addTag". Login required
-router.put("/addTag", Fetchuser, async (req, res) => {
+// add a new tag using : POST "/api/v1/tags/addTag".
+router.put("/addTag", async (req, res) => {
     const { tag } = req.body;
     try {
         const tagsTillNow = await tags.findOne();

@@ -1,15 +1,33 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Form, Row, Col, Button } from "react-bootstrap";
 import eye1 from "../Assets/eye-regular.svg";
 import eye2 from "../Assets/eye-slash-regular.svg";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import swal from "sweetalert";
 
 const Login = () => {
-  const HandleSubmit = (info) => {
-    console.log(info);
-  }
-  const [passShow, setPassShow] = useState(false);
   const [info, setInfo] = useState({ email: "", password: "" });
+  const [passShow, setPassShow] = useState(false);
+  const navigate = useNavigate();
+
+  const HandleSubmit = async (e) => {
+    e.preventDefault();
+    const res = await fetch("http://localhost:5000/api/v1/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(info),
+    });
+    if (res.status === 200) {
+      const data = await res.json();
+      localStorage.setItem("auth-token", data.auto_token);
+      navigate("/questions");
+    } else {
+      const data = await res.json();
+      swal({ icon: "error", title: data.error });
+    }
+  };
   return (
     <div
       style={{
@@ -30,7 +48,11 @@ const Login = () => {
             Email
           </Form.Label>
           <Col sm="10">
-            <Form.Control type="email" placeholder="Enter your email id" onChange={(e)=>setInfo({...info,email:e.target.value})}/>
+            <Form.Control
+              type="email"
+              placeholder="Enter your email id"
+              onChange={(e) => setInfo({ ...info, email: e.target.value })}
+            />
           </Col>
         </Form.Group>
 
@@ -42,7 +64,7 @@ const Login = () => {
             <Form.Control
               type={passShow ? "text" : "password"}
               placeholder="Enter your password"
-              onChange={(e)=>setInfo({...info,password:e.target.value})}
+              onChange={(e) => setInfo({ ...info, password: e.target.value })}
             />
             <img
               src={passShow ? eye2 : eye1}
@@ -62,7 +84,7 @@ const Login = () => {
         variant="primary"
         type="submit"
         style={{ width: "100%", marginBottom: "1rem" }}
-        onClick={()=>HandleSubmit(info)}
+        onClick={(e) => HandleSubmit(e)}
       >
         Login Now
       </Button>
