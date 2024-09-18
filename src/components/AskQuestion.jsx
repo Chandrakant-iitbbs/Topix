@@ -1,13 +1,12 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Form, Row, Col, Button } from "react-bootstrap";
 import Select from "react-select";
 import JoditEditor from "jodit-react";
 import makeAnimated from "react-select/animated";
+import swal from "sweetalert";
 
 const AskQuestion = () => {
   const animatedComponents = makeAnimated();
-  const quesref = useRef("");
-  const alreadyKewref = useRef("");
   const isWrap = window.innerWidth < 900;
   const config = {
     readonly: false,
@@ -29,61 +28,164 @@ const AskQuestion = () => {
 
   const [info, setInfo] = useState({
     ques: "",
-    alreadyKew: "",
+    alreadyKnew: "",
     rewardPrice: 0,
     tags: [],
   });
 
-  const HandleSubmit = (info) => {
-    console.log(info);
+  function htmlToPlainText(html) {
+    return html.replace(/<[^>]*>?/gm, "");
+  }
+
+  const HandleSubmit = async (e) => {
+    e.preventDefault();
+    let { ques, alreadyKnew, rewardPrice, tags } = info;
+
+    let plainText = htmlToPlainText(ques);
+    ques = ques.trim();
+    alreadyKnew = alreadyKnew.trim();
+
+    if (rewardPrice < 0) {
+      swal({
+        icon: "error",
+        title: "Reward price can't be negative",
+      });
+      return;
+    }
+
+    if (tags.length === 0) {
+      tags.push("General");
+    }
+    if (plainText === "") {
+      swal({
+        icon: "error",
+        title: "Question can't be empty",
+      });
+      return;
+    }
+
+    const res = await fetch("http://localhost:5000/api/v1/ques/addQuestion", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "auth-header":
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjY5NTJkZDlhNjU0N2NmMmExMDRiNTllIn0sImlhdCI6MTcyMTI2ODAyMH0.HzFCj14g8v48JSx3zetJpccBCgP5R_4vRJV8uslWvgw",
+      },
+      body: JSON.stringify({
+        question: ques,
+        alreadyKnew: alreadyKnew,
+        rewardPrice,
+        tags,
+      }),
+    });
+    if (res.status === 200) {
+      swal({
+        title: "Question added successfully",
+        icon: "success",
+      });
+      setInfo({ ques: "", alreadyKnew: "", rewardPrice: 0, tags: [] });
+      return;
+    }
+    if (res.status === 401) {
+      const data = await res.json();
+      swal({
+        icon: "error",
+        title: data.error,
+      });
+    } else {
+      const data = await res.json();
+      swal({
+        icon: "error",
+        title: data,
+      });
+    }
   };
 
-  const [allTags, setAllTags] = useState([
-    "Add a new tag",
-    "General",
-    "React",
-    "Angular",
-    "Vue",
-    "Node",
-    "Express",
-    "MongoDB",
-    "Python",
-    "Django",
-    "Flask",
-    "PostgreSQL",
-  ]);
+  const getTags = async () => {
+    const response = await fetch(
+      "http://localhost:5000/api/v1/tags/getAllTags",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "auth-header":
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjY5NTJkZDlhNjU0N2NmMmExMDRiNTllIn0sImlhdCI6MTcyMTI2ODAyMH0.HzFCj14g8v48JSx3zetJpccBCgP5R_4vRJV8uslWvgw",
+        },
+      }
+    );
 
+    if (response.status === 200) {
+      const data = await response.json();
+      setAllTags(data[0].tags);
+    }
+  };
+
+  const addTag = async (tag) => {
+    const response = await fetch("http://localhost:5000/api/v1/tags/addTag", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "auth-header":
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjY5NTJkZDlhNjU0N2NmMmExMDRiNTllIn0sImlhdCI6MTcyMTI2ODAyMH0.HzFCj14g8v48JSx3zetJpccBCgP5R_4vRJV8uslWvgw",
+      },
+      body: JSON.stringify({ tag }),
+    });
+    if (response.status === 200) {
+      const data = await response.json();
+      setAllTags(data.tags);
+    }
+  };
+
+  useEffect(() => {
+    getTags();
+  }, []);
+
+  const [allTags, setAllTags] = useState([]);
   return (
     <div
       style={{
         width: "90%",
         margin: "auto",
-        marginTop: "6rem",
         padding: "1rem",
       }}
     >
       <Form style={{ marginBottom: "2rem" }}>
+        <h2 style={{ textAlign: "center" }}>Ask a question</h2>
         <Form.Group as={Row} controlId="tags" style={{ marginBottom: "1rem" }}>
           <Form.Label column sm="2">
             Related tags
           </Form.Label>
           <Col sm="12">
             <Select
+              value={info.tags.map((item) => ({ value: item, label: item }))}
               components={animatedComponents}
               closeMenuOnSelect={false}
-              options={allTags.map((topic) => ({
-                value: topic,
-                label: topic,
-              }))}
+              options={
+                allTags &&
+                allTags.map((topic) => ({
+                  value: topic,
+                  label: topic,
+                }))
+              }
               isMulti
               onChange={(e) => {
-                if (e[e.length - 1].value === "Add a new tag") {
+                if (e.length > 0 && e[e.length - 1].value === "Add a new tag") {
                   let newtag = prompt("Enter your tag");
-                  e[e.length - 1].value = newtag;
-                  e[e.length - 1].label = newtag;
-                  let arr1 = allTags.concat(newtag);
-                  setAllTags(arr1);
+                  if (newtag === null) {
+                    swal({
+                      icon: "error",
+                      title: "Tag can't be empty",
+                    });
+                  } else {
+                    newtag = newtag && newtag.trim();
+                    e[e.length - 1].value = newtag;
+                    e[e.length - 1].label = newtag;
+                    if (newtag) {
+                      addTag(newtag);
+                    }
+                  }
                 }
+
                 setInfo({ ...info, tags: e.map((item) => item.value) });
               }}
             />
@@ -93,6 +195,7 @@ const AskQuestion = () => {
         <Form.Group
           as={Row}
           controlId="reward"
+          value={info.rewardPrice}
           style={{ marginBottom: "1rem" }}
         >
           <Form.Label column sm="2">
@@ -102,13 +205,16 @@ const AskQuestion = () => {
             <Form.Control
               type="number"
               placeholder="Enter reward price"
-              onChange={(e) => setInfo({ ...info, name: e.target.value })}
+              value={info.rewardPrice}
+              onChange={(e) =>
+                setInfo({ ...info, rewardPrice: e.target.value })
+              }
             />
           </Col>
         </Form.Group>
         <Form.Group
           as={Row}
-          controlId="alreadyKew"
+          controlId="alreadyKnew"
           style={{ marginBottom: "1rem" }}
         >
           <Form.Label column sm="2">
@@ -117,11 +223,10 @@ const AskQuestion = () => {
           <Col sm="12">
             <JoditEditor
               iframeBaseUrl=""
-              ref={alreadyKewref}
-              value={info.alreadyKew}
+              value={info.alreadyKnew}
               config={config2}
               onBlur={(newContent) =>
-                setInfo({ ...info, alreadyKew: newContent })
+                setInfo({ ...info, alreadyKnew: newContent })
               }
             />
           </Col>
@@ -133,7 +238,6 @@ const AskQuestion = () => {
           </Form.Label>
           <Col sm="12">
             <JoditEditor
-              ref={quesref}
               value={info.ques}
               config={config}
               onBlur={(newContent) => setInfo({ ...info, ques: newContent })}
@@ -151,7 +255,7 @@ const AskQuestion = () => {
           margin: "auto",
           display: "block",
         }}
-        onClick={() => HandleSubmit(info)}
+        onClick={(e) => HandleSubmit(e)}
       >
         Send
       </Button>

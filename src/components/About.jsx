@@ -1,14 +1,16 @@
 import React from "react";
 import { Button, Col, Row, Image } from "react-bootstrap";
 import download from "../Assets/download.jpeg";
+import { useNavigate } from "react-router-dom";
 
 const About = () => {
+  const navigate = useNavigate();
   const handleLogin = () => {
-    console.log("login");
-  };
+    navigate("/login");
+    };
 
   const handleSignup = () => {
-    console.log("signup");
+    navigate("/signup");
   };
 
   return (

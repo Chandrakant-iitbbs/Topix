@@ -24,7 +24,7 @@ router.post("/addQuestion", FetchUser, async (req, res) => {
         const { question, alreadyKnew, tags, rewardPrice } = req.body;
         let q = {};
         if (!question) {
-            res.status(400).send("Please enter your question");
+            res.status(400).json("Please enter your question");
             return;
         }
         q.user = req.user.id;
@@ -42,11 +42,11 @@ router.post("/addQuestion", FetchUser, async (req, res) => {
         }
         const ques = await Ques(q);
         const saveQuestion = await ques.save();
-        res.json(saveQuestion);
+        res.status(200).json(saveQuestion);
     }
     catch (error) {
         console.error(error.message);
-        res.status(500).send("Internal1 server error");
+        res.status(500).json("Internal server error");
     }
 });
 
