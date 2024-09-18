@@ -1,14 +1,27 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import swal from "sweetalert";
 
 const QuesCard = (props) => {
-  const { ques } = props;
-  const { user, question, alreadyKnew, rewardPrice, tags, views, date } = ques;
+  const { ques, setQuesId } = props;
+  const { user, question, rewardPrice, tags, views, date, _id } = ques;
   const [name, setName] = useState("Anonymous");
+
+  const navigate = useNavigate();
+  const handleQuesClick = () => {
+    setQuesId(_id);
+    navigate(`/question/${_id}`);
+  };
+
+  const htmlTotext = (html) => {
+    let div = document.createElement("div");
+    div.innerHTML = html;
+    return div.innerText;
+  };
 
   const getAskedTime = (date) => {
     const currentDate = new Date();
     const askDate = new Date(date);
-    console.log(askDate);
     let diffTime = currentDate - askDate;
 
     const yrs = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 365));
@@ -49,13 +62,25 @@ const QuesCard = (props) => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "auth-header":
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjY5NTJkZDlhNjU0N2NmMmExMDRiNTllIn0sImlhdCI6MTcyMTI2ODAyMH0.HzFCj14g8v48JSx3zetJpccBCgP5R_4vRJV8uslWvgw",
+          "auth-header": localStorage.getItem("auth-token") || "",
         },
       }
     );
-    const res = await data.json();
-    setName(res.name);
+    if (data.status === 200) {
+      const user = await data.json();
+      setName(user.name);
+    } else if (data.status === 401) {
+      const user = await data.json();
+      swal({
+        icon: "error",
+        title: user.error,
+      });
+    } else {
+      swal({
+        icon: "error",
+        title: "Internal server error",
+      });
+    }
   };
 
   useEffect(() => {
@@ -82,13 +107,24 @@ const QuesCard = (props) => {
         <div>Views: {views && views.length}</div>
       </div>
 
-      <div style={{ width: "78%", padding: "5px" }}>
-        <div style={{ fontSize: "1.5rem" }}>{question}</div>
-        <div style={{ fontSize: "1rem" }}>{alreadyKnew}</div>
+      <div style={{ width: "78%" }}>
+        <div
+          style={{ fontSize: "1.5rem", cursor: "pointer" }}
+          onClick={handleQuesClick}
+        >
+          {htmlTotext(question)}
+        </div>
         <div style={{ fontSize: "1rem" }}>Tags: {tags.join(", ")}</div>
-        <div style={{ fontSize: "1rem", justifyContent:"space-between", display:"flex", flexDirection:"row"}}>
-          <div >Asked by: {name}</div>
-          <div style={{marginLeft:"10px"}}>{getAskedTime(date)}</div>
+        <div
+          style={{
+            fontSize: "1rem",
+            justifyContent: "space-between",
+            display: "flex",
+            flexDirection: "row",
+          }}
+        >
+          <div>Asked by: {name}</div>
+          <div style={{ marginRight: "10px" }}>{getAskedTime(date)}</div>
         </div>
       </div>
     </div>

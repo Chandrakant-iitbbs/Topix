@@ -5,6 +5,7 @@ const Fetchuser =(req, res, next)=>{
     const token = req.header("auth-header");     
     if (!token) {
         res.status(401).send({error: "Enter the token"});  
+        return;
     }
     try {
         const data = jwt.verify(token, JWT_secret);   // verify from token

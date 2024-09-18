@@ -3,8 +3,10 @@ import { Dropdown, Button, Form, Col, Row } from "react-bootstrap";
 import Select from "react-select";
 import makeAnimated from "react-select/animated";
 import QuesCard from "./QuesCard";
+import swal from "sweetalert";
 
-const Questions = () => {
+const Questions = (props) => {
+  const { setQuesId } = props;
   const animatedComponents = makeAnimated();
   const [allTags, setAllTags] = useState([]);
   const [questions, setQuestions] = useState([]);
@@ -16,31 +18,44 @@ const Questions = () => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "auth-header":
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjY5NTJkZDlhNjU0N2NmMmExMDRiNTllIn0sImlhdCI6MTcyMTI2ODAyMH0.HzFCj14g8v48JSx3zetJpccBCgP5R_4vRJV8uslWvgw",
+          "auth-header": localStorage.getItem("auth-token") || "",
         },
       }
     );
-    const ques = await data.json();
-    setQuestions(ques);
+    if (data.status === 200) {
+      const ques = await data.json();
+      setQuestions(ques);
+    } else if (data.status === 401) {
+      const ques = await data.json();
+      swal({
+        icon: "error",
+        title: ques.error,
+      });
+    } else {
+      swal({
+        icon: "error",
+        title: "Internal server error",
+      });
+    }
   };
 
-  const setTags = async () => {
+  const getAllTags = async () => {
     const res = await fetch("http://localhost:5000/api/v1/tags/getAllTags", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "auth-header":
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjY5NTJkZDlhNjU0N2NmMmExMDRiNTllIn0sImlhdCI6MTcyMTI2ODAyMH0.HzFCj14g8v48JSx3zetJpccBCgP5R_4vRJV8uslWvgw",
       },
     });
-    const tagsData = await res.json();
-    setAllTags(tagsData[0].tags);
+    if (res.status === 200) {
+      const tagsData = await res.json();
+      const tags = tagsData[0].tags.filter((tag) => tag !== "Add a new tag");
+      setAllTags(tags);
+    }
   };
 
   useEffect(() => {
     getQuestions();
-    setTags();
+    getAllTags();
   }, []);
 
   const sortByTime = async () => {
@@ -50,13 +65,25 @@ const Questions = () => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "auth-header":
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjY5NTJkZDlhNjU0N2NmMmExMDRiNTllIn0sImlhdCI6MTcyMTI2ODAyMH0.HzFCj14g8v48JSx3zetJpccBCgP5R_4vRJV8uslWvgw",
+          "auth-header": localStorage.getItem("auth-token") || "",
         },
       }
     );
-    const ques = await data.json();
-    setQuestions(ques);
+    if (data.status === 200) {
+      const ques = await data.json();
+      setQuestions(ques);
+    } else if (data.status === 401) {
+      const ques = await data.json();
+      swal({
+        icon: "error",
+        title: ques.error,
+      });
+    } else {
+      swal({
+        icon: "error",
+        title: "Internal server error",
+      });
+    }
   };
 
   const sortByReward = async () => {
@@ -66,13 +93,25 @@ const Questions = () => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "auth-header":
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjY5NTJkZDlhNjU0N2NmMmExMDRiNTllIn0sImlhdCI6MTcyMTI2ODAyMH0.HzFCj14g8v48JSx3zetJpccBCgP5R_4vRJV8uslWvgw",
+          "auth-header": localStorage.getItem("auth-token") || "",
         },
       }
     );
-    const ques = await data.json();
-    setQuestions(ques);
+    if (data.status === 200) {
+      const ques = await data.json();
+      setQuestions(ques);
+    } else if (data.status === 401) {
+      const ques = await data.json();
+      swal({
+        icon: "error",
+        title: ques.error,
+      });
+    } else {
+      swal({
+        icon: "error",
+        title: "Internal server error",
+      });
+    }
   };
 
   const sortByTag = async (e) => {
@@ -87,13 +126,25 @@ const Questions = () => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "auth-header":
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjY5NTJkZDlhNjU0N2NmMmExMDRiNTllIn0sImlhdCI6MTcyMTI2ODAyMH0.HzFCj14g8v48JSx3zetJpccBCgP5R_4vRJV8uslWvgw",
+          "auth-header": localStorage.getItem("auth-token") || "",
         },
       }
     );
-    const ques = await data.json();
-    setQuestions(ques);
+    if (data.status === 200) {
+      const ques = await data.json();
+      setQuestions(ques);
+    } else if (data.status === 401) {
+      const ques = await data.json();
+      swal({
+        icon: "error",
+        title: ques.error,
+      });
+    } else {
+      swal({
+        icon: "error",
+        title: "Internal server error",
+      });
+    }
   };
 
   return (
@@ -123,19 +174,18 @@ const Questions = () => {
               Sorted by
             </Dropdown.Toggle>
             <Dropdown.Menu style={{ padding: "10px" }}>
-              <div style={{ margin: "8px" }} onClick={sortByTime}>
-                Newest
-              </div>
-              <div style={{ margin: "8px" }} onClick={sortByReward}>
+              <Dropdown.Item onClick={sortByTime}>Latest</Dropdown.Item>
+              <Dropdown.Item onClick={sortByReward}>
                 Highest reward
-              </div>
-              <div style={{ margin: "8px" }}>
+              </Dropdown.Item>
+
+              <div style={{ padding: "4px 24px" }}>
                 <Form.Group as={Row} controlId="tags">
                   <Col style={{ width: "20rem" }}>
                     By tags
                     <Select
                       components={animatedComponents}
-                      closeMenuOnSelect={false}
+                      closeMenuOnSelect={true}
                       options={allTags.map((topic) => ({
                         value: topic,
                         label: topic,
@@ -161,11 +211,17 @@ const Questions = () => {
           justifyContent: "center",
           flexWrap: "wrap",
           flexDirection: "column",
-          width:"90%"
+          width: "90%",
         }}
       >
         {questions.map((question) => {
-          return <QuesCard key={question._id} ques={question} />;
+          return (
+            <QuesCard
+              key={question._id}
+              ques={question}
+              setQuesId={setQuesId}
+            />
+          );
         })}
       </div>
     </div>

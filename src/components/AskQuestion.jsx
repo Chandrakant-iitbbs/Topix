@@ -68,8 +68,7 @@ const AskQuestion = () => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "auth-header":
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjY5NTJkZDlhNjU0N2NmMmExMDRiNTllIn0sImlhdCI6MTcyMTI2ODAyMH0.HzFCj14g8v48JSx3zetJpccBCgP5R_4vRJV8uslWvgw",
+        "auth-header":localStorage.getItem("auth-token") || "",
       },
       body: JSON.stringify({
         question: ques,
@@ -108,8 +107,6 @@ const AskQuestion = () => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "auth-header":
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjY5NTJkZDlhNjU0N2NmMmExMDRiNTllIn0sImlhdCI6MTcyMTI2ODAyMH0.HzFCj14g8v48JSx3zetJpccBCgP5R_4vRJV8uslWvgw",
         },
       }
     );
@@ -125,8 +122,6 @@ const AskQuestion = () => {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        "auth-header":
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjY5NTJkZDlhNjU0N2NmMmExMDRiNTllIn0sImlhdCI6MTcyMTI2ODAyMH0.HzFCj14g8v48JSx3zetJpccBCgP5R_4vRJV8uslWvgw",
       },
       body: JSON.stringify({ tag }),
     });
