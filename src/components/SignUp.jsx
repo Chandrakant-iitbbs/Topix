@@ -7,7 +7,8 @@ import makeAnimated from "react-select/animated";
 import { Link, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 
-const SignUp = () => {
+const SignUp = (props) => {
+  const { setToken } = props;
   const animatedComponents = makeAnimated();
   const [passShow, setPassShow] = useState(false);
   const [info, setInfo] = useState({
@@ -100,6 +101,7 @@ const SignUp = () => {
     if (res.status === 200) {
       const data = await res.json();
       localStorage.setItem("auth-token", data.auto_token);
+      setToken(data.auto_token);
       navigate("/questions");
       setInfo({
         name: "",

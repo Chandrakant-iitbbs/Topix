@@ -20,8 +20,9 @@ import Questions from './components/Questions';
 const App = () => {
 
   const [id, setId] = useLocalStorage("id", "");
+  const [quesId, setQuesId] = useState("");
 
-  const [isOnline, setIsOnline] = useState(false);;
+  const [isOnline, setIsOnline] = useState(false);
 
   useEffect(() => {
     setIsOnline(true);
@@ -30,6 +31,9 @@ const App = () => {
       console.log("User is offline");
     };
   }, []);
+
+
+  const [token, setToken] = useState(localStorage.getItem("auth-token"));
 
   const sideBar = (
     <SocketProvider id={id}>
@@ -54,16 +58,15 @@ const App = () => {
   return (
     <>
       <Router>
-        <NavBar />
-        {/* <NavBar2 /> */}
+        {token? <NavBar setToken={setToken} /> : <NavBar2/>}
         <Routes>
           <Route exact path="/" element={<About />} />
           <Route exact path='/about' element={<About />} />
-          <Route exact path='/login' element={<Login />} />
+          <Route exact path='/login' element={<Login setToken={setToken}/>} />
           <Route exact path='/user' element={<User isOnline={isOnline} />} />
           <Route exact path='/users' element={<Users />} />
-          <Route exact path='/questions' element={<Questions/>} />
-          <Route exact path="/signup" element={<SignUp />} />
+          <Route exact path='/questions' element={<Questions setQuesId={setQuesId}/>} />
+          <Route exact path="/signup" element={<SignUp setToken={setToken} />} />
           <Route exact path='/askQues' element={<AskQuestion />} />
           {/* <Route path="/" element={id ? sideBar : <ChatLogin setId={setId}/>} /> */}
           <Route exact path="/chat" element={openConversation} />

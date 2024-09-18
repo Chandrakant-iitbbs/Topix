@@ -5,7 +5,8 @@ import eye2 from "../Assets/eye-slash-regular.svg";
 import { Link, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 
-const Login = () => {
+const Login = (props) => {
+  const { setToken } = props;
   const [info, setInfo] = useState({ email: "", password: "" });
   const [passShow, setPassShow] = useState(false);
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ const Login = () => {
     if (res.status === 200) {
       const data = await res.json();
       localStorage.setItem("auth-token", data.auto_token);
+      setToken(data.auto_token);
       navigate("/questions");
     } else {
       const data = await res.json();
