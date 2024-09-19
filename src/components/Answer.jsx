@@ -5,6 +5,7 @@ const Answer = (props) => {
   let { ans } = props;
 
   const [name, setName] = useState("Anonymous");
+  const [votes, setVotes] = useState(ans.upVotes.length - ans.downVotes.length);
 
   const getUserName = async () => {
     const data = await fetch(
@@ -20,7 +21,7 @@ const Answer = (props) => {
     if (data.status === 200) {
       const user = await data.json();
       setName(user.name);
-    } else if (data.status === 401) {
+    } else if (data.status === 401 || data.status === 404) {
       const user = await data.json();
       swal({
         icon: "error",
@@ -81,6 +82,65 @@ const Answer = (props) => {
     div.innerHTML = html;
     return div.innerText || div.textContent || "";
   };
+
+  const upVote = async (id) => {
+    const data = await fetch(
+      `http://localhost:5000/api/v1/answer/upvote/${id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "auth-header": localStorage.getItem("auth-token") || "",
+        },
+      }
+    );
+    if (data.status === 200) {
+      const ans = await data.json();
+      setVotes(ans);
+    } else if (data.status === 401 || data.status === 404) {
+      const ans = await data.json();
+      swal({
+        icon: "error",
+        title: ans.error ? ans.error : ans,
+      });
+    } else {
+      swal({
+        icon: "error",
+        title: "Internal server error",
+      });
+    }
+  };
+
+  const downVote = async (id) => {
+    const data = await fetch(
+      `http://localhost:5000/api/v1/answer/downvote/${id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "auth-header": localStorage.getItem("auth-token") || "",
+        },
+      }
+    );
+
+    if (data.status === 200) {
+      const ans = await data.json();
+      setVotes(ans);
+      return;
+    } else if (data.status === 401 || data.status === 404) {
+      const ans = await data.json();
+      swal({
+        icon: "error",
+        title: ans.error ? ans.error : ans,
+      });
+    } else {
+      swal({
+        icon: "error",
+        title: "Internal server error",
+      });
+    }
+  };
+
   return (
     <div
       style={{
@@ -100,16 +160,19 @@ const Answer = (props) => {
           flexDirection: "column",
           margin: "auto auto",
           minWidth: "40px",
-          gap: "1rem",
+          gap: "10px",
         }}
       >
         <i
           className="fa-regular fa-thumbs-up"
           style={{ fontSize: "1.6rem", margin: "auto" }}
+          onClick={() => upVote(ans._id)}
         ></i>
+        <div style={{ textAlign: "center" }}>{votes}</div>
         <i
           className="fa-regular fa-thumbs-down"
           style={{ fontSize: "1.6rem", margin: "auto" }}
+          onClick={() => downVote(ans._id)}
         ></i>
       </div>
       <div style={{ width: "94%", paddingLeft: "20px" }}>

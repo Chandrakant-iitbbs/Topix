@@ -123,4 +123,52 @@ router.get("/getAnswers/:QId", FetchUser, async (req, res) => {
     }
 });
 
+// Route 7
+// Upvote an answer using : Put "api/v1/answer/upvote/:id". Login required
+router.put("/upvote/:id", FetchUser, async (req, res) => {
+    try {
+        let ans = await Answer.findById(req.params.id);
+        if (!ans) {
+            return res.status(404).json("Answer not found");
+        }
+        if (ans.upVotes.includes(req.user.id)) {
+            return res.status(401).json("You have already upvoted");
+        }
+        if (ans.downVotes.includes(req.user.id)) {
+            ans.downVotes = ans.downVotes.filter(id => id.toString() !== req.user.id);
+        }
+        ans.upVotes.push(req.user.id);
+        ans = await Answer.findByIdAndUpdate(req.params.id, { $set: ans }, { new: true });
+        res.status(200).json(ans.upVotes.length-ans.downVotes.length);
+    }
+    catch (error) {
+        console.error(error.message);
+        res.status(500).json("Internal server error");
+    }
+});
+
+// Route 8
+// Downvote an answer using : Put "api/v1/answer/downvote/:id". Login required
+router.put("/downvote/:id", FetchUser, async (req, res) => {
+    try {
+        let ans = await Answer.findById(req.params.id);
+        if (!ans) {
+            return res.status(404).json("Answer not found");
+        }
+        if (ans.downVotes.includes(req.user.id)) {
+            return res.status(401).json("You have already downvoted");
+        }
+        if (ans.upVotes.includes(req.user.id)) {
+            ans.upVotes = ans.upVotes.filter(id => id.toString() !== req.user.id);
+        }
+        ans.downVotes.push(req.user.id);
+        ans = await Answer.findByIdAndUpdate(req.params.id, { $set: ans }, { new: true });
+        res.status(200).json(ans.upVotes.length-ans.downVotes.length);
+    }
+    catch (error) {
+        console.error(error.message);
+        res.status(500).json("Internal server error");
+    }
+});
+
 module.exports = router;

@@ -14,10 +14,12 @@ const AnswerSchema = new Schema({
         type: String,
         required: true,
     },
-    likes:{
-        type : Number,
-        default : 0,
-    },
+    upVotes:[
+        { type: Schema.Types.ObjectId, ref: "user" }
+    ],
+    downVotes:[
+        { type: Schema.Types.ObjectId, ref: "user" }
+    ],
     date:{
         type : Date,
         default : Date.now

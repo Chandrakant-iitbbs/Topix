@@ -77,9 +77,21 @@ const Question = (props) => {
     return `${seconds} seconds ago`;
   };
 
+  function htmlToPlainText(html) {
+    return html.replace(/<[^>]*>?/gm, "");
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(addAnswer);
+    const plainText = htmlToPlainText(addAnswer).trim();
+    if(plainText === "" ) {
+      swal({
+        title: "Answer cannot be empty",
+        icon: "error",
+      });
+      return;
+    }
+
     const res = await fetch(
       `http://localhost:5000/api/v1/answer/addAnswer/${id}`,
       {
@@ -203,7 +215,7 @@ const Question = (props) => {
     <div style={{ margin: "20px 20px" }}>
       {ques ? (
         <div style={{ width: "95%", margin: "auto", padding: "10px" }}>
-          <h4>{htmlToText(ques.question)}</h4>
+          <div>{htmlToText(ques.question)}</div>
           <div
             style={{
               display: "flex",
