@@ -122,8 +122,9 @@ router.get("/getQuestion/:id", FetchUser, async (req, res) => {
             return res.status(404).send("Not Found");
         }
 
-        if (ques.user.toString() !== req.user.id) {
-            return res.status(401).send("Not Allowed");
+        if (!ques.views.includes(req.user.id)) {
+            ques.views.push(req.user.id);
+            await ques.save();
         }
         res.status(200).json(ques);
     }
