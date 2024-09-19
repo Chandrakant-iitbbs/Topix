@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import swal from "sweetalert";
 import JoditEditor from "jodit-react";
-import {Button} from "react-bootstrap";
+import { Button } from "react-bootstrap";
+import Answer from "./Answer";
 
 const Question = (props) => {
   let { id } = props;
@@ -79,16 +80,19 @@ const Question = (props) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(addAnswer);
-    const res = await fetch(`http://localhost:5000/api/v1/answer/addAnswer/${id}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "auth-header": localStorage.getItem("auth-token") || "",
-      },
-      body: JSON.stringify({
-        answer: addAnswer,
-      }),
-    });
+    const res = await fetch(
+      `http://localhost:5000/api/v1/answer/addAnswer/${id}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "auth-header": localStorage.getItem("auth-token") || "",
+        },
+        body: JSON.stringify({
+          answer: addAnswer,
+        }),
+      }
+    );
     if (res.status === 200) {
       swal({
         title: "Answer added successfully",
@@ -108,7 +112,7 @@ const Question = (props) => {
         icon: "error",
       });
     }
-  }
+  };
 
   const config = {
     readonly: false,
@@ -193,7 +197,6 @@ const Question = (props) => {
   useEffect(() => {
     fetchQuestion();
     fetchAnswers();
-
     getAskedTime();
   }, []);
   return (
@@ -277,11 +280,7 @@ const Question = (props) => {
           <div>
             <h2>Answers</h2>
             {answers.map((ans, index) => {
-              return <div key={index}>
-              <h4>{htmlToText(ans.answer)}</h4>
-              <hr></hr>
-              <div>{ans.date}</div>
-            </div>
+              return <Answer ans={ans} key={index} />;
             })}
           </div>
         ) : (
@@ -289,24 +288,22 @@ const Question = (props) => {
         )}
       </div>
 
-
-      <div style={{width:"95%", margin:"1rem auto"}}>
+      <div style={{ width: "95%", margin: "1rem auto" }}>
         <h3>Add answer</h3>
         <div>
-        <JoditEditor
-              iframeBaseUrl=""
-              value={addAnswer}
-              config={config}
-              onBlur={(newContent) =>
-                setAddAnswer(newContent)
-              }
-            />
+          <JoditEditor
+            iframeBaseUrl=""
+            value={addAnswer}
+            config={config}
+            onBlur={(newContent) => setAddAnswer(newContent)}
+          />
         </div>
-        <div style={{ display:"flex",justifyContent:"center", margin:"1rem"}}>
+        <div
+          style={{ display: "flex", justifyContent: "center", margin: "1rem" }}
+        >
           <Button onClick={handleSubmit}>Submit</Button>
         </div>
       </div>
-
     </div>
   );
 };
