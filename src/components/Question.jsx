@@ -3,6 +3,7 @@ import swal from "sweetalert";
 import JoditEditor from "jodit-react";
 import { Button } from "react-bootstrap";
 import Answer from "./Answer";
+import HtmlToText from "./HtmlToText";
 
 const Question = (props) => {
   let { id } = props;
@@ -199,13 +200,6 @@ const Question = (props) => {
     }
   };
 
-  const htmlToText = (html) => {
-    // let div = new DOMParser().parseFromString(html, "text/html");
-    // return div.body.textContent || "";
-    let div = document.createElement("div");
-    div.innerHTML = html;
-    return div.textContent || div.innerText || "";
-  };
   useEffect(() => {
     fetchQuestion();
     fetchAnswers();
@@ -215,7 +209,7 @@ const Question = (props) => {
     <div style={{ margin: "20px 20px" }}>
       {ques ? (
         <div style={{ width: "95%", margin: "auto", padding: "10px" }}>
-          <div>{htmlToText(ques.question)}</div>
+          <div>{<HtmlToText html={ques.question} index={ques._id}/>}</div>
           <div
             style={{
               display: "flex",
@@ -263,7 +257,7 @@ const Question = (props) => {
           </div>
           <hr></hr>
           <div style={{ textWrap: "wrap", margin: "1rem 0" }}>
-            {ques.alreadyKnew && htmlToText(ques.alreadyKnew)}
+            {ques.alreadyKnew && < HtmlToText html={ques.alreadyKnew} index={ques._id+'c'}/>}
           </div>
           <div style={{ display: "flex", flexWrap: "wrap" }}>
             {ques.tags.map((tag) => (

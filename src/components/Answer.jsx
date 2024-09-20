@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import swal from "sweetalert";
+import HtmlToText from "./HtmlToText";
 
 const Answer = (props) => {
   let { ans } = props;
@@ -176,7 +177,7 @@ const Answer = (props) => {
         ></i>
       </div>
       <div style={{ width: "94%", paddingLeft: "20px" }}>
-      <div>{htmlToText(ans.answer)}</div>
+        <div> {<HtmlToText html={ans.answer} index={ans._id} />}</div>
         <div style={{ marginTop: "1rem" }}>
           {" "}
           Answered : {getAskedTime(ans.date)} by {name}

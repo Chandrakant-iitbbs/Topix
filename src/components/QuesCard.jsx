@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import swal from "sweetalert";
+import HtmlToText from "./HtmlToText";
 
 const QuesCard = (props) => {
   const { ques, setQuesId } = props;
@@ -11,12 +12,6 @@ const QuesCard = (props) => {
   const handleQuesClick = () => {
     setQuesId(_id);
     navigate(`/question/${_id}`);
-  };
-
-  const htmlTotext = (html) => {
-    let div = document.createElement("div");
-    div.innerHTML = html;
-    return div.innerText;
   };
 
   const getAskedTime = (date) => {
@@ -88,6 +83,8 @@ const QuesCard = (props) => {
     getAskedTime();
   }, []);
 
+  const quesText = <HtmlToText html={question} index={_id} />;  
+
   return (
     <div
       style={{
@@ -103,8 +100,7 @@ const QuesCard = (props) => {
     >
       <div style={{ width: "20%", padding: "5px", minWidth: "80px" }}>
         <div>Reward price: {rewardPrice}</div>
-        {/* Todo to remove condition */}
-        <div>Views: {views && views.length}</div>
+        <div>Views: {views.length}</div>
       </div>
 
       <div style={{ width: "78%" }}>
@@ -112,7 +108,7 @@ const QuesCard = (props) => {
           style={{ fontSize: "1.5rem", cursor: "pointer" }}
           onClick={handleQuesClick}
         >
-          {htmlTotext(question)}
+          {quesText}
         </div>
         <div style={{ fontSize: "1rem" }}>Tags: {tags.join(", ")}</div>
         <div
