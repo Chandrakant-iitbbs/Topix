@@ -5,14 +5,6 @@ import { useNavigate } from "react-router-dom";
 
 const About = () => {
   const navigate = useNavigate();
-  const handleLogin = () => {
-    navigate("/login");
-    };
-
-  const handleSignup = () => {
-    navigate("/signup");
-  };
-
   return (
     <div style={{ margin: "2rem 4rem" }}>
       <Row
@@ -34,12 +26,28 @@ const About = () => {
               display: "flex",
             }}
           >
-            <Button style={{ margin: "10px" }} onClick={() => handleLogin()}>
-              Login
-            </Button>
-            <Button style={{ margin: "10px" }} onClick={() => handleSignup()}>
-              Sign up
-            </Button>
+            {localStorage.getItem("auth-token") ? (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-around",
+                  width: "100%",
+                }}
+              >
+                <Button
+                  style={{ margin: "10px" }}
+                  onClick={() => navigate("/questions")}
+                >
+                  Go to questions
+                </Button>
+                <Button
+                  style={{ margin: "10px" }}
+                  onClick={() => navigate("/askQues")}
+                >
+                  Ask a question
+                </Button>
+              </div>
+            ) : null}
           </Row>
         </Col>
         <Col

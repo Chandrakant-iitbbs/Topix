@@ -1,6 +1,7 @@
 import { Navbar, Nav, Button, Image, Col, Form } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../logo.svg";
+import { useEffect, useState } from "react";
 
 const NavBar = (props) => {
   const { setToken } = props;
@@ -17,14 +18,40 @@ const NavBar = (props) => {
   };
   const navigate = useNavigate();
 
+  const [dp, setDp] = useState("");
+  const [name, setName] = useState("C");
+
+  const getuser = async () => {
+    const res = await fetch("http://localhost:5000/api/v1/auth/getuser", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "auth-header": localStorage.getItem("auth-token") || "",
+      },
+    });
+    if (res.status === 200) {
+      const data = await res.json();
+      setName((data.name[0]).toUpperCase());
+      if (data.dp) {
+        setDp("data:image/jpeg;base64," + data.dp);
+      }
+    }
+  };
+
+  useEffect(() => {
+    getuser();
+  }, []);
+
   return (
+
+    <div style={{width:"100%", margin:"20px"
+    }}>
     <Navbar
       collapseOnSelect
       expand="md"
       className="bg-body-tertiary"
-      style={{ justifyItems: "center" }}
     >
-      <Col sm={2} style={{ minWidth: "200px" }}>
+      <Col sm={2} style={{ minWidth: "160px" }}>
         <Image
           src={logo}
           alt="logo"
@@ -112,16 +139,29 @@ const NavBar = (props) => {
         </Col>
 
         <Col sm={2} style={{ minWidth: "200px" }}>
-          <Image
-            src="https://imgv3.fotor.com/images/slider-image/A-clear-close-up-photo-of-a-woman.jpg"
-            roundedCircle
-            width={50}
-            height={50}
-            style={{ marginLeft: "16px", marginRight: "16px" }}
-          />
+          {dp.length ? (
+            <Image
+              src={dp}
+              roundedCircle
+              width={35}
+              height={35}
+              style={{ marginLeft: "16px", marginRight: "16px" }}
+            />
+          ) : (
+            <span
+              style={{
+                marginLeft: "5px",
+                marginRight: "5px",
+                fontSize: "2rem", 
+                fontWeight: "bold",
+              }}
+            >
+              {name}
+            </span>
+          )}
           <Button
             variant="primary"
-            style={{ height: "40px", margin: "auto" }}
+            style={{ margin: "auto" }}
             onClick={(e) => handleLogOut(e)}
           >
             Log out
@@ -129,6 +169,7 @@ const NavBar = (props) => {
         </Col>
       </Navbar.Collapse>
     </Navbar>
+    </div>
   );
 };
 

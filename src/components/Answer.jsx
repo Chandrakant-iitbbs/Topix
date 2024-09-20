@@ -176,14 +176,12 @@ const Answer = (props) => {
         ></i>
       </div>
       <div style={{ width: "94%", paddingLeft: "20px" }}>
-        <div>{htmlToText(ans.answer)}</div>
+      <div>{htmlToText(ans.answer)}</div>
         <div style={{ marginTop: "1rem" }}>
           {" "}
           Answered : {getAskedTime(ans.date)} by {name}
         </div>
       </div>
-
-      <hr></hr>
     </div>
   );
 };

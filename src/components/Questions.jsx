@@ -4,8 +4,10 @@ import Select from "react-select";
 import makeAnimated from "react-select/animated";
 import QuesCard from "./QuesCard";
 import swal from "sweetalert";
+import { useNavigate } from "react-router-dom";
 
 const Questions = (props) => {
+  const navigate = useNavigate();
   const { setQuesId } = props;
   const animatedComponents = makeAnimated();
   const [allTags, setAllTags] = useState([]);
@@ -202,7 +204,7 @@ const Questions = (props) => {
           </Dropdown>
         </div>
         <div>
-          <Button>Ask a question</Button>
+          <Button onClick={()=>navigate("/askQues")}>Ask a question</Button>
         </div>
       </div>
       <div
