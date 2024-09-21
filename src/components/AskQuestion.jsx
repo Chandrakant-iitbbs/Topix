@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import  { useState, useEffect, useRef } from "react";
 import { Form, Row, Col, Button } from "react-bootstrap";
 import Select from "react-select";
 import JoditEditor from "jodit-react";
@@ -24,6 +24,9 @@ const AskQuestion = () => {
     saveSelectionOnBlur: true,
   };
 
+  const questionRef = useRef("");
+  const alreadyKnewRef = useRef("");
+
   const config2 = { ...config, height: 260 };
 
   const [info, setInfo] = useState({
@@ -33,8 +36,10 @@ const AskQuestion = () => {
     tags: [],
   });
 
-  function htmlToPlainText(html) {
-    return html.replace(/<[^>]*>?/gm, "");
+  const htmlToPlainText=(html)=> {
+    let tempDiv = document.createElement("div");
+    tempDiv.innerHTML = html;
+    return tempDiv.textContent || tempDiv.innerText || "";
   }
 
   const HandleSubmit = async (e) => {
@@ -42,9 +47,7 @@ const AskQuestion = () => {
     let { ques, alreadyKnew, rewardPrice, tags } = info;
 
     let plainText = htmlToPlainText(ques);
-    ques = ques.trim();
-    alreadyKnew = alreadyKnew.trim();
-
+    plainText = plainText.replace(/\s/g, "").trim();
     if (rewardPrice < 0) {
       swal({
         icon: "error",
@@ -72,7 +75,7 @@ const AskQuestion = () => {
       },
       body: JSON.stringify({
         question: ques,
-        alreadyKnew: alreadyKnew,
+        alreadyKnew,
         rewardPrice,
         tags,
       }),
@@ -220,6 +223,7 @@ const AskQuestion = () => {
               iframeBaseUrl=""
               value={info.alreadyKnew}
               config={config2}
+              ref={alreadyKnewRef}
               onBlur={(newContent) =>
                 setInfo({ ...info, alreadyKnew: newContent })
               }
@@ -235,6 +239,7 @@ const AskQuestion = () => {
             <JoditEditor
               value={info.ques}
               config={config}
+              ref={questionRef}
               onBlur={(newContent) => setInfo({ ...info, ques: newContent })}
             />
           </Col>

@@ -78,13 +78,16 @@ const Question = (props) => {
     return `${seconds} seconds ago`;
   };
 
-  function htmlToPlainText(html) {
-    return html.replace(/<[^>]*>?/gm, "");
+  const htmlToPlainText=(html)=> {
+    let tempDiv = document.createElement("div");
+    tempDiv.innerHTML = html;
+    return tempDiv.textContent || tempDiv.innerText || "";
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const plainText = htmlToPlainText(addAnswer).trim();
+    let plainText = htmlToPlainText(addAnswer);
+    plainText = plainText.replace(/\s/g, "").trim();  
     if(plainText === "" ) {
       swal({
         title: "Answer cannot be empty",
