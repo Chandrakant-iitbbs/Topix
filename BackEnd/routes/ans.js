@@ -5,7 +5,7 @@ const Answer = require('../models/Answer');
 const Ques = require('../models/Ques');
 
 // ROUTE 1
-// get all the answers of the user using : Get "/api/v1/ans/getAllAnswers". Login required
+// get all the answers of the user using : Get "/api/v1/answer/getAllAnswers". Login required
 router.get("/getAllAnswers", FetchUser, async (req, res) => {
     try {
         const answers = await Answer.find({ user: req.user.id });   
@@ -18,7 +18,7 @@ router.get("/getAllAnswers", FetchUser, async (req, res) => {
 });
 
 // ROUTE 2
-// Add a new answer of the user using : post "/api/v1/ans/addAnswer". Login required
+// Add a new answer of the user using : post "/api/v1/answer/addAnswer". Login required
 router.post("/addAnswer/:QId", FetchUser, async (req, res) => {
     try {
         const ques = await Ques.findById(req.params.QId);
@@ -44,7 +44,7 @@ router.post("/addAnswer/:QId", FetchUser, async (req, res) => {
 }); 
 
 // ROUTE 3
-// Update an answer of the user using : put "/api/v1/ans/updateAnswer". Login required
+// Update an answer of the user using : put "/api/v1/answer/updateAnswer". Login required
 router.put("/updateAnswer/:id", FetchUser, async (req, res) => {
     try {
         let ans = await Answer.findById(req.params.id);
@@ -71,7 +71,7 @@ router.put("/updateAnswer/:id", FetchUser, async (req, res) => {
 });
 
 // ROUTE 4
-// Delete an answer of the user using : delete "/api/v1/ans/deleteAnswer". Login required
+// Delete an answer of the user using : delete "/api/v1/answer/deleteAnswer". Login required
 router.delete("/deleteAnswer/:id", FetchUser, async (req, res) => {
     try {
         let ans = await Answer.findById(req.params.id);
@@ -91,7 +91,7 @@ router.delete("/deleteAnswer/:id", FetchUser, async (req, res) => {
 });
 
 // ROUTE 5
-// Get a single answer of the user using : Get "/api/v1/ans/getAnswer". Login required
+// Get a single answer of the user using : Get "/api/v1/answer/getAnswer". Login required
 router.get("/getAnswer/:id", FetchUser, async (req, res) => {
     try {
         let ans = await Answer.findById(req.params.id);

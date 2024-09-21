@@ -19,7 +19,6 @@ const UserSchema = new Schema({
     },
     interestedTopics:{
         type : [String],
-        default:["General"],
     } ,
     date:{
         type : Date,

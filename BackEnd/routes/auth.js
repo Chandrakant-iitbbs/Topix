@@ -14,18 +14,20 @@ router.use(bodyParser.json());
 // ROUTE 1  
 // Creating a user using : post "/api/v1/auth/createuser". No login required
 router.post('/createuser', UserMiddleWare, async (req, res) => {
-    const { name, email, password, dp } = req.body;
-    try {
+    const { name, email, password, dp, UPIid ,interestedTopics } = req.body;
+    try {        
         let user = await User.findOne({ email });
         if (user) {
             return res.status(400).json({ error: "Sorry a User with this email already exists." });
         }
-        if (dp) {
-            user = await User({ name, email, password, dp });
+        let info = {name, email, password,interestedTopics};
+        if(dp){
+            info.dp=dp;
         }
-        else {
-            user = await User({ name, email, password });
+        if(UPIid){
+            info.UPIid=UPIid;
         }
+        user = await User(info);
         user.save();
         const data = {
             user: {
@@ -87,7 +89,7 @@ router.get('/getuser', Fetchuser, async (req, res) => {
 // ROUTE 4
 // Update user details using : put "/api/v1/auth/updateuser". Login required
 router.put('/updateuser', Fetchuser, async (req, res) => {
-    const { name, email, password, interestedTopics, dp } = req.body;
+    const { name, email, password, interestedTopics, dp, UPIid} = req.body;
     try {
         let newUser = {};
         if (name) {
@@ -106,6 +108,9 @@ router.put('/updateuser', Fetchuser, async (req, res) => {
         }
         if (dp) {
             newUser.dp = dp;
+        }
+        if(UPIid){
+            newUser.UPIid= UPIid;
         }
 
         let user = await User.findById(req.user.id);

@@ -96,7 +96,16 @@ const SignUp = (props) => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(info),
+      body: JSON.stringify(
+        {
+          name:info.name,
+          email: info.email,
+          password: info.password,
+          dp:info.password, 
+          UPIid:info.upiId,
+          interestedTopics:info.tags
+        }
+      )
     });
     if (res.status === 200) {
       const data = await res.json();
@@ -236,9 +245,10 @@ const SignUp = (props) => {
           <Col sm="10">
             <Form.Control
               type="text"
-              placeholder="Enter your upi id"
-              onChange={(e) => setInfo({ ...info, upiId: e.target.value })}
-              accept=".jpg,.jpeg,.png"
+              placeholder="Enter your UPI id"
+              onChange={(e) => 
+                setInfo({ ...info, upiId: e.target.value })
+              }
             />
           </Col>
         </Form.Group>
