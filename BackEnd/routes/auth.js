@@ -34,7 +34,6 @@ router.post('/createuser', UserMiddleWare, async (req, res) => {
                 id: user.id
             }
         }
-
         const auto_token = jwt.sign(data, JWT_secret);
         res.status(200).json({ auto_token });
     } catch (error) {
@@ -89,7 +88,7 @@ router.get('/getuser', Fetchuser, async (req, res) => {
 // ROUTE 4
 // Update user details using : put "/api/v1/auth/updateuser". Login required
 router.put('/updateuser', Fetchuser, async (req, res) => {
-    const { name, email, password, interestedTopics, dp, UPIid} = req.body;
+    const { name, email, password, interestedTopics, dp, UPIid } = req.body;
     try {
         let newUser = {};
         if (name) {
@@ -118,7 +117,7 @@ router.put('/updateuser', Fetchuser, async (req, res) => {
             return res.status(404).send("Not Found");
         }
         user = await User.findByIdAndUpdate(req.user.id, { $set: newUser }, { new: true });
-        res.json({ user });
+        res.status(200).json({ user });
     } catch (error) {
         console.error(error.message);
         res.status(500).send("Internal server error");
@@ -136,7 +135,7 @@ router.delete('/deleteuser', Fetchuser, async (req, res) => {
             return res.status(404).send("Not Found");
         }
         user = await User.findByIdAndDelete(req.user.id);
-        res.json({ "Success": "User has been deleted", user: user });
+        res.status(200).json({ "Success": "User has been deleted", user: user });
     } catch (error) {
         console.error(error.message);
         res.status(500).send("Internal server error");
@@ -164,6 +163,34 @@ router.get('/getuserbyid/:id', Fetchuser, async (req, res) => {
         const id = req.params.id;
         const user = await User.findById(id).select("-password");
         res.status(200).send(user);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send("Internal server error");
+    }
+}
+);
+
+// ROUTE 8
+// Update user's data by id using : get "/api/v1/auth/updateuserbyid". Login required
+router.put('/updateuserbyid/:id', Fetchuser, async (req, res) => {
+    const { totalLikes, questionsAnswered, questionsAsked } = req.body;
+    try {
+        let newUser = {};
+        if (totalLikes) {
+            newUser.totalLikes = totalLikes;
+        }
+        if (questionsAnswered) {
+            newUser.questionsAnswered = questionsAnswered;
+        }
+        if (questionsAsked) {
+            newUser.questionsAsked = questionsAsked;
+        }
+        let user = await User.findById(req.params.id);
+        if (!user) {
+            return res.status(404).send("Not Found");
+        }
+        user = await User.findByIdAndUpdate(req.params.id, { $set: newUser }, { new: true });
+        res.status(200).json({ user });
     } catch (error) {
         console.error(error.message);
         res.status(500).send("Internal server error");

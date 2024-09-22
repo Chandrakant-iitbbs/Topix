@@ -71,7 +71,7 @@ const App = () => {
           <Route exact path="/" element={<About />} />
           <Route exact path='/about' element={<About />} />
           <Route exact path='/login' element={<Login setToken={setToken} />} />
-          <Route exact path='/user' element={<User isOnline={isOnline} />} />
+          <Route exact path='/user' element={<User isOnline={isOnline} setQuesId={setQuesId} />} />
           <Route exact path='/users' element={<Users />} />
           <Route exact path='/questions' element={<Questions setQuesId={setQuesId} />} />
           <Route exact path={`/question/${quesId}`} element={<Question id={quesId} />} />

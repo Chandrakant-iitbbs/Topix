@@ -2,12 +2,15 @@ import React, { useEffect, useState } from "react";
 import { Button, Row, Col, Image, Card } from "react-bootstrap";
 import HtmlToText from "./HtmlToText";
 import swal from "sweetalert";
+import {useNavigate } from "react-router-dom";
 
 const User = (props) => {
-  const { isOnline } = props;
+  const navigate = useNavigate();
+  const { isOnline, setQuesId } = props;
   const [ques, setQues] = useState([]);
   const [answered, setAnswered] = useState([]);
   const [user, setUser] = useState([]);
+  const [likes, setLikes] = useState(0);
 
   const getStar = (n) => {
     let stars = "";
@@ -30,14 +33,10 @@ const User = (props) => {
     const res = await data.json();
     if (data.status === 200) {
       setQues(res);
-    } else if (data.status === 404 || data.status === 401) {
+    }
+    else {
       swal({
-        title: res.error ? res.error : res,
-        icon: "error",
-      });
-    } else {
-      swal({
-        title: "Something went wrong",
+        title:  res.error ? res.error : (res?res:"Something went wrong"),
         icon: "error",
       });
     }
@@ -75,6 +74,15 @@ const User = (props) => {
     }
   };
 
+  const getLikes = (res) => {
+    let likes = 0;
+    res.forEach((ans) => {
+      let like = ans.upVotes.length - ans.downVotes.length;
+      likes = likes + like;
+    });
+    return likes;
+  };
+
   const getAns = async () => {
     const data = await fetch(
       "http://localhost:5000/api/v1/answer/getAllAnswers",
@@ -87,6 +95,9 @@ const User = (props) => {
     );
     const res = await data.json();
     if (data.status === 200) {
+      const totalLikes = getLikes(res);
+      setLikes(totalLikes);
+
       const uniqueAnswers = removeDuplicateAnswers(res);
 
       for (let answer of uniqueAnswers) {
@@ -100,14 +111,9 @@ const User = (props) => {
         }
       }
       setAnswered(uniqueAnswers);
-    } else if (data.status === 404 || data.status === 401) {
-      swal({
-        title: res.error ? res.error : res,
-        icon: "error",
-      });
     } else {
       swal({
-        title: "Something went wrong",
+        title: res.error ? res.error : (res?res:"Something went wrong"),
         icon: "error",
       });
     }
@@ -123,23 +129,43 @@ const User = (props) => {
     const res = await data.json();
     if (data.status === 200) {
       setUser(res);
-    } else if (data.status === 404 || data.status === 401) {
-      swal({
-        title: res.error ? res.error : res,
-        icon: "error",
-      });
     } else {
       swal({
-        title: "Something went wrong",
+        title: res.error ? res.error : (res?res:"Something went wrong"),
         icon: "error",
       });
     }
   };
 
+  const updateUser = async() => {
+    if((user.likes !== likes || user.questionsAsked !== ques.length || user.questionsAnswered!==ques.length) && user._id){      
+      const res = await fetch(`http://localhost:5000/api/v1/auth/updateuserbyid/${user._id}`,{
+        method:"PUT",
+        headers:
+        {
+          "Content-Type": "application/json",
+          "auth-header": localStorage.getItem("auth-token") || ""
+        },
+        body:
+          JSON.stringify({ 
+            totalLikes:likes,
+            questionsAnswered:answered.length,
+            questionsAsked:ques.length
+           })
+      });
+      const data =await res.json();
+      if(res.status===200){
+        setUser(data);
+      }
+    }
+  }
+
+  const GetData = async () => {
+    await Promise.all([getUser(), getQues(), getAns()]);
+    await updateUser();
+  }
   useEffect(() => {
-    getQues();
-    getAns();
-    getUser();
+    GetData();
   }, []);
 
   const handleEdit = () => {
@@ -157,7 +183,8 @@ const User = (props) => {
   };
 
   const handleQuestionClick = (id) => {
-    console.log("Question Clicked", id);
+    setQuesId(id);
+    navigate(`/question/${id}`);
   };
 
   const getMembershipTime = (date) => {
@@ -231,7 +258,7 @@ const User = (props) => {
           <div>Rating : {getStar(3)}</div>
           <div>{user.email}</div>
           <div>{user.interestedTopics && user.interestedTopics.join(", ")}</div>
-          <div>{user["UPI id"]}</div>
+          <div>{user.UPIid}</div>
           <div>{isOnline ? "Online" : "Offline"}</div>
         </Col>
         <Col
@@ -269,8 +296,7 @@ const User = (props) => {
         <div style={{ marginBottom: "1rem" }}>
           Member of {getMembershipTime(user.date)}, Till now you have asked{" "}
           {ques && ques.length} questions and answered{" "}
-          {answered && answered.length} questions, you recived{" "}
-          {"Total Likes"} likes.
+          {answered && answered.length} questions, you recived {likes} likes.
         </div>
         <Button
           variant="primary"
@@ -293,27 +319,27 @@ const User = (props) => {
           {ques.length === 0
             ? "No question asked"
             : ques.map((question, index) => (
-                <Card
-                  style={{
-                    width: "100%",
-                    marginTop: "1rem",
-                    cursor: "pointer",
-                  }}
-                  key={index}
-                  onClick={() => handleQuestionClick(question._id)}
-                >
-                  <Card.Body>
-                    <Card.Title>
-                      {
-                        <HtmlToText
-                          html={question.question}
-                          index={question._id}
-                        />
-                      }
-                    </Card.Title>
-                  </Card.Body>
-                </Card>
-              ))}
+              <Card
+                style={{
+                  width: "100%",
+                  marginTop: "1rem",
+                  cursor: "pointer",
+                }}
+                key={index}
+                onClick={() => handleQuestionClick(question._id)}
+              >
+                <Card.Body>
+                  <Card.Title>
+                    {
+                      <HtmlToText
+                        html={question.question}
+                        index={question._id}
+                      />
+                    }
+                  </Card.Title>
+                </Card.Body>
+              </Card>
+            ))}
         </Col>
       </Row>
       <Row style={{ margin: "2rem 0" }}>
@@ -323,27 +349,27 @@ const User = (props) => {
             {answered.length === 0
               ? "No answer given from you"
               : answered.map((answer, index) => (
-                  <Card
-                    key={index}
-                    style={{
-                      width: "100%",
-                      marginTop: "1rem",
-                      cursor: "pointer",
-                    }}
-                    onClick={() => handleQuestionClick(answer.question.id)}
-                  >
-                    <Card.Body>
-                      <Card.Title>
-                        {
-                          <HtmlToText
-                            html={answer.question.html}
-                            index={answer._id}
-                          />
-                        }
-                      </Card.Title>
-                    </Card.Body>
-                  </Card>
-                ))}
+                <Card
+                  key={index}
+                  style={{
+                    width: "100%",
+                    marginTop: "1rem",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => handleQuestionClick(answer.question.id)}
+                >
+                  <Card.Body>
+                    <Card.Title>
+                      {
+                        <HtmlToText
+                          html={answer.question.html}
+                          index={answer._id}
+                        />
+                      }
+                    </Card.Title>
+                  </Card.Body>
+                </Card>
+              ))}
           </div>
         </Col>
       </Row>

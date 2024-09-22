@@ -9,7 +9,7 @@ const Ques = require('../models/Ques');
 router.get("/getAllQuestionsOfUser", FetchUser, async (req, res) => {
     try {
         const questions = await Ques.find({ user: req.user.id });   // fetching all questions of user, where user = req.user.id, where req.user is varified user and this is available because of fetchuser middleware.
-        res.json(questions);
+        res.status(200).json(questions);
     }
     catch (error) {
         console.error(error.message);
@@ -83,7 +83,7 @@ router.put("/updateQuestion/:id", FetchUser, async (req, res) => {
         }
 
         ques = await Ques.findByIdAndUpdate(req.params.id, { $set: newNode }, { new: true });
-        res.json({ ques });
+        res.status(200).json({ ques });
     }
     catch (error) {
         console.error(error.message);
@@ -105,7 +105,7 @@ router.delete("/deleteQuestion/:id", FetchUser, async (req, res) => {
         }
 
         ques = await Ques.findByIdAndDelete(req.params.id);
-        res.json({ "Success": "Question has been deleted", ques: ques });
+        res.status(200).json({ "Success": "Question has been deleted", ques: ques });
     }
     catch (error) {
         console.error(error.message);
@@ -206,7 +206,5 @@ router.get("/getAllQuestionsByTime", FetchUser, async (req, res) => {
     }
 }
 );
-
-
 
 module.exports = router;
