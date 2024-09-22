@@ -101,7 +101,7 @@ const SignUp = (props) => {
           name:info.name,
           email: info.email,
           password: info.password,
-          dp:info.password, 
+          dp:info.dp, 
           UPIid:info.upiId,
           interestedTopics:info.tags
         }

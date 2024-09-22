@@ -9,8 +9,7 @@ const Users = () => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "auth-header":
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjY5NTJkZDlhNjU0N2NmMmExMDRiNTllIn0sImlhdCI6MTcyMTI2ODAyMH0.HzFCj14g8v48JSx3zetJpccBCgP5R_4vRJV8uslWvgw",
+        "auth-header": localStorage.getItem("auth-token") || ""
       },
     });
     const users = await data.json();
