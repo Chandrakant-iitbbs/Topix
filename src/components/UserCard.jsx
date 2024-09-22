@@ -1,10 +1,13 @@
 const UserCard = (props) => {
   const { user } = props;
-  let { name, interestedTopics, dp } = user;
+
+  let { name, interestedTopics, dp, questionsAnswered, questionsAsked, totalLikes } = user;
   if (interestedTopics.length > 3) {
     interestedTopics = interestedTopics.slice(0, 3);
   }
-  const getStar = (n) => {
+  const getStar = () => {
+    let n = 1 + 1.7 * (questionsAnswered / (10 + questionsAnswered)) + 1.3 * (totalLikes / (50 + totalLikes)) + (questionsAsked / (20 + questionsAsked));
+    n = Math.round(n);
     let stars = "";
     for (let i = 0; i < n; i++) {
       stars += "⭐";
@@ -43,7 +46,7 @@ const UserCard = (props) => {
       </div>
       <div style={{ display: "flex", flexDirection: "column" }}>
         <span style={{ fontSize: "20px" }}>{name}</span>
-        <span>{getStar(3)}</span>
+        <span>{getStar()}</span>
         <span>{interestedTopics.map((topic) => topic).join(", ")}</span>
       </div>
     </div>

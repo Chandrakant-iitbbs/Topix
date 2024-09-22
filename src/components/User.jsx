@@ -12,7 +12,9 @@ const User = (props) => {
   const [user, setUser] = useState([]);
   const [likes, setLikes] = useState(0);
 
-  const getStar = (n) => {
+  const getStar = () => {
+    let n = 1+ 1.7*(answered.length/(10+answered.length))+ 1.3*(likes/(50+likes))+ (ques.length/(20+ques.length));
+    n = Math.round(n);
     let stars = "";
     for (let i = 0; i < n; i++) {
       stars += "⭐";
@@ -255,7 +257,7 @@ const User = (props) => {
           }}
         >
           <div>{user.name}</div>
-          <div>Rating : {getStar(3)}</div>
+          <div>Rating : {getStar()}</div>
           <div>{user.email}</div>
           <div>{user.interestedTopics && user.interestedTopics.join(", ")}</div>
           <div>{user.UPIid}</div>
