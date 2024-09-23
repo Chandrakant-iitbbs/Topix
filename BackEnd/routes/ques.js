@@ -207,4 +207,18 @@ router.get("/getAllQuestionsByTime", FetchUser, async (req, res) => {
 }
 );
 
+// ROUTE 11
+// get all question by user id using : Get "/api/v1/ques/getAllQuestionsByUser". Login required
+router.get("/getAllQuestionsByUser/:id", FetchUser, async (req, res) => {
+    try {
+        const questions = await Ques.find({ user: req.params.id });
+        res.status(200).json(questions);
+    }
+    catch (error) {
+        console.error(error.message);
+        res.status(500).send("Internal server error");
+    }
+}
+);
+
 module.exports = router;

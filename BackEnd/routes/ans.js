@@ -171,4 +171,18 @@ router.put("/downvote/:id", FetchUser, async (req, res) => {
     }
 });
 
+// Route 9
+// Get all the answers by user id using : Get "api/v1/answer/getUserAnswers/:id". Login required
+router.get("/getUserAnswers/:id", FetchUser, async (req, res) => {
+    try {
+        const answers = await Answer.find({ user: req.params.id });
+        res.status(200).json(answers);
+    }
+    catch (error) {
+        console.error(error.message);
+        res.status(500).json("Internal server error");
+    }
+});
+
+
 module.exports = router;

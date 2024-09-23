@@ -1,5 +1,9 @@
+import { useNavigate } from "react-router-dom";
+
 const UserCard = (props) => {
-  const { user } = props;
+const navigate = useNavigate();
+
+  const { user, setUserId } = props;
 
   let { name, interestedTopics, dp, questionsAnswered, questionsAsked, totalLikes } = user;
   if (interestedTopics.length > 3) {
@@ -45,7 +49,11 @@ const UserCard = (props) => {
         />
       </div>
       <div style={{ display: "flex", flexDirection: "column" }}>
-        <span style={{ fontSize: "20px" }}>{name}</span>
+        <span style={{ fontSize: "20px" }} onClick={() => {
+          navigate(`/profile/${user._id}`);
+          setUserId(user._id);
+        }
+        }>{name}</span>
         <span>{getStar()}</span>
         <span>{interestedTopics.map((topic) => topic).join(", ")}</span>
       </div>
