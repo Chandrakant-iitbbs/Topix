@@ -336,6 +336,7 @@ const User = (props) => {
                       <HtmlToText
                         html={question.question}
                         index={question._id}
+                        isfull={false}
                       />
                     }
                   </Card.Title>
@@ -366,6 +367,7 @@ const User = (props) => {
                         <HtmlToText
                           html={answer.question.html}
                           index={answer._id}
+                          isfull={false}
                         />
                       }
                     </Card.Title>
