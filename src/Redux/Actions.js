@@ -1,14 +1,17 @@
-import {
-    SetUserId
-} from "./Constants"
+import { SetUserId, SetQuesId } from "./Constants";
 
 const setUserId = (id) => {
-    return {
-        type: SetUserId,
-        payload: id
-    }
-}
+  return {
+    type: SetUserId,
+    payload: id,
+  };
+};
 
-export {
-    setUserId
-}
+const setQuesId = (id) => {
+  return {
+    type: SetQuesId,
+    payload: id,
+  };
+};
+
+export { setUserId, setQuesId };

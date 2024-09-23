@@ -3,10 +3,13 @@ import { Button, Row, Col, Image, Card } from "react-bootstrap";
 import HtmlToText from "./HtmlToText";
 import swal from "sweetalert";
 import {useNavigate } from "react-router-dom";
+import { setQuesId } from "../Redux/Actions";
+import { useDispatch } from "react-redux";
 
 const User = (props) => {
   const navigate = useNavigate();
-  const { isOnline, setQuesId } = props;
+  const dispatch = useDispatch();
+  const { isOnline } = props;
   const [ques, setQues] = useState([]);
   const [answered, setAnswered] = useState([]);
   const [user, setUser] = useState([]);
@@ -185,7 +188,7 @@ const User = (props) => {
   };
 
   const handleQuestionClick = (id) => {
-    setQuesId(id);
+    dispatch(setQuesId(id));
     navigate(`/question/${id}`);
   };
 

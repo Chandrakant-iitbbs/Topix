@@ -22,11 +22,9 @@ import { useSelector} from "react-redux";
 
 const App = () => {
   const UserId = useSelector(state => state.UserId);
+  const QuesId = useSelector(state => state.QuesId);
 
   const [id, setId] = useLocalStorage("id", "");
-  const [quesId, setQuesId] = useState(
-    localStorage.getItem("quesId") || ""
-  )
 
   const [isOnline, setIsOnline] = useState(false);
 
@@ -37,10 +35,6 @@ const App = () => {
       console.log("User is offline");
     };
   }, []);
-
-  useEffect(() => {
-    localStorage.setItem("quesId", quesId);
-  }, [quesId]);
 
 
   const [token, setToken] = useState(localStorage.getItem("auth-token"));
@@ -73,11 +67,11 @@ const App = () => {
           <Route exact path="/" element={<About />} />
           <Route exact path='/about' element={<About />} />
           <Route exact path='/login' element={<Login setToken={setToken} />} />
-          <Route exact path='/user' element={<User isOnline={isOnline} setQuesId={setQuesId} />} />
-          <Route exact path={`/profile/${UserId}`} element={<Profile isOnline={isOnline}  setQuesId={setQuesId} />} />
+          <Route exact path='/user' element={<User isOnline={isOnline}  />} />
+          <Route exact path={`/profile/${UserId}`} element={<Profile isOnline={isOnline}   />} />
           <Route exact path='/users' element={<Users  />} />
-          <Route exact path='/questions' element={<Questions setQuesId={setQuesId} />} />
-          <Route exact path={`/question/${quesId}`} element={<Question id={quesId} />} />
+          <Route exact path='/questions' element={<Questions />} />
+          <Route exact path={`/question/${QuesId}`} element={<Question />} />
           <Route exact path="/signup" element={<SignUp setToken={setToken} />} />
           <Route exact path='/askQues' element={<AskQuestion />} />
           {/* <Route path="/" element={id ? sideBar : <ChatLogin setId={setId}/>} /> */}

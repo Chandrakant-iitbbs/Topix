@@ -1,7 +1,8 @@
-import {SetUserId} from "./Constants"
+import { SetUserId, SetQuesId } from "./Constants"
 
 const initialState = {
-    UserId: localStorage.getItem("userId") || ""
+    UserId: localStorage.getItem("userId") || "",
+    QuesId: localStorage.getItem("quesId") || ""
 }
 
 const reducers = (state = initialState, action) => {
@@ -11,6 +12,12 @@ const reducers = (state = initialState, action) => {
             return {
                 ...state,
                 UserId: action.payload
+            }
+        case SetQuesId:
+            localStorage.setItem("quesId", action.payload)
+            return {
+                ...state,
+                QuesId: action.payload
             }
         default:
             return state

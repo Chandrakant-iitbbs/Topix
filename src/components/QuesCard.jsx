@@ -2,15 +2,18 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import HtmlToText from "./HtmlToText";
+import { useDispatch } from "react-redux";
+import { setQuesId } from "../Redux/Actions";
 
 const QuesCard = (props) => {
-  const { ques, setQuesId } = props;
+  const { ques } = props;
   const { user, question, rewardPrice, tags, views, date, _id } = ques;
   const [name, setName] = useState("Anonymous");
+  const dispatch = useDispatch();
 
   const navigate = useNavigate();
   const handleQuesClick = () => {
-    setQuesId(_id);
+    dispatch(setQuesId(_id));
     navigate(`/question/${_id}`);
   };
 

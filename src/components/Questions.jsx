@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 
 const Questions = (props) => {
   const navigate = useNavigate();
-  const { setQuesId } = props;
   const animatedComponents = makeAnimated();
   const [allTags, setAllTags] = useState([]);
   const [questions, setQuestions] = useState([]);
@@ -221,7 +220,6 @@ const Questions = (props) => {
             <QuesCard
               key={question._id}
               ques={question}
-              setQuesId={setQuesId}
             />
           );
         })}

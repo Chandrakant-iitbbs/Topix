@@ -1,5 +1,7 @@
-const SetUserId = 'SetUserId';
+const SetUserId = "SetUserId";
+const SetQuesId = "SetQuesId";
 
 module.exports = {
-    SetUserId
-}
+  SetUserId,
+  SetQuesId,
+};

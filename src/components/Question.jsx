@@ -4,9 +4,11 @@ import JoditEditor from "jodit-react";
 import { Button } from "react-bootstrap";
 import Answer from "./Answer";
 import HtmlToText from "./HtmlToText";
+import { useSelector } from "react-redux";
 
 const Question = (props) => {
-  let { id } = props;
+
+  const id = useSelector((state) => state.QuesId);
 
   const [ques, setQues] = useState();
   const [answers, setAnswers] = useState([]);
