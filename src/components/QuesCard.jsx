@@ -83,7 +83,7 @@ const QuesCard = (props) => {
     getAskedTime();
   }, []);
 
-  const quesText = <HtmlToText html={question} index={_id} />;  
+  const quesText = <HtmlToText html={question} index={_id} isfull={false} />;  
 
   return (
     <div

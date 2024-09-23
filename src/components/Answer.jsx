@@ -177,7 +177,7 @@ const Answer = (props) => {
         ></i>
       </div>
       <div style={{ width: "94%", paddingLeft: "20px" }}>
-        <div> {<HtmlToText html={ans.answer} index={ans._id} />}</div>
+        <div> {<HtmlToText html={ans.answer} index={ans._id} isfull={true}/>}</div>
         <div style={{ marginTop: "1rem" }}>
           {" "}
           Answered : {getAskedTime(ans.date)} by {name}

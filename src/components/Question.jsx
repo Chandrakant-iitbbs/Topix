@@ -212,7 +212,7 @@ const Question = (props) => {
     <div style={{ margin: "20px 20px" }}>
       {ques ? (
         <div style={{ width: "95%", margin: "auto", padding: "10px" }}>
-          <div>{<HtmlToText html={ques.question} index={ques._id}/>}</div>
+          <div>{<HtmlToText html={ques.question} index={ques._id} isfull={true}/>}</div>
           <div
             style={{
               display: "flex",

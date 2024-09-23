@@ -5,9 +5,11 @@ import { useEffect, useState } from "react";
 
 const NavBar = (props) => {
   const { setToken } = props;
+  const [search, setSearch] = useState("");
   const handleSearch = (e) => {
     e.preventDefault();
-    console.log("search");
+    console.log(search);
+    setSearch("");
   };
 
   const handleLogOut = (e) => {
@@ -44,14 +46,15 @@ const NavBar = (props) => {
 
   return (
 
-    <div style={{width:"100%", margin:"20px"
+    <div style={{width:"100%", padding:"20px"
     }}>
     <Navbar
       collapseOnSelect
       expand="md"
       className="bg-body-tertiary"
+      width="100%"
     >
-      <Col sm={2} style={{ minWidth: "160px" }}>
+      <Col style={{ minWidth: "160px", paddingLeft:0 }}>
         <Image
           src={logo}
           alt="logo"
@@ -72,7 +75,7 @@ const NavBar = (props) => {
         </Link>
       </Col>
       <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-      <Navbar.Collapse id="responsive-navbar-nav">
+      <Navbar.Collapse id="responsive-navbar-nav" style={{width:"80%"}}>
         <Col
           sm={4}
           style={{
@@ -82,6 +85,7 @@ const NavBar = (props) => {
             alignItems: "center",
             display: "flex",
             justifyContent: "center",
+            flexWrap:"wrap"
           }}
         >
           <Nav className="me-auto">
@@ -92,6 +96,7 @@ const NavBar = (props) => {
                 paddingLeft: "16px",
                 paddingRight: "16px",
                 textDecoration: "none",
+                display: "flex",
               }}
             >
               Users
@@ -103,6 +108,7 @@ const NavBar = (props) => {
                 paddingLeft: "16px",
                 paddingRight: "16px",
                 textDecoration: "none",
+                display: "flex",
               }}
             >
               Questions
@@ -114,6 +120,7 @@ const NavBar = (props) => {
                 paddingLeft: "16px",
                 paddingRight: "16px",
                 textDecoration: "none",
+                display: "flex",
               }}
             >
               About
@@ -121,24 +128,22 @@ const NavBar = (props) => {
           </Nav>
         </Col>
         <Col>
-          <Form className="d-flex" style={{ marginLeft: "16px" }}>
+          <Form className="d-flex" style={{ marginLeft: "16px" }} onSubmit={(e)=>{
+            handleSearch(e);
+          }}>
             <Form.Control
-              type="search"
+              type="text"
               placeholder="Search"
               className="me-2"
               aria-label="Search"
+              style={{ minWidth: "100px"}}
+              onChange={(e)=>setSearch(e.target.value)}
+              value={search}
             />
-            <Button
-              variant="success"
-              onClick={(e) => handleSearch(e)}
-              style={{ marginLeft: "16px", marginRight: "10px" }}
-            >
-              Search
-            </Button>
           </Form>
         </Col>
 
-        <Col sm={2} style={{ minWidth: "200px" }}>
+        <Col sm={2} style={{ minWidth: "200px", cursor:"pointer", alignItems:"center", display:"flex" }} onClick={()=>navigate("/user")}>
           {dp.length ? (
             <Image
               src={dp}
@@ -161,7 +166,7 @@ const NavBar = (props) => {
           )}
           <Button
             variant="primary"
-            style={{ margin: "auto" }}
+            style={{ margin: "auto", width: "100px" }}
             onClick={(e) => handleLogOut(e)}
           >
             Log out
