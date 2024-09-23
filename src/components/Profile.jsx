@@ -3,14 +3,17 @@ import { Button, Row, Col, Image, Card } from "react-bootstrap";
 import HtmlToText from "./HtmlToText";
 import swal from "sweetalert";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const Profile = (props) => {
   const navigate = useNavigate();
-  const { isOnline, setQuesId, userId } = props;
+  const { isOnline, setQuesId } = props;
   const [ques, setQues] = useState([]);
   const [answered, setAnswered] = useState([]);
   const [user, setUser] = useState([]);
   const [likes, setLikes] = useState(0);
+  
+  const userId = useSelector((state) => state.UserId);
 
   const getStar = () => {
     let n = 1 + 1.7 * (answered.length / (10 + answered.length)) + 1.3 * (likes / (50 + likes)) + (ques.length / (20 + ques.length));

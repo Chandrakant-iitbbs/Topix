@@ -1,9 +1,11 @@
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setUserId } from "../Redux/Actions";
 
 const UserCard = (props) => {
-const navigate = useNavigate();
-
-  const { user, setUserId } = props;
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { user } = props;
 
   let { name, interestedTopics, dp, questionsAnswered, questionsAsked, totalLikes } = user;
   if (interestedTopics.length > 3) {
@@ -49,9 +51,9 @@ const navigate = useNavigate();
         />
       </div>
       <div style={{ display: "flex", flexDirection: "column" }}>
-        <span style={{ fontSize: "20px" }} onClick={() => {
+        <span style={{ fontSize: "20px" }} onClick={ () => {
+          dispatch(setUserId(user._id));
           navigate(`/profile/${user._id}`);
-          setUserId(user._id);
         }
         }>{name}</span>
         <span>{getStar()}</span>

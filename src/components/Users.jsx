@@ -3,7 +3,6 @@ import UserCard from "./UserCard";
 
 const Users = (props) => {
   const [users, setUsers] = useState([]);
-  const { setUserId } = props;
 
   const getallusers = async () => {
     const data = await fetch("http://localhost:5000/api/v1/auth/getallusers", {
@@ -40,7 +39,7 @@ const Users = (props) => {
         }}
       >
         {users.map((user) => {
-          return <UserCard key={user._id} user={user}  setUserId={setUserId} />;
+          return <UserCard key={user._id} user={user}  />;
         })}
       </div>
     </div>
