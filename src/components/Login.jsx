@@ -4,9 +4,11 @@ import eye1 from "../Assets/eye-regular.svg";
 import eye2 from "../Assets/eye-slash-regular.svg";
 import { Link, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
+import { useDispatch } from "react-redux";
+import { setToken } from "../Redux/Actions";
 
 const Login = (props) => {
-  const { setToken } = props;
+  const dispatch = useDispatch();
   const [info, setInfo] = useState({ email: "", password: "" });
   const [passShow, setPassShow] = useState(false);
   const navigate = useNavigate();
@@ -23,7 +25,7 @@ const Login = (props) => {
     if (res.status === 200) {
       const data = await res.json();
       localStorage.setItem("auth-token", data.auto_token);
-      setToken(data.auto_token);
+      dispatch(setToken(data.auto_token));
       navigate("/questions");
     } else {
       const data = await res.json();

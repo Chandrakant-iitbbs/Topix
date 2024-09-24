@@ -5,7 +5,6 @@ import { ConversationsProvider } from './context/ConversationProvider';
 import { SocketProvider } from './context/SocketProvider';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import OpenConversation from './components/OpenConversation';
-import useLocalStorage from './hooks/useLocalStorage';
 import SideBar from './components/SideBar';
 import Login from './components/Login';
 import SignUp from './components/SignUp';
@@ -18,26 +17,21 @@ import Users from './components/Users';
 import Questions from './components/Questions';
 import Question from './components/Question';
 import Profile from './components/Profile';
-import { useSelector} from "react-redux";
+import { useSelector, useDispatch} from "react-redux";
+import { setOnline} from "./Redux/Actions"
 
 const App = () => {
   const UserId = useSelector(state => state.UserId);
   const QuesId = useSelector(state => state.QuesId);
+  const dispatch = useDispatch();
 
-  const [id, setId] = useLocalStorage("id", "");
-
-  const [isOnline, setIsOnline] = useState(false);
+  const id = useSelector(state => state.ChatId);
 
   useEffect(() => {
-    setIsOnline(true);
-    return () => {
-      setIsOnline(false);
-      console.log("User is offline");
-    };
+    dispatch(setOnline(true));
   }, []);
 
-
-  const [token, setToken] = useState(localStorage.getItem("auth-token"));
+ const token = useSelector(state => state.token);
 
   const sideBar = (
     <SocketProvider id={id}>
@@ -62,23 +56,22 @@ const App = () => {
   return (
     <>
       <Router>
-        {token ? <NavBar setToken={setToken} /> : <NavBar2 />}
+        {token ? <NavBar /> : <NavBar2 />}
         <Routes>
           <Route exact path="/" element={<About />} />
           <Route exact path='/about' element={<About />} />
-          <Route exact path='/login' element={<Login setToken={setToken} />} />
-          <Route exact path='/user' element={<User isOnline={isOnline}  />} />
-          <Route exact path={`/profile/${UserId}`} element={<Profile isOnline={isOnline}   />} />
+          <Route exact path='/login' element={<Login  />} />
+          <Route exact path='/user' element={<User  />} />
+          <Route exact path={`/profile/${UserId}`} element={<Profile />} />
           <Route exact path='/users' element={<Users  />} />
           <Route exact path='/questions' element={<Questions />} />
           <Route exact path={`/question/${QuesId}`} element={<Question />} />
-          <Route exact path="/signup" element={<SignUp setToken={setToken} />} />
+          <Route exact path="/signup" element={<SignUp  />} />
           <Route exact path='/askQues' element={<AskQuestion />} />
-          {/* <Route path="/" element={id ? sideBar : <ChatLogin setId={setId}/>} /> */}
+          <Route exact path="/chatting" element={id ? sideBar : <ChatLogin />} />
           <Route exact path="/chat" element={openConversation} />
         </Routes>
       </Router>
-
     </>
   );
 }

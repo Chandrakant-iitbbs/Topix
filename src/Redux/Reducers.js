@@ -1,8 +1,12 @@
-import { SetUserId, SetQuesId } from "./Constants"
+import { SetUserId, SetQuesId, IsOnline, ChatId, setToken } from "./Constants"
 
 const initialState = {
     UserId: localStorage.getItem("userId") || "",
-    QuesId: localStorage.getItem("quesId") || ""
+    QuesId: localStorage.getItem("quesId") || "",
+    IsOnline: false,
+    ChatId: localStorage.getItem("chatId") || "",
+    Token: localStorage.getItem("auth-token") || ""
+
 }
 
 const reducers = (state = initialState, action) => {
@@ -18,6 +22,24 @@ const reducers = (state = initialState, action) => {
             return {
                 ...state,
                 QuesId: action.payload
+            }
+        
+        case IsOnline:
+            return {
+                ...state,
+                IsOnline: action.payload
+            }
+        case ChatId:
+            localStorage.setItem("chatId", action.payload)
+            return {
+                ...state,
+                ChatId: action.payload
+            }
+        case setToken:
+            localStorage.setItem("auth-token", action.payload)
+            return {
+                ...state,
+                Token: action.payload
             }
         default:
             return state

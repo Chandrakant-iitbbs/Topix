@@ -1,10 +1,12 @@
-import { Navbar, Nav, Button, Image, Col, Form } from "react-bootstrap";
+import { Navbar, Nav, Button, Image, Col, Form, Row } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../logo.svg";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { setToken } from "../Redux/Actions";
 
-const NavBar = (props) => {
-  const { setToken } = props;
+const NavBar = () => {
+  const dispatch = useDispatch();
   const [search, setSearch] = useState("");
   const handleSearch = (e) => {
     e.preventDefault();
@@ -15,7 +17,7 @@ const NavBar = (props) => {
   const handleLogOut = (e) => {
     e.preventDefault();
     localStorage.removeItem("auth-token");
-    setToken(null);
+    dispatch(setToken(""));
     navigate("/");
   };
   const navigate = useNavigate();
@@ -46,134 +48,148 @@ const NavBar = (props) => {
 
   return (
 
-    <div style={{width:"100%", padding:"20px"
+    <div style={{
+      width: "100%", padding: "16px"
     }}>
-    <Navbar
-      collapseOnSelect
-      expand="md"
-      className="bg-body-tertiary"
-      width="100%"
-    >
-      <Col style={{ minWidth: "160px", paddingLeft:0 }}>
-        <Image
-          src={logo}
-          alt="logo"
-          width="50"
-          height="50"
-          onClick={() => navigate("/")}
-        />
-        <Link
-          to="/"
-          style={{
-            color: "black",
-            fontSize: "30px",
-            cursor: "pointer",
-            textDecoration: "none",
-          }}
-        >
-          Topix
-        </Link>
-      </Col>
-      <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-      <Navbar.Collapse id="responsive-navbar-nav" style={{width:"80%"}}>
-        <Col
-          sm={4}
-          style={{
-            width: "100%",
-            marginRight: "20px",
-            justifyItems: "center",
-            alignItems: "center",
-            display: "flex",
-            justifyContent: "center",
-            flexWrap:"wrap"
-          }}
-        >
-          <Nav className="me-auto">
-            <Link
-              to="/users"
-              style={{
-                justifyContent: "center",
-                paddingLeft: "16px",
-                paddingRight: "16px",
-                textDecoration: "none",
-                display: "flex",
-              }}
-            >
-              Users
-            </Link>
-            <Link
-              to="/questions"
-              style={{
-                justifyContent: "center",
-                paddingLeft: "16px",
-                paddingRight: "16px",
-                textDecoration: "none",
-                display: "flex",
-              }}
-            >
-              Questions
-            </Link>
-            <Link
-              to="/about"
-              style={{
-                justifyContent: "center",
-                paddingLeft: "16px",
-                paddingRight: "16px",
-                textDecoration: "none",
-                display: "flex",
-              }}
-            >
-              About
-            </Link>
-          </Nav>
-        </Col>
-        <Col>
-          <Form className="d-flex" style={{ marginLeft: "16px" }} onSubmit={(e)=>{
-            handleSearch(e);
-          }}>
-            <Form.Control
-              type="text"
-              placeholder="Search"
-              className="me-2"
-              aria-label="Search"
-              style={{ minWidth: "100px"}}
-              onChange={(e)=>setSearch(e.target.value)}
-              value={search}
-            />
-          </Form>
-        </Col>
-
-        <Col sm={2} style={{ minWidth: "200px", cursor:"pointer", alignItems:"center", display:"flex" }} onClick={()=>navigate("/user")}>
-          {dp.length ? (
-            <Image
-              src={dp}
-              roundedCircle
-              width={35}
-              height={35}
-              style={{ marginLeft: "16px", marginRight: "16px" }}
-            />
-          ) : (
-            <span
-              style={{
-                marginLeft: "5px",
-                marginRight: "5px",
-                fontSize: "2rem", 
-                fontWeight: "bold",
-              }}
-            >
-              {name}
-            </span>
-          )}
-          <Button
-            variant="primary"
-            style={{ margin: "auto", width: "100px" }}
-            onClick={(e) => handleLogOut(e)}
+      <Navbar
+        collapseOnSelect
+        expand="md"
+        className="bg-body-tertiary"
+        width="100%"
+        style={{ padding: "0px" }}
+      >
+      <Col style={{ minWidth: "140px", paddingLeft: 0 }}>
+          <Image
+            src={logo}
+            alt="logo"
+            width="50"
+            height="50"
+            onClick={() => navigate("/")}
+          />
+          <Link
+            to="/"
+            style={{
+              color: "black",
+              fontSize: "30px",
+              cursor: "pointer",
+              textDecoration: "none",
+            }}
           >
-            Log out
-          </Button>
+            Topix
+          </Link>
         </Col>
-      </Navbar.Collapse>
-    </Navbar>
+        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+        <Navbar.Collapse id="responsive-navbar-nav" >
+          <Col
+            sm={6}
+            style={{
+              width: "100%",
+              justifyItems: "center",
+              alignItems: "center",
+              display: "flex",
+              justifyContent: "center",
+              flexWrap: "wrap"
+            }}
+          >
+            <Nav className="me-auto">
+              <Link
+                to="/users"
+                style={{
+                  justifyContent: "center",
+                  paddingLeft: "10px",
+                  paddingRight: "10px",
+                  textDecoration: "none",
+                  display: "flex",
+                }}
+              >
+                Users
+              </Link>
+              <Link
+                to="/questions"
+                style={{
+                  justifyContent: "center",
+                  paddingLeft: "10px",
+                  paddingRight: "10px",
+                  textDecoration: "none",
+                  display: "flex",
+                }}
+              >
+                Questions
+              </Link>
+              <Link
+                to="/chatting"
+                style={{
+                  justifyContent: "center",
+                  paddingLeft: "10px",
+                  paddingRight: "10px",
+                  textDecoration: "none",
+                  display: "flex",
+                }}
+              >
+                Chat
+              </Link>
+              <Link
+                to="/about"
+                style={{
+                  justifyContent: "center",
+                  paddingLeft: "10px",
+                  paddingRight: "10px",
+                  textDecoration: "none",
+                  display: "flex",
+                }}
+              >
+                About
+              </Link>
+
+            </Nav>
+          </Col>
+          <Col>
+            <Form className="d-flex"  onSubmit={(e) => {
+              handleSearch(e);
+            }}>
+              <Form.Control
+                type="text"
+                placeholder="Search"
+                className="me-2"
+                aria-label="Search"
+                style={{ minWidth: "100px" }}
+                onChange={(e) => setSearch(e.target.value)}
+                value={search}
+              />
+            </Form>
+          </Col>
+
+          <Col sm={2} style={{ minWidth: "150px", cursor: "pointer", alignItems: "center", display: "flex" , paddingLeft:0, justifyContent:"center"}} onClick={() => navigate("/user")}>
+            {dp.length ? (
+              <Image
+                src={dp}
+                roundedCircle
+                width={35}
+                height={35}
+                style={{ marginLeft: "10px", marginRight: "10px", display:"flex" }}
+              />
+            ) : (
+              <span
+                style={{
+                  marginLeft: "5px",
+                  marginRight: "5px",
+                  fontSize: "2rem",
+                  fontWeight: "bold",
+                }}
+              >
+                {name}
+              </span>
+            )}
+            <Button
+              variant="primary"
+              style={{ margin: "auto", width: "100px" }}
+              onClick={(e) => handleLogOut(e)}
+            >
+              Log out
+            </Button>
+          </Col>
+        </Navbar.Collapse>
+      </Navbar>
     </div>
   );
 };

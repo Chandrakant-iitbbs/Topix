@@ -6,9 +6,11 @@ import Select from "react-select";
 import makeAnimated from "react-select/animated";
 import { Link, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
+import { useDispatch } from "react-redux";
+import { setToken } from "../Redux/Actions";
 
-const SignUp = (props) => {
-  const { setToken } = props;
+const SignUp = () => {
+  const dispatch = useDispatch();
   const animatedComponents = makeAnimated();
   const [passShow, setPassShow] = useState(false);
   const [info, setInfo] = useState({
@@ -98,19 +100,19 @@ const SignUp = (props) => {
       },
       body: JSON.stringify(
         {
-          name:info.name,
+          name: info.name,
           email: info.email,
           password: info.password,
-          dp:info.dp, 
-          UPIid:info.upiId,
-          interestedTopics:info.tags
+          dp: info.dp,
+          UPIid: info.upiId,
+          interestedTopics: info.tags
         }
       )
     });
     if (res.status === 200) {
       const data = await res.json();
       localStorage.setItem("auth-token", data.auto_token);
-      setToken(data.auto_token);
+      dispatch(setToken(data.auto_token));
       navigate("/questions");
       setInfo({
         name: "",
@@ -246,7 +248,7 @@ const SignUp = (props) => {
             <Form.Control
               type="text"
               placeholder="Enter your UPI id"
-              onChange={(e) => 
+              onChange={(e) =>
                 setInfo({ ...info, upiId: e.target.value })
               }
             />

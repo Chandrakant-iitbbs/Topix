@@ -6,10 +6,10 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { setQuesId } from "../Redux/Actions";
 
-const Profile = (props) => {
+const Profile = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { isOnline } = props;
+  const isOnline = useSelector((state) => state.IsOnline);
   const [ques, setQues] = useState([]);
   const [answered, setAnswered] = useState([]);
   const [user, setUser] = useState([]);

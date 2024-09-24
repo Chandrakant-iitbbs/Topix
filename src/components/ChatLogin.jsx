@@ -1,18 +1,20 @@
-import React, { useRef } from "react";
+import { useRef } from "react";
 import { v4 } from "uuid";
 import { Form, Button, Row } from "react-bootstrap";
+import { useDispatch } from "react-redux";
+import { setChatId } from "../Redux/Actions";
 
-const ChatLogin = (props) => {
-  const {setId} = props;
+const ChatLogin = () => {
+  const dispatch = useDispatch();
   const idref = useRef(null);
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!idref.current.value) return;
-    setId(idref.current.value);
+    dispatch(setChatId(idref.current.value));
   };
   const createNewId = (e) => {
     e.preventDefault();
-    setId(v4());
+    dispatch(setChatId(v4()));
   };
   return (
     <Form className="w-full p-4">

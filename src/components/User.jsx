@@ -4,12 +4,12 @@ import HtmlToText from "./HtmlToText";
 import swal from "sweetalert";
 import {useNavigate } from "react-router-dom";
 import { setQuesId } from "../Redux/Actions";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
-const User = (props) => {
+const User = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { isOnline } = props;
+  const isOnline = useSelector((state) => state.IsOnline);
   const [ques, setQues] = useState([]);
   const [answered, setAnswered] = useState([]);
   const [user, setUser] = useState([]);
