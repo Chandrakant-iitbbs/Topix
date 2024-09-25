@@ -227,12 +227,14 @@ const User = () => {
           style={{
             maxWidth: "200px",
             minWidth: "200px",
-            height: "200px",
             justifyContent: "center",
-            margin: "10px",
+            margin: "1rem",
+            display: "flex",
+            justifyItems: "center",
+            alignItems: "center",
           }}
         >
-          {user.dp ? (
+           {user.dp ? (
             <Image
               src={`data:image/jpeg;base64,${user.dp}`}
               roundedCircle
@@ -244,10 +246,14 @@ const User = () => {
               style={{
                 width: "100px",
                 height: "100px",
-                borderRadius: "50%",
+                backgroundColor: "cyan",
+                display: "flex",
+                justifyContent: "center",
+                fontSize: "50px",
+                alignItems: "center"
               }}
             >
-              {user.name && user.name[0]}
+              {user.name && user.name[0].toUpperCase()}
             </div>
           )}
         </Col>

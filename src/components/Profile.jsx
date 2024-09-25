@@ -6,6 +6,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { setQuesId } from "../Redux/Actions";
 import showAlert from "../Functions/Alert";
 import { getMembershipTime } from "../Functions/GetTime";
+import { getStars } from "../Functions/GetStars";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -19,16 +20,6 @@ const Profile = () => {
   const userId = useSelector((state) => state.UserId);
 
   const token = localStorage.getItem("auth-token") || "";
-
-  const getStar = () => {
-    let n = 1 + 1.7 * (answered.length / (10 + answered.length)) + 1.3 * (likes / (50 + likes)) + (ques.length / (20 + ques.length));
-    n = Math.round(n);
-    let stars = "";
-    for (let i = 0; i < n; i++) {
-      stars += "⭐";
-    }
-    return stars;
-  };
 
   const getQues = async () => {
     const data = await fetch(
@@ -48,10 +39,10 @@ const Profile = () => {
       navigate("/login");
     }
     else {
-     showAlert({
+      showAlert({
         title: res.error ? res.error : (res ? res : "Something went wrong"),
         icon: "error",
-     });
+      });
     }
   };
 
@@ -124,7 +115,7 @@ const Profile = () => {
         }
       }
       setAnswered(uniqueAnswers);
-    } else if (res.error && (res.error === "Enter the token" || res.error === "Please authenticate using a valid token")){
+    } else if (res.error && (res.error === "Enter the token" || res.error === "Please authenticate using a valid token")) {
       navigate("/login");
     }
     else {
@@ -202,20 +193,22 @@ const Profile = () => {
   return (
     <div
       style={{
-        padding: "1.5rem  1.5rem  1.5rem 3rem",
+        padding: "1.5rem 3rem",
         maxWidth: "100%",
         display: "flex",
         flexDirection: "column",
       }}
     >
-      <Row style={{ display: "flex", justifyContent: "space-around" }}>
+      <Row style={{ display: "flex", justifyContent: "space-around"}}>
         <Col
           style={{
             maxWidth: "200px",
             minWidth: "200px",
-            height: "200px",
             justifyContent: "center",
-            margin: "10px",
+            margin: "1rem",
+            display: "flex",
+            justifyItems: "center",
+            alignItems: "center",
           }}
         >
           {user.dp ? (
@@ -230,10 +223,14 @@ const Profile = () => {
               style={{
                 width: "100px",
                 height: "100px",
-                borderRadius: "50%",
+                backgroundColor: "cyan",
+                display: "flex",
+                justifyContent: "center",
+                fontSize: "50px",
+                alignItems: "center"
               }}
             >
-              {user.name && user.name[0]}
+              {user.name && user.name[0].toUpperCase()}
             </div>
           )}
         </Col>
@@ -242,10 +239,12 @@ const Profile = () => {
             justifyItems: "center",
             alignContent: "center",
             margin: "1rem",
+            display: "flex",
+            flexDirection: "column",
           }}
         >
           <div>{user.name}</div>
-          <div>Rating : {getStar()}</div>
+          <div>Rating : {getStars(answered.length, likes, ques.length)}</div>
           <div>{user.email}</div>
           <div>{user.interestedTopics && user.interestedTopics.join(", ")}</div>
           <div>{user.UPIid}</div>
