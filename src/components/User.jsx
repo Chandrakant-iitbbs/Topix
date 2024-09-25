@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Row, Col, Image, Card } from "react-bootstrap";
 import HtmlToText from "./HtmlToText";
-import swal from "sweetalert";
-import {useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { setQuesId } from "../Redux/Actions";
 import { useDispatch, useSelector } from "react-redux";
+import showAlert from "../Functions/Alert";
+import {getMembershipTime} from "../Functions/GetTime";
+import { getStars } from "../Functions/GetStars";
 
 const User = () => {
   const navigate = useNavigate();
@@ -15,15 +17,6 @@ const User = () => {
   const [user, setUser] = useState([]);
   const [likes, setLikes] = useState(0);
   const token = localStorage.getItem("auth-token") || "";
-  const getStar = () => {
-    let n = 1+ 1.7*(answered.length/(10+answered.length))+ 1.3*(likes/(50+likes))+ (ques.length/(20+ques.length));
-    n = Math.round(n);
-    let stars = "";
-    for (let i = 0; i < n; i++) {
-      stars += "⭐";
-    }
-    return stars;
-  };
 
   const getQues = async () => {
     const data = await fetch(
@@ -31,28 +24,20 @@ const User = () => {
       {
         headers: {
           "Content-Type": "application/json",
-          "auth-header":token,
+          "auth-header": token,
         },
       }
     );
     const res = await data.json();
     if (data.status === 200) {
       setQues(res);
-    }
-    else if(data.status === 401){
-      if(res.error === "Enter the token" || res.error=== "Please authenticate using a valid token"){
-        navigate("/login");
-      }
-      else{
-        swal({
-          title: res.error ? res.error : (res?res:"Something went wrong"),
-          icon: "error",
-        });
-      }
-    }
-    else {
-      swal({
-        title:  res.error ? res.error : (res?res:"Something went wrong"),
+    } else if (res.error && (res.error === "Enter the token" ||
+        res.error === "Please authenticate using a valid token"
+      )) {
+      navigate("/login");
+    } else {
+      showAlert({
+        title: res.error ? res.error : res ? res : "Something went wrong",
         icon: "error",
       });
     }
@@ -127,81 +112,84 @@ const User = () => {
         }
       }
       setAnswered(uniqueAnswers);
-    } else if(data.status === 401){
-      if(res.error === "Enter the token" || res.error=== "Please authenticate using a valid token"){
+    } else if (res.error && (res.error === "Enter the token" ||
+      res.error === "Please authenticate using a valid token"
+    )){
         navigate("/login");
-      }
-      else{
-        swal({
-          title: res.error ? res.error : (res?res:"Something went wrong"),
+      } else {
+        showAlert({
+          title: res.error ? res.error : res ? res : "Something went wrong",
           icon: "error",
         });
       }
-    }
-    else {
-      swal({
-        title: res.error ? res.error : (res?res:"Something went wrong"),
-        icon: "error",
-      });
-    }
   };
 
   const getUser = async () => {
     const data = await fetch("http://localhost:5000/api/v1/auth/getuser", {
       headers: {
         "Content-Type": "application/json",
-        "auth-header":token,
+        "auth-header": token,
       },
     });
     const res = await data.json();
     if (data.status === 200) {
       setUser(res);
-    } else if(data.status === 401){
-      if(res.error === "Enter the token" || res.error=== "Please authenticate using a valid token"){
-        navigate("/login");
-      }
-      else{
-        swal({
-          title: res.error ? res.error : (res?res:"Something went wrong"),
-          icon: "error",
-        });
-      }
-    }
-    else {
-      swal({
-        title: res.error ? res.error : (res?res:"Something went wrong"),
+    } else if (res.error && (res.error === "Enter the token" ||
+      res.error === "Please authenticate using a valid token"
+    )){
+      navigate("/login");
+    } else {
+      showAlert({
+        title: res.error ? res.error : res ? res : "Something went wrong",
         icon: "error",
       });
     }
   };
 
-  const updateUser = async() => {
-    if((user.likes !== likes || user.questionsAsked !== ques.length || user.questionsAnswered!==ques.length) && user._id){      
-      const res = await fetch(`http://localhost:5000/api/v1/auth/updateuserbyid/${user._id}`,{
-        method:"PUT",
-        headers:
+  const updateUser = async () => {
+    if (
+      (user.likes !== likes ||
+        user.questionsAsked !== ques.length ||
+        user.questionsAnswered !== ques.length) &&
+      user._id
+    ) {
+      const res = await fetch(
+        `http://localhost:5000/api/v1/auth/updateuserbyid/${user._id}`,
         {
-          "Content-Type": "application/json",
-          "auth-header": token,
-        },
-        body:
-          JSON.stringify({ 
-            totalLikes:likes,
-            questionsAnswered:answered.length,
-            questionsAsked:ques.length
-           })
-      });
-      const data =await res.json();
-      if(res.status===200){
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "auth-header": token,
+          },
+          body: JSON.stringify({
+            totalLikes: likes,
+            questionsAnswered: answered.length,
+            questionsAsked: ques.length,
+          }),
+        }
+      );
+      const data = await res.json();
+      if (res.status === 200) {
         setUser(data);
       }
+      else if (res.error && (res.error === "Enter the token" ||
+        res.error === "Please authenticate using a valid token"
+      )){
+        navigate("/login");
+      }
+      else {
+        showAlert({
+          title: data.error ? data.error : data ? data : "Something went wrong",
+          icon: "error",
+        });
+      }
     }
-  }
+  };
 
   const GetData = async () => {
     await Promise.all([getUser(), getQues(), getAns()]);
     await updateUser();
-  }
+  };
   useEffect(() => {
     GetData();
   }, []);
@@ -223,28 +211,6 @@ const User = () => {
   const handleQuestionClick = (id) => {
     dispatch(setQuesId(id));
     navigate(`/question/${id}`);
-  };
-
-  const getMembershipTime = (date) => {
-    const currentDate = new Date();
-    const membershipDate = new Date(date);
-    let diffTime = Math.abs(currentDate - membershipDate);
-    const yrs = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 365));
-    diffTime -= yrs * (1000 * 60 * 60 * 24 * 365);
-    const months = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 30));
-    diffTime -= months * (1000 * 60 * 60 * 24 * 30);
-    const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    let membership = "";
-    if (yrs > 0) {
-      membership += `${yrs} years `;
-    }
-    if (months > 0) {
-      membership += `${months} months `;
-    }
-    if (days > 0) {
-      membership += `${days} days `;
-    }
-    return membership;
   };
 
   return (
@@ -293,7 +259,7 @@ const User = () => {
           }}
         >
           <div>{user.name}</div>
-          <div>Rating : {getStar()}</div>
+          <div>Rating : {getStars(answered.length,likes, ques.length)}</div>
           <div>{user.email}</div>
           <div>{user.interestedTopics && user.interestedTopics.join(", ")}</div>
           <div>{user.UPIid}</div>

@@ -1,11 +1,14 @@
-import  { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Form, Row, Col, Button } from "react-bootstrap";
 import Select from "react-select";
 import JoditEditor from "jodit-react";
 import makeAnimated from "react-select/animated";
-import swal from "sweetalert";
+import showAlert from "../Functions/Alert";
+import { useNavigate } from "react-router-dom";
 
 const AskQuestion = () => {
+  const navigate = useNavigate();
+  const token = localStorage.getItem("auth-token") || "";
   const animatedComponents = makeAnimated();
   const isWrap = window.innerWidth < 900;
   const config = {
@@ -36,11 +39,11 @@ const AskQuestion = () => {
     tags: [],
   });
 
-  const htmlToPlainText=(html)=> {
+  const htmlToPlainText = (html) => {
     let tempDiv = document.createElement("div");
     tempDiv.innerHTML = html;
     return tempDiv.textContent || tempDiv.innerText || "";
-  }
+  };
 
   const HandleSubmit = async (e) => {
     e.preventDefault();
@@ -49,7 +52,7 @@ const AskQuestion = () => {
     let plainText = htmlToPlainText(ques);
     plainText = plainText.replace(/\s/g, "").trim();
     if (rewardPrice < 0) {
-      swal({
+      showAlert({
         icon: "error",
         title: "Reward price can't be negative",
       });
@@ -60,7 +63,7 @@ const AskQuestion = () => {
       tags.push("General");
     }
     if (plainText === "") {
-      swal({
+      showAlert({
         icon: "error",
         title: "Question can't be empty",
       });
@@ -71,7 +74,7 @@ const AskQuestion = () => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "auth-header":localStorage.getItem("auth-token") || "",
+        "auth-header": token,
       },
       body: JSON.stringify({
         question: ques,
@@ -80,25 +83,20 @@ const AskQuestion = () => {
         tags,
       }),
     });
+    const data = await res.json();
     if (res.status === 200) {
-      swal({
+      showAlert({
         title: "Question added successfully",
         icon: "success",
       });
       setInfo({ ques: "", alreadyKnew: "", rewardPrice: 0, tags: [] });
-      return;
     }
-    if (res.status === 401) {
-      const data = await res.json();
-      swal({
-        icon: "error",
-        title: data.error,
-      });
+    else if (data.error === "Enter the token" || data.error === "Please authenticate using a valid token") {
+      navigate("/login");
     } else {
-      const data = await res.json();
-      swal({
+      showAlert({
+        title: data.error ? data.error : data ? data : "Something went wrong",
         icon: "error",
-        title: data,
       });
     }
   };
@@ -170,7 +168,7 @@ const AskQuestion = () => {
                 if (e.length > 0 && e[e.length - 1].value === "Add a new tag") {
                   let newtag = prompt("Enter your tag");
                   if (newtag === null) {
-                    swal({
+                    showAlert({
                       icon: "error",
                       title: "Tag can't be empty",
                     });

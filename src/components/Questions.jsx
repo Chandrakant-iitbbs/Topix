@@ -3,12 +3,12 @@ import { Dropdown, Button, Form, Col, Row } from "react-bootstrap";
 import Select from "react-select";
 import makeAnimated from "react-select/animated";
 import QuesCard from "./QuesCard";
-import swal from "sweetalert";
 import { useNavigate } from "react-router-dom";
+import showAlert from "../Functions/Alert";
 
 const Questions = () => {
   const navigate = useNavigate();
-  const token = localStorage.getItem("auth-token")||"";
+  const token = localStorage.getItem("auth-token") || "";
   const animatedComponents = makeAnimated();
   const [allTags, setAllTags] = useState([]);
   const [questions, setQuestions] = useState([]);
@@ -27,23 +27,16 @@ const Questions = () => {
     const ques = await data.json();
     if (data.status === 200) {
       setQuestions(ques);
-    } else if (data.status === 401) {
-      if (ques.error == "Enter the token" || ques.error == "Please authenticate using a valid token") {
-        navigate("/login");
-      }
-      else {
-        swal({
-          icon: "error",
-          title: ques.error ? ques.error : ques ? ques : "Internal server error",
-        });
-      }
+    } else if (ques.error === "Enter the token" || ques.error === "Please authenticate using a valid token") {
+      navigate("/login");
     } else {
-      swal({
-        icon: "error",
+      showAlert({
         title: ques.error ? ques.error : ques ? ques : "Internal server error",
+        icon: "error",
       });
     }
   };
+
 
   const getAllTags = async () => {
     const res = await fetch("http://localhost:5000/api/v1/tags/getAllTags", {
@@ -79,20 +72,13 @@ const Questions = () => {
 
     if (data.status === 200) {
       setQuestions(ques);
-    } else if (data.status === 401) {
-      if (ques.error == "Enter the token" || ques.error == "Please authenticate using a valid token") {
-        navigate("/login");
-      }
-      else {
-        swal({
-          icon: "error",
-          title: ques.error ? ques.error : ques ? ques : "Internal server error",
-        });
-      }
-    } else {
-      swal({
-        icon: "error",
+    } else if (ques.error && (ques.error == "Enter the token" || ques.error == "Please authenticate using a valid token")) {
+      navigate("/login");
+    }
+    else {
+      showAlert({
         title: ques.error ? ques.error : ques ? ques : "Internal server error",
+        icon: "error",
       });
     }
   };
@@ -111,20 +97,13 @@ const Questions = () => {
     const ques = await data.json();
     if (data.status === 200) {
       setQuestions(ques);
-    } else if (data.status === 401) {
-      if(ques.error == "Enter the token" || ques.error == "Please authenticate using a valid token") {
-        navigate("/login");
-      }
-      else {
-        swal({
-          icon: "error",
-          title: ques.error? ques.error : ques ? ques : "Internal server error",
-        });
-      }
-    } else {
-      swal({
-        icon: "error",
+    } else if (ques.error && (ques.error == "Enter the token" || ques.error == "Please authenticate using a valid token")) {
+      navigate("/login");
+    }
+    else {
+      showAlert({
         title: ques.error ? ques.error : ques ? ques : "Internal server error",
+        icon: "error",
       });
     }
   };
@@ -148,20 +127,13 @@ const Questions = () => {
     const ques = await data.json();
     if (data.status === 200) {
       setQuestions(ques);
-    } else if (data.status === 401) {
-      if(ques.error == "Enter the token" || ques.error == "Please authenticate using a valid token") {
-        navigate("/login");
-      }
-      else {
-        swal({
-          icon: "error",
-          title: ques.error ? ques.error : ques ? ques : "Internal server error",
-        });
-      }
-    } else {
-      swal({
-        icon: "error",
+    } else if (ques.error && (ques.error == "Enter the token" || ques.error == "Please authenticate using a valid token")) {
+      navigate("/login");
+    }
+    else {
+      showAlert({
         title: ques.error ? ques.error : ques ? ques : "Internal server error",
+        icon: "error",
       });
     }
   };

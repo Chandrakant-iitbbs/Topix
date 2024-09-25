@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import UserCard from "./UserCard";
+import { useNavigate } from "react-router-dom";
+import showAlert from "../Functions/Alert";
 
 const Users = () => {
+  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const token = localStorage.getItem("auth-token") || "";
 
@@ -14,7 +17,18 @@ const Users = () => {
       },
     });
     const users = await data.json();
-    setUsers(users);
+    if(data.status === 200){
+      setUsers(users);
+    }
+    else if (users.error && (users.error === "Enter the token" || users.error === "Please authenticate using a valid token")) {
+      navigate("/login");
+    }
+    else{
+      showAlert({
+        title: users.error ? users.error : users ? users : "Internal server error",
+        icon: "error",
+      });
+  }
   };
   useEffect(() => {
     getallusers();

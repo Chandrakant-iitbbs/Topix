@@ -6,7 +6,6 @@ const initialState = {
     IsOnline: false,
     ChatId: localStorage.getItem("chatId") || "",
     Token: localStorage.getItem("auth-token") || ""
-
 }
 
 const reducers = (state = initialState, action) => {

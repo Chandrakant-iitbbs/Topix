@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import swal from "sweetalert";
 import JoditEditor from "jodit-react";
 import { Button } from "react-bootstrap";
 import Answer from "./Answer";
 import HtmlToText from "./HtmlToText";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import getTime from "../Functions/GetTime";
+import {getTimeDifference} from "../Functions/GetTime";
+import showAlert from "../Functions/Alert";
 
 const Question = () => {
 
@@ -30,28 +30,18 @@ const Question = () => {
         },
       }
     );
+    const res = await data.json();
     if (data.status === 200) {
-      const user = await data.json();
-      setName(user.name);
-    } else if (data.status === 401) {
-      const user = await data.json();
-      if (user.error == "Enter the token" || user.error == "Please authenticate using a valid token") {
-        navigate("/login");
-      }
-      else {
-        swal({
-          icon: "error",
-          title: user.error? user.error : user?user:"Internal server error",
-        });
-      }
+      setName(res.name);
+    } else if (res.error && (res.error === "Enter the token" || res.error === "Please authenticate using a valid token")) {
+      navigate("/login");
     } else {
-      swal({
+      showAlert ({
+        title: res.error ? res.error: res ? res : "Internal server error",
         icon: "error",
-        title: "Internal server error",
       });
     }
   };
-
 
   const htmlToPlainText = (html) => {
     let tempDiv = document.createElement("div");
@@ -64,8 +54,8 @@ const Question = () => {
     let plainText = htmlToPlainText(addAnswer);
     plainText = plainText.replace(/\s/g, "").trim();  
     if(plainText === "" ) {
-      swal({
-        title: "Answer cannot be empty",
+     showAlert({
+        title: "Answer can not be empty",
         icon: "error",
       });
       return;
@@ -86,26 +76,17 @@ const Question = () => {
     );
     const a = await res.json();
     if (res.status === 200) {
-      swal({
+     showAlert({
         title: "Answer added successfully",
         icon: "success",
       });
       setAddAnswer("");
       fetchAnswers();
-    } else if (res.status === 401 ) {
-      if (a.error == "Enter the token" || a.error == "Please authenticate using a valid token") {
-        navigate("/login");
-      }
-      else {
-        swal({
-          icon: "error",
-          title: a.error? a.error : a?a:"Internal server error",
-        });
-      }
-      
+    } else if (a.error && (a.error === "Enter the token" || a.error === "Please authenticate using a valid token")) {
+      navigate("/login");
     } else {
-      swal({
-        title: "Internal Server Error",
+      showAlert({
+        title: a.error ? a.error : a ? a : "Internal server error",
         icon: "error",
       });
     }
@@ -138,22 +119,19 @@ const Question = () => {
         },
       }
     );
+    const a = await data.json();
     if (data.status === 200) {
-      const a = await data.json();
       setAnswers(a);
-    } else if (data.status === 401 || data.status === 404) {
-      const a = await data.json();
-      swal({
-        title: a.error ? a.error : a,
-        icon: "error",
-      });
+    } else if (a.error && (a.error === "Enter the token" || a.error === "Please authenticate using a valid token")) {
+      navigate("/login");
     } else {
-      swal({
-        title: "Internal Server Error",
+      showAlert({
+        title: a.error ? a.error : a ? a : "Internal server error",
         icon: "error",
       });
     }
   };
+
 
   const fetchQuestion = async () => {
     const data = await fetch(
@@ -166,19 +144,15 @@ const Question = () => {
         },
       }
     );
+    const q = await data.json();
     if (data.status === 200) {
-      const q = await data.json();
       getUserName(q.user);
       setQues(q);
-    } else if (data.status === 401 || data.status === 404) {
-      const q = await data.json();
-      swal({
-        title: q.error ? q.error : q,
-        icon: "error",
-      });
+    } else if (q.error && (q.error === "Enter the token" || q.error === "Please authenticate using a valid token")) {
+      navigate("/login");
     } else {
-      swal({
-        title: "Internal Server Error",
+      showAlert({
+        title: q.error ? q.error : q ? q : "Internal server error",
         icon: "error",
       });
     }
@@ -235,7 +209,7 @@ const Question = () => {
                 marginRight: "10px",
               }}
             >
-              Asked : {getTime(ques.date)} by {name}
+              Asked : {getTimeDifference(ques.date)} by {name}
             </div>
           </div>
           <hr></hr>

@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Row, Col, Image, Card } from "react-bootstrap";
 import HtmlToText from "./HtmlToText";
-import swal from "sweetalert";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { setQuesId } from "../Redux/Actions";
+import showAlert from "../Functions/Alert";
+import { getMembershipTime } from "../Functions/GetTime";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -14,8 +15,10 @@ const Profile = () => {
   const [answered, setAnswered] = useState([]);
   const [user, setUser] = useState([]);
   const [likes, setLikes] = useState(0);
-  
+
   const userId = useSelector((state) => state.UserId);
+
+  const token = localStorage.getItem("auth-token") || "";
 
   const getStar = () => {
     let n = 1 + 1.7 * (answered.length / (10 + answered.length)) + 1.3 * (likes / (50 + likes)) + (ques.length / (20 + ques.length));
@@ -33,7 +36,7 @@ const Profile = () => {
       {
         headers: {
           "Content-Type": "application/json",
-          "auth-header": localStorage.getItem("auth-token") || "",
+          "auth-header": token,
         },
       }
     );
@@ -41,11 +44,14 @@ const Profile = () => {
     if (data.status === 200) {
       setQues(res);
     }
+    else if (res.error && (res.error === "Enter the token" || res.error === "Please authenticate using a valid token")) {
+      navigate("/login");
+    }
     else {
-      swal({
+     showAlert({
         title: res.error ? res.error : (res ? res : "Something went wrong"),
         icon: "error",
-      });
+     });
     }
   };
 
@@ -66,7 +72,7 @@ const Profile = () => {
         {
           headers: {
             "Content-Type": "application/json",
-            "auth-header": localStorage.getItem("auth-token") || "",
+            "auth-header": token,
           },
         }
       );
@@ -96,7 +102,7 @@ const Profile = () => {
       {
         headers: {
           "Content-Type": "application/json",
-          "auth-header": localStorage.getItem("auth-token") || "",
+          "auth-header": token,
         },
       }
     );
@@ -118,8 +124,11 @@ const Profile = () => {
         }
       }
       setAnswered(uniqueAnswers);
-    } else {
-      swal({
+    } else if (res.error && (res.error === "Enter the token" || res.error === "Please authenticate using a valid token")){
+      navigate("/login");
+    }
+    else {
+      showAlert({
         title: res.error ? res.error : (res ? res : "Something went wrong"),
         icon: "error",
       });
@@ -130,14 +139,17 @@ const Profile = () => {
     const data = await fetch(`http://localhost:5000/api/v1/auth/getuserbyid/${userId}`, {
       headers: {
         "Content-Type": "application/json",
-        "auth-header": localStorage.getItem("auth-token") || "",
+        "auth-header": token,
       },
     });
     const res = await data.json();
     if (data.status === 200) {
       setUser(res);
-    } else {
-      swal({
+    } else if (res.error && (res.error === "Enter the token" || res.error === "Please authenticate using a valid token")) {
+      navigate("/login");
+    }
+    else {
+      showAlert({
         title: res.error ? res.error : (res ? res : "Something went wrong"),
         icon: "error",
       });
@@ -151,7 +163,7 @@ const Profile = () => {
         headers:
         {
           "Content-Type": "application/json",
-          "auth-header": localStorage.getItem("auth-token") || ""
+          "auth-header": token,
         },
         body:
           JSON.stringify({
@@ -185,28 +197,6 @@ const Profile = () => {
   const handleQuestionClick = (id) => {
     dispatch(setQuesId(id));
     navigate(`/question/${id}`);
-  };
-
-  const getMembershipTime = (date) => {
-    const currentDate = new Date();
-    const membershipDate = new Date(date);
-    let diffTime = Math.abs(currentDate - membershipDate);
-    const yrs = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 365));
-    diffTime -= yrs * (1000 * 60 * 60 * 24 * 365);
-    const months = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 30));
-    diffTime -= months * (1000 * 60 * 60 * 24 * 30);
-    const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    let membership = "";
-    if (yrs > 0) {
-      membership += `${yrs} years `;
-    }
-    if (months > 0) {
-      membership += `${months} months `;
-    }
-    if (days > 0) {
-      membership += `${days} days `;
-    }
-    return membership;
   };
 
   return (

@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
-import swal from "sweetalert";
 import HtmlToText from "./HtmlToText";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import getTime from "../Functions/GetTime";
+import {getTimeDifference} from "../Functions/GetTime";
+import showAlert from "../Functions/Alert";
 
 const Answer = (props) => {
   const token = localStorage.getItem("auth-token") || "";
   const navigate = useNavigate();
-  if(!token || token === ""){
+  if (!token || token === "") {
     navigate("/login");
   }
-  
+
   let { ans } = props;
 
   const [name, setName] = useState("Anonymous");
@@ -24,23 +24,20 @@ const Answer = (props) => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "auth-header": localStorage.getItem("auth-token") || "",
+          "auth-header": token,
         },
       }
     );
+    const user = await data.json();
     if (data.status === 200) {
-      const user = await data.json();
       setName(user.name);
-    } else if (data.status === 401 || data.status === 404) {
-      const user = await data.json();
-      swal({
-        icon: "error",
-        title: user.error ? user.error : user,
-      });
+    } else if (user.error && (user.error === "Enter the token" || user.error === "Please authenticate using a valid token")
+    ) {
+      navigate("/login");
     } else {
-      swal({
+      showAlert({
+        title: user.error ? user.error : user ? user : "Something went wrong",
         icon: "error",
-        title: "Internal server error",
       });
     }
   };
@@ -56,23 +53,22 @@ const Answer = (props) => {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          "auth-header": localStorage.getItem("auth-token") || "",
+          "auth-header": token,
         },
       }
     );
+    const ans = await data.json();
     if (data.status === 200) {
-      const ans = await data.json();
       setVotes(ans);
-    } else if (data.status === 401 || data.status === 404) {
-      const ans = await data.json();
-      swal({
-        icon: "error",
-        title: ans.error ? ans.error : ans,
-      });
+    }  else if (
+      ans.error === "Enter the token" ||
+      ans.error === "Please authenticate using a valid token"
+    ) {
+      navigate("/login");
     } else {
-      swal({
+      showAlert({
+        title: ans.error ? ans.error : ans ? ans : "Something went wrong",
         icon: "error",
-        title: "Internal server error",
       });
     }
   };
@@ -84,25 +80,23 @@ const Answer = (props) => {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          "auth-header": localStorage.getItem("auth-token") || "",
+          "auth-header": token,
         },
       }
     );
-
+    const ans = await data.json();
     if (data.status === 200) {
-      const ans = await data.json();
       setVotes(ans);
       return;
-    } else if (data.status === 401 || data.status === 404) {
-      const ans = await data.json();
-      swal({
-        icon: "error",
-        title: ans.error ? ans.error : ans,
-      });
+    }  else if (
+      ans.error === "Enter the token" ||
+      ans.error === "Please authenticate using a valid token"
+    ) {
+      navigate("/login");
     } else {
-      swal({
+      showAlert({
+        title: ans.error ? ans.error : ans ? ans : "Something went wrong",
         icon: "error",
-        title: "Internal server error",
       });
     }
   };
@@ -142,10 +136,12 @@ const Answer = (props) => {
         ></i>
       </div>
       <div style={{ width: "94%", paddingLeft: "20px" }}>
-        <div> {<HtmlToText html={ans.answer} index={ans._id} isfull={true}/>}</div>
+        <div>
+          {<HtmlToText html={ans.answer} index={ans._id} isfull={true} />}
+        </div>
         <div style={{ marginTop: "1rem" }}>
           {" "}
-          Answered : {getTime(ans.date)} by {name}
+          Answered : {getTimeDifference(ans.date)} by {name}
         </div>
       </div>
     </div>

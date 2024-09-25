@@ -1,4 +1,4 @@
-const getTime = (date) => {
+const getTimeDifference = (date) => {
     const currentDate = new Date();
     const askDate = new Date(date);
     let diffTime = currentDate - askDate;
@@ -34,4 +34,26 @@ const getTime = (date) => {
     return `${seconds} seconds ago`;
 };
 
-export default getTime;
+const getMembershipTime = (date) => {
+    const currentDate = new Date();
+    const membershipDate = new Date(date);
+    let diffTime = Math.abs(currentDate - membershipDate);
+    const yrs = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 365));
+    diffTime -= yrs * (1000 * 60 * 60 * 24 * 365);
+    const months = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 30));
+    diffTime -= months * (1000 * 60 * 60 * 24 * 30);
+    const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    let membership = "";
+    if (yrs > 0) {
+      membership += `${yrs} years `;
+    }
+    if (months > 0) {
+      membership += `${months} months `;
+    }
+    if (days > 0) {
+      membership += `${days} days `;
+    }
+    return membership;
+  };
+
+module.exports = { getTimeDifference, getMembershipTime };    

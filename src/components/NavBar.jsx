@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 const NavBar = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
-  const token = localStorage.getItem("auth-token");
+  const token = localStorage.getItem("auth-token") || "";
   const handleSearch = (e) => {
     e.preventDefault();
     console.log(search);
@@ -34,7 +34,7 @@ const NavBar = () => {
       const data = await res.json();
       setName((data.name[0]).toUpperCase());
       if (data.dp) {
-        setDp("data:image/jpeg;base64," + data.dp);
+        setDp(data.dp);
       }
     }
   };
@@ -157,9 +157,9 @@ const NavBar = () => {
           </Col>
 
           <Col sm={2} style={{ minWidth: "150px", cursor: "pointer", alignItems: "center", display: "flex" , paddingLeft:0, justifyContent:"center"}} onClick={() => navigate("/user")}>
-            {dp.length ? (
+            {dp ? (
               <Image
-                src={dp}
+                src={`data:image/jpeg;base64,${dp}`}
                 roundedCircle
                 width={35}
                 height={35}

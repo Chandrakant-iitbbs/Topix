@@ -1,56 +1,22 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import swal from "sweetalert";
 import HtmlToText from "./HtmlToText";
 import { useDispatch } from "react-redux";
 import { setQuesId } from "../Redux/Actions";
+import {getTimeDifference} from "../Functions/GetTime";
+import showAlert from "../Functions/Alert";
 
 const QuesCard = (props) => {
   const { ques } = props;
   const { user, question, rewardPrice, tags, views, date, _id } = ques;
   const [name, setName] = useState("Anonymous");
   const dispatch = useDispatch();
+  const token = localStorage.getItem("auth-token") || "";
 
   const navigate = useNavigate();
   const handleQuesClick = () => {
     dispatch(setQuesId(_id));
     navigate(`/question/${_id}`);
-  };
-
-  const getAskedTime = (date) => {
-    const currentDate = new Date();
-    const askDate = new Date(date);
-    let diffTime = currentDate - askDate;
-
-    const yrs = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 365));
-    if (yrs > 0) {
-      return `${yrs} years ago`;
-    }
-    diffTime -= yrs * (1000 * 60 * 60 * 24 * 365);
-    const months = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 30));
-    if (months > 0) {
-      return `${months} months ago`;
-    }
-    diffTime -= months * (1000 * 60 * 60 * 24 * 30);
-
-    const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    if (days > 0) {
-      return `${days} days ago`;
-    }
-    diffTime -= days * (1000 * 60 * 60 * 24);
-    const hours = Math.floor(diffTime / (1000 * 60 * 60));
-    if (hours > 0) {
-      return `${hours} hours ago`;
-    }
-
-    diffTime -= hours * (1000 * 60 * 60);
-    const minutes = Math.floor(diffTime / (1000 * 60));
-    if (minutes > 0) {
-      return `${minutes} minutes ago`;
-    }
-    diffTime -= minutes * (1000 * 60);
-    const seconds = Math.ceil(diffTime / 1000);
-    return `${seconds} seconds ago`;
   };
 
   const getUserName = async () => {
@@ -60,30 +26,27 @@ const QuesCard = (props) => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "auth-header": localStorage.getItem("auth-token") || "",
+          "auth-header": token,
         },
       }
     );
+    const res = await data.json();
     if (data.status === 200) {
-      const user = await data.json();
-      setName(user.name);
-    } else if (data.status === 401) {
-      const user = await data.json();
-      swal({
+      setName(res.name);
+    } 
+    else if (res.error && (res.error === "Enter the token" || res.error === "Please authenticate using a valid token")) {
+      navigate("/login");
+    }
+    else{
+      showAlert({
+        title: res.error ? res.error : res ? res : "Something went wrong",
         icon: "error",
-        title: user.error,
-      });
-    } else {
-      swal({
-        icon: "error",
-        title: "Internal server error",
       });
     }
   };
 
   useEffect(() => {
     getUserName();
-    getAskedTime();
   }, []);
 
   const quesText = <HtmlToText html={question} index={_id} isfull={false} />;  
@@ -123,7 +86,7 @@ const QuesCard = (props) => {
           }}
         >
           <div>Asked by: {name}</div>
-          <div style={{ marginRight: "10px" }}>{getAskedTime(date)}</div>
+          <div style={{ marginRight: "10px" }}>{getTimeDifference(date)}</div>
         </div>
       </div>
     </div>

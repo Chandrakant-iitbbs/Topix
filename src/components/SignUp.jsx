@@ -5,7 +5,7 @@ import eye2 from "../Assets/eye-slash-regular.svg";
 import Select from "react-select";
 import makeAnimated from "react-select/animated";
 import { Link, useNavigate } from "react-router-dom";
-import swal from "sweetalert";
+import showAlert from "../Functions/Alert";
 
 const SignUp = () => {
   const animatedComponents = makeAnimated();
@@ -106,8 +106,8 @@ const SignUp = () => {
         }
       )
     });
+    const data = await res.json();
     if (res.status === 200) {
-      const data = await res.json();
       localStorage.setItem("auth-token", data.auto_token);
       navigate("/questions");
       setInfo({
@@ -118,11 +118,11 @@ const SignUp = () => {
         upiId: "",
         dp: "",
       });
-    } else if (res.status === 400) {
-      const data = await res.json();
-      swal({ icon: "error", title: data.error });
     } else {
-      swal({ icon: "error", title: "Internal server error" });
+      showAlert({
+        title: data.error ? data.error : data ? data : "Something went wrong",
+        icon: "error",
+      });
     }
   };
 
@@ -217,9 +217,9 @@ const SignUp = () => {
                 if (e.length > 0 && e[e.length - 1].value === "Add a new tag") {
                   let newtag = prompt("Enter your tag");
                   if (newtag === null) {
-                    swal({
-                      icon: "error",
+                   showAlert({
                       title: "Tag can't be empty",
+                      icon: "error",
                     });
                   } else {
                     newtag = newtag && newtag.trim();

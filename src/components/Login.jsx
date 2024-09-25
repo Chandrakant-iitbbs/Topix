@@ -3,8 +3,8 @@ import { Form, Row, Col, Button } from "react-bootstrap";
 import eye1 from "../Assets/eye-regular.svg";
 import eye2 from "../Assets/eye-slash-regular.svg";
 import { Link, useNavigate } from "react-router-dom";
-import swal from "sweetalert";
 import { useDispatch } from "react-redux";
+import showAlert from "../Functions/Alert";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -21,13 +21,16 @@ const Login = () => {
       },
       body: JSON.stringify(info),
     });
+    const data = await res.json();
     if (res.status === 200) {
-      const data = await res.json();
       localStorage.setItem("auth-token", data.auto_token);
-            navigate("/questions");
-    } else {
-      const data = await res.json();
-      swal({ icon: "error", title: data.error });
+      navigate("/questions");
+    } 
+    else{
+      showAlert({
+        title: data.error ? data.error : data ? data : "Something went wrong",
+        icon: "error",
+      })
     }
   };
   return (
