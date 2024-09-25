@@ -6,8 +6,9 @@ import QuesCard from "./QuesCard";
 import swal from "sweetalert";
 import { useNavigate } from "react-router-dom";
 
-const Questions = (props) => {
+const Questions = () => {
   const navigate = useNavigate();
+  const token = localStorage.getItem("auth-token")||"";
   const animatedComponents = makeAnimated();
   const [allTags, setAllTags] = useState([]);
   const [questions, setQuestions] = useState([]);
@@ -19,23 +20,27 @@ const Questions = (props) => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "auth-header": localStorage.getItem("auth-token") || "",
+          "auth-header": token,
         },
       }
     );
+    const ques = await data.json();
     if (data.status === 200) {
-      const ques = await data.json();
       setQuestions(ques);
     } else if (data.status === 401) {
-      const ques = await data.json();
-      swal({
-        icon: "error",
-        title: ques.error,
-      });
+      if (ques.error == "Enter the token" || ques.error == "Please authenticate using a valid token") {
+        navigate("/login");
+      }
+      else {
+        swal({
+          icon: "error",
+          title: ques.error ? ques.error : ques ? ques : "Internal server error",
+        });
+      }
     } else {
       swal({
         icon: "error",
-        title: "Internal server error",
+        title: ques.error ? ques.error : ques ? ques : "Internal server error",
       });
     }
   };
@@ -66,23 +71,28 @@ const Questions = (props) => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "auth-header": localStorage.getItem("auth-token") || "",
+          "auth-header": token,
         },
       }
     );
+    const ques = await data.json();
+
     if (data.status === 200) {
-      const ques = await data.json();
       setQuestions(ques);
     } else if (data.status === 401) {
-      const ques = await data.json();
-      swal({
-        icon: "error",
-        title: ques.error,
-      });
+      if (ques.error == "Enter the token" || ques.error == "Please authenticate using a valid token") {
+        navigate("/login");
+      }
+      else {
+        swal({
+          icon: "error",
+          title: ques.error ? ques.error : ques ? ques : "Internal server error",
+        });
+      }
     } else {
       swal({
         icon: "error",
-        title: "Internal server error",
+        title: ques.error ? ques.error : ques ? ques : "Internal server error",
       });
     }
   };
@@ -94,23 +104,27 @@ const Questions = (props) => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "auth-header": localStorage.getItem("auth-token") || "",
+          "auth-header": token,
         },
       }
     );
+    const ques = await data.json();
     if (data.status === 200) {
-      const ques = await data.json();
       setQuestions(ques);
     } else if (data.status === 401) {
-      const ques = await data.json();
-      swal({
-        icon: "error",
-        title: ques.error,
-      });
+      if(ques.error == "Enter the token" || ques.error == "Please authenticate using a valid token") {
+        navigate("/login");
+      }
+      else {
+        swal({
+          icon: "error",
+          title: ques.error? ques.error : ques ? ques : "Internal server error",
+        });
+      }
     } else {
       swal({
         icon: "error",
-        title: "Internal server error",
+        title: ques.error ? ques.error : ques ? ques : "Internal server error",
       });
     }
   };
@@ -127,23 +141,27 @@ const Questions = (props) => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "auth-header": localStorage.getItem("auth-token") || "",
+          "auth-header": token,
         },
       }
     );
+    const ques = await data.json();
     if (data.status === 200) {
-      const ques = await data.json();
       setQuestions(ques);
     } else if (data.status === 401) {
-      const ques = await data.json();
-      swal({
-        icon: "error",
-        title: ques.error,
-      });
+      if(ques.error == "Enter the token" || ques.error == "Please authenticate using a valid token") {
+        navigate("/login");
+      }
+      else {
+        swal({
+          icon: "error",
+          title: ques.error ? ques.error : ques ? ques : "Internal server error",
+        });
+      }
     } else {
       swal({
         icon: "error",
-        title: "Internal server error",
+        title: ques.error ? ques.error : ques ? ques : "Internal server error",
       });
     }
   };
@@ -203,7 +221,7 @@ const Questions = (props) => {
           </Dropdown>
         </div>
         <div>
-          <Button onClick={()=>navigate("/askQues")}>Ask a question</Button>
+          <Button onClick={() => navigate("/askQues")}>Ask a question</Button>
         </div>
       </div>
       <div

@@ -6,11 +6,8 @@ import Select from "react-select";
 import makeAnimated from "react-select/animated";
 import { Link, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
-import { useDispatch } from "react-redux";
-import { setToken } from "../Redux/Actions";
 
 const SignUp = () => {
-  const dispatch = useDispatch();
   const animatedComponents = makeAnimated();
   const [passShow, setPassShow] = useState(false);
   const [info, setInfo] = useState({
@@ -112,7 +109,6 @@ const SignUp = () => {
     if (res.status === 200) {
       const data = await res.json();
       localStorage.setItem("auth-token", data.auto_token);
-      dispatch(setToken(data.auto_token));
       navigate("/questions");
       setInfo({
         name: "",

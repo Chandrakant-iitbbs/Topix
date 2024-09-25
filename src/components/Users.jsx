@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
 import UserCard from "./UserCard";
 
-const Users = (props) => {
+const Users = () => {
   const [users, setUsers] = useState([]);
+  const token = localStorage.getItem("auth-token") || "";
 
   const getallusers = async () => {
     const data = await fetch("http://localhost:5000/api/v1/auth/getallusers", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "auth-header": localStorage.getItem("auth-token") || ""
+        "auth-header": token,
       },
     });
     const users = await data.json();

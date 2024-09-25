@@ -1,8 +1,17 @@
 import { useEffect, useState } from "react";
 import swal from "sweetalert";
 import HtmlToText from "./HtmlToText";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import getTime from "../Functions/GetTime";
 
 const Answer = (props) => {
+  const token = localStorage.getItem("auth-token") || "";
+  const navigate = useNavigate();
+  if(!token || token === ""){
+    navigate("/login");
+  }
+  
   let { ans } = props;
 
   const [name, setName] = useState("Anonymous");
@@ -36,53 +45,9 @@ const Answer = (props) => {
     }
   };
 
-  const getAskedTime = (date) => {
-    const currentDate = new Date();
-    const askDate = new Date(date);
-    let diffTime = currentDate - askDate;
-
-    const yrs = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 365));
-    if (yrs > 0) {
-      return `${yrs} years ago`;
-    }
-    diffTime -= yrs * (1000 * 60 * 60 * 24 * 365);
-    const months = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 30));
-    if (months > 0) {
-      return `${months} months ago`;
-    }
-    diffTime -= months * (1000 * 60 * 60 * 24 * 30);
-
-    const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    if (days > 0) {
-      return `${days} days ago`;
-    }
-    diffTime -= days * (1000 * 60 * 60 * 24);
-    const hours = Math.floor(diffTime / (1000 * 60 * 60));
-    if (hours > 0) {
-      return `${hours} hours ago`;
-    }
-
-    diffTime -= hours * (1000 * 60 * 60);
-    const minutes = Math.floor(diffTime / (1000 * 60));
-    if (minutes > 0) {
-      return `${minutes} minutes ago`;
-    }
-    diffTime -= minutes * (1000 * 60);
-    const seconds = Math.ceil(diffTime / 1000);
-    return `${seconds} seconds ago`;
-  };
-
   useEffect(() => {
     getUserName();
   }, []);
-
-  const htmlToText = (html) => {
-    // let doc = new DOMParser().parseFromString(html, "text/html");
-    // return doc.body.textContent || "";
-    let div = document.createElement("div");
-    div.innerHTML = html;
-    return div.innerText || div.textContent || "";
-  };
 
   const upVote = async (id) => {
     const data = await fetch(
@@ -180,7 +145,7 @@ const Answer = (props) => {
         <div> {<HtmlToText html={ans.answer} index={ans._id} isfull={true}/>}</div>
         <div style={{ marginTop: "1rem" }}>
           {" "}
-          Answered : {getAskedTime(ans.date)} by {name}
+          Answered : {getTime(ans.date)} by {name}
         </div>
       </div>
     </div>

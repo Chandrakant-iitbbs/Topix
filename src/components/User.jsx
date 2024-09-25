@@ -14,7 +14,7 @@ const User = () => {
   const [answered, setAnswered] = useState([]);
   const [user, setUser] = useState([]);
   const [likes, setLikes] = useState(0);
-
+  const token = localStorage.getItem("auth-token") || "";
   const getStar = () => {
     let n = 1+ 1.7*(answered.length/(10+answered.length))+ 1.3*(likes/(50+likes))+ (ques.length/(20+ques.length));
     n = Math.round(n);
@@ -31,13 +31,24 @@ const User = () => {
       {
         headers: {
           "Content-Type": "application/json",
-          "auth-header": localStorage.getItem("auth-token") || "",
+          "auth-header":token,
         },
       }
     );
     const res = await data.json();
     if (data.status === 200) {
       setQues(res);
+    }
+    else if(data.status === 401){
+      if(res.error === "Enter the token" || res.error=== "Please authenticate using a valid token"){
+        navigate("/login");
+      }
+      else{
+        swal({
+          title: res.error ? res.error : (res?res:"Something went wrong"),
+          icon: "error",
+        });
+      }
     }
     else {
       swal({
@@ -64,7 +75,7 @@ const User = () => {
         {
           headers: {
             "Content-Type": "application/json",
-            "auth-header": localStorage.getItem("auth-token") || "",
+            "auth-header": token,
           },
         }
       );
@@ -94,7 +105,7 @@ const User = () => {
       {
         headers: {
           "Content-Type": "application/json",
-          "auth-header": localStorage.getItem("auth-token") || "",
+          "auth-header": token,
         },
       }
     );
@@ -116,7 +127,18 @@ const User = () => {
         }
       }
       setAnswered(uniqueAnswers);
-    } else {
+    } else if(data.status === 401){
+      if(res.error === "Enter the token" || res.error=== "Please authenticate using a valid token"){
+        navigate("/login");
+      }
+      else{
+        swal({
+          title: res.error ? res.error : (res?res:"Something went wrong"),
+          icon: "error",
+        });
+      }
+    }
+    else {
       swal({
         title: res.error ? res.error : (res?res:"Something went wrong"),
         icon: "error",
@@ -128,13 +150,24 @@ const User = () => {
     const data = await fetch("http://localhost:5000/api/v1/auth/getuser", {
       headers: {
         "Content-Type": "application/json",
-        "auth-header": localStorage.getItem("auth-token") || "",
+        "auth-header":token,
       },
     });
     const res = await data.json();
     if (data.status === 200) {
       setUser(res);
-    } else {
+    } else if(data.status === 401){
+      if(res.error === "Enter the token" || res.error=== "Please authenticate using a valid token"){
+        navigate("/login");
+      }
+      else{
+        swal({
+          title: res.error ? res.error : (res?res:"Something went wrong"),
+          icon: "error",
+        });
+      }
+    }
+    else {
       swal({
         title: res.error ? res.error : (res?res:"Something went wrong"),
         icon: "error",
@@ -149,7 +182,7 @@ const User = () => {
         headers:
         {
           "Content-Type": "application/json",
-          "auth-header": localStorage.getItem("auth-token") || ""
+          "auth-header": token,
         },
         body:
           JSON.stringify({ 

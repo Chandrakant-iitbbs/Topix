@@ -2,9 +2,12 @@ import React from "react";
 import { Button, Col, Row, Image } from "react-bootstrap";
 import download from "../Assets/download.jpeg";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const About = () => {
   const navigate = useNavigate();
+  const token = localStorage.getItem("auth-token")|| "";
+
   return (
     <div style={{ margin: "2rem 4rem" }}>
       <Row
@@ -26,7 +29,7 @@ const About = () => {
               display: "flex",
             }}
           >
-            {localStorage.getItem("auth-token") ? (
+            {token ? (
               <div
                 style={{
                   display: "flex",

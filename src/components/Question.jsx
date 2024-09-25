@@ -5,11 +5,14 @@ import { Button } from "react-bootstrap";
 import Answer from "./Answer";
 import HtmlToText from "./HtmlToText";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import getTime from "../Functions/GetTime";
 
-const Question = (props) => {
+const Question = () => {
 
   const id = useSelector((state) => state.QuesId);
-
+  const token = localStorage.getItem("auth-token") || "";
+  const navigate = useNavigate();
   const [ques, setQues] = useState();
   const [answers, setAnswers] = useState([]);
   const [name, setName] = useState("Anonymous");
@@ -23,7 +26,7 @@ const Question = (props) => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "auth-header": localStorage.getItem("auth-token") || "",
+          "auth-header": token,
         },
       }
     );
@@ -32,10 +35,15 @@ const Question = (props) => {
       setName(user.name);
     } else if (data.status === 401) {
       const user = await data.json();
-      swal({
-        icon: "error",
-        title: user.error,
-      });
+      if (user.error == "Enter the token" || user.error == "Please authenticate using a valid token") {
+        navigate("/login");
+      }
+      else {
+        swal({
+          icon: "error",
+          title: user.error? user.error : user?user:"Internal server error",
+        });
+      }
     } else {
       swal({
         icon: "error",
@@ -44,43 +52,8 @@ const Question = (props) => {
     }
   };
 
-  const getAskedTime = (date) => {
-    const currentDate = new Date();
-    const askDate = new Date(date);
-    let diffTime = currentDate - askDate;
 
-    const yrs = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 365));
-    if (yrs > 0) {
-      return `${yrs} years ago`;
-    }
-    diffTime -= yrs * (1000 * 60 * 60 * 24 * 365);
-    const months = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 30));
-    if (months > 0) {
-      return `${months} months ago`;
-    }
-    diffTime -= months * (1000 * 60 * 60 * 24 * 30);
-
-    const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    if (days > 0) {
-      return `${days} days ago`;
-    }
-    diffTime -= days * (1000 * 60 * 60 * 24);
-    const hours = Math.floor(diffTime / (1000 * 60 * 60));
-    if (hours > 0) {
-      return `${hours} hours ago`;
-    }
-
-    diffTime -= hours * (1000 * 60 * 60);
-    const minutes = Math.floor(diffTime / (1000 * 60));
-    if (minutes > 0) {
-      return `${minutes} minutes ago`;
-    }
-    diffTime -= minutes * (1000 * 60);
-    const seconds = Math.ceil(diffTime / 1000);
-    return `${seconds} seconds ago`;
-  };
-
-  const htmlToPlainText=(html)=> {
+  const htmlToPlainText = (html) => {
     let tempDiv = document.createElement("div");
     tempDiv.innerHTML = html;
     return tempDiv.textContent || tempDiv.innerText || "";
@@ -104,13 +77,14 @@ const Question = (props) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "auth-header": localStorage.getItem("auth-token") || "",
+          "auth-header": token,
         },
         body: JSON.stringify({
           answer: addAnswer,
         }),
       }
     );
+    const a = await res.json();
     if (res.status === 200) {
       swal({
         title: "Answer added successfully",
@@ -118,12 +92,17 @@ const Question = (props) => {
       });
       setAddAnswer("");
       fetchAnswers();
-    } else if (res.status === 401 || res.status === 404) {
-      const a = await res.json();
-      swal({
-        title: a.error ? a.error : a,
-        icon: "error",
-      });
+    } else if (res.status === 401 ) {
+      if (a.error == "Enter the token" || a.error == "Please authenticate using a valid token") {
+        navigate("/login");
+      }
+      else {
+        swal({
+          icon: "error",
+          title: a.error? a.error : a?a:"Internal server error",
+        });
+      }
+      
     } else {
       swal({
         title: "Internal Server Error",
@@ -155,7 +134,7 @@ const Question = (props) => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "auth-header": localStorage.getItem("auth-token") || "",
+          "auth-header": token,
         },
       }
     );
@@ -183,7 +162,7 @@ const Question = (props) => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "auth-header": localStorage.getItem("auth-token") || "",
+          "auth-header": token,
         },
       }
     );
@@ -208,13 +187,12 @@ const Question = (props) => {
   useEffect(() => {
     fetchQuestion();
     fetchAnswers();
-    getAskedTime();
   }, []);
   return (
     <div style={{ margin: "20px 20px" }}>
       {ques ? (
         <div style={{ width: "95%", margin: "auto", padding: "10px" }}>
-          <div>{<HtmlToText html={ques.question} index={ques._id} isfull={true}/>}</div>
+          <div>{<HtmlToText html={ques.question} index={ques._id} isfull={true} />}</div>
           <div
             style={{
               display: "flex",
@@ -257,12 +235,12 @@ const Question = (props) => {
                 marginRight: "10px",
               }}
             >
-              Asked : {getAskedTime(ques.date)} by {name}
+              Asked : {getTime(ques.date)} by {name}
             </div>
           </div>
           <hr></hr>
           <div style={{ textWrap: "wrap", margin: "1rem 0" }}>
-            {ques.alreadyKnew && < HtmlToText html={ques.alreadyKnew} index={ques._id+'c'}/>}
+            {ques.alreadyKnew && < HtmlToText html={ques.alreadyKnew} index={ques._id + 'c'} />}
           </div>
           <div style={{ display: "flex", flexWrap: "wrap" }}>
             {ques.tags.map((tag) => (

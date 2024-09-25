@@ -10,7 +10,6 @@ import Login from './components/Login';
 import SignUp from './components/SignUp';
 import AskQuestion from './components/AskQuestion';
 import NavBar from './components/NavBar';
-import NavBar2 from './components/NavBar2';
 import About from './components/About';
 import User from './components/User';
 import Users from './components/Users';
@@ -30,8 +29,6 @@ const App = () => {
   useEffect(() => {
     dispatch(setOnline(true));
   }, []);
-
- const token = useSelector(state => state.token);
 
   const sideBar = (
     <SocketProvider id={id}>
@@ -56,7 +53,7 @@ const App = () => {
   return (
     <>
       <Router>
-        {token ? <NavBar /> : <NavBar2 />}
+        <NavBar /> 
         <Routes>
           <Route exact path="/" element={<About />} />
           <Route exact path='/about' element={<About />} />
