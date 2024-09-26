@@ -1,11 +1,12 @@
-import { SetUserId, SetQuesId, IsOnline, ChatId, setToken } from "./Constants"
+import { SetUserId, SetQuesId, IsOnline, ChatId, setToken, AddContact } from "./Constants"
 
 const initialState = {
     UserId: localStorage.getItem("userId") || "",
     QuesId: localStorage.getItem("quesId") || "",
     IsOnline: false,
     ChatId: localStorage.getItem("chatId") || "",
-    Token: localStorage.getItem("auth-token") || ""
+    Token: localStorage.getItem("auth-token") || "",
+    contacts: JSON.parse(localStorage.getItem("contacts")) || [],
 }
 
 const reducers = (state = initialState, action) => {
@@ -22,7 +23,7 @@ const reducers = (state = initialState, action) => {
                 ...state,
                 QuesId: action.payload
             }
-        
+
         case IsOnline:
             return {
                 ...state,
@@ -40,8 +41,16 @@ const reducers = (state = initialState, action) => {
                 ...state,
                 Token: action.payload
             }
+        case AddContact:
+            let contacts = state.contacts;
+            contacts= [...contacts, action.payload];
+            localStorage.setItem("contacts", JSON.stringify(contacts));
+            return {
+                ...state,
+                contacts: contacts
+            }
         default:
-            return state
+            return state;
     }
 }
 

@@ -1,12 +1,13 @@
 import { useState, useRef } from "react";
-import { useContacts } from "../context/ContactProvider.js";
 import { useConversations } from "../context/ConversationProvider.js";
 import { Modal, Form, Button, FormLabel, Row } from "react-bootstrap";
+import { useSelector } from "react-redux";
 
 const ConversationModal = (props) => {
   const { show, setShow } = props;
   const [selectedContactIds, setSelectedContactIds] = useState([])
-  const { contacts } = useContacts()
+  const contacts = useSelector((state) => state.contacts);
+
   const { createConversation } = useConversations();
 
   const idref = useRef();
@@ -39,7 +40,7 @@ const ConversationModal = (props) => {
       animation={true}
     >
       <Modal.Header closeButton>
-        <Modal.Title>Craete Conversations</Modal.Title>
+        <Modal.Title>Create Conversations</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form>

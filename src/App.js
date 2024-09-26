@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import ChatLogin from './components/ChatLogin';
-import { ContactProvider } from './context/ContactProvider';
 import { ConversationsProvider } from './context/ConversationProvider';
 import { SocketProvider } from './context/SocketProvider';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
@@ -30,21 +29,17 @@ const App = () => {
 
   const sideBar = (
     <SocketProvider >
-      <ContactProvider>
         <ConversationsProvider >
           <SideBar  />
         </ConversationsProvider>
-      </ContactProvider>
     </SocketProvider>
   )
 
   const openConversation = (
     <SocketProvider >
-      <ContactProvider>
         <ConversationsProvider >
           <OpenConversation />
         </ConversationsProvider>
-      </ContactProvider>
     </SocketProvider>
   )
 

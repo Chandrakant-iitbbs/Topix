@@ -1,16 +1,17 @@
 import { useRef } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
-import { useContacts } from "../context/ContactProvider";
+import { addContact } from "../Redux/Actions";
+import { useDispatch } from "react-redux";
 
 const ContactModal = (props) => {
   const { show, setShow } = props;
-  const { createContact } = useContacts();
+  const dispatch = useDispatch();
+
   const idref = useRef();
   const nameref = useRef();
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(idref.current.value, nameref.current.value);
-    createContact(idref.current.value, nameref.current.value);
+    dispatch(addContact(idref.current.value, nameref.current.value));
     setShow(false);
   };
 

@@ -1,12 +1,12 @@
-import { useContacts } from "../context/ContactProvider.js";
+import { useSelector } from "react-redux";
 import { ListGroup } from "react-bootstrap"
 
 const Contact = () => {
-const { contacts } = useContacts();
-  return (
+const contacts = useSelector((state) => state.contacts);
+return (
     <ListGroup variant="flush">
-      {contacts.map((contact) => {
-        return <ListGroup.Item key={contact.chatId}>{contact.name}</ListGroup.Item>;
+      {contacts && contacts.map((c) => {
+        return <ListGroup.Item key={c.chatId}>{c.name}</ListGroup.Item>;
       })}
     </ListGroup>
   );

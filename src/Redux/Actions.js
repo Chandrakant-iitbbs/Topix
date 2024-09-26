@@ -1,4 +1,4 @@
-import { SetUserId, SetQuesId, IsOnline, ChatId, SetToken } from "./Constants";
+import { SetUserId, SetQuesId, IsOnline, ChatId, SetToken, AddContact } from "./Constants";
 
 const setUserId = (id) => {
   return {
@@ -36,4 +36,11 @@ const setToken = (token) => {
   };
 } 
 
-export { setUserId, setQuesId, setOnline, setChatId,setToken };
+const addContact = (chatId,name) => {
+  return {
+    type: AddContact,
+    payload: {chatId,name},
+  };
+};
+
+export { setUserId, setQuesId, setOnline, setChatId,setToken, addContact };
