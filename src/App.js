@@ -58,11 +58,12 @@ const App = () => {
           <Route exact path='/about' element={<About />} />
           <Route exact path='/login' element={<Login  />} />
           <Route exact path='/user' element={<User  />} />
+          <Route exact path='/user/editProfile' element={<SignUp edit={true}  />} />
           <Route exact path={`/profile/${UserId}`} element={<Profile />} />
           <Route exact path='/users' element={<Users  />} />
           <Route exact path='/questions' element={<Questions />} />
           <Route exact path={`/question/${QuesId}`} element={<Question />} />
-          <Route exact path="/signup" element={<SignUp  />} />
+          <Route exact path="/signup" element={<SignUp edit={false} />} />
           <Route exact path='/askQues' element={<AskQuestion />} />
           <Route exact path="/chatting" element={id ? sideBar : <ChatLogin />} />
           <Route exact path="/chat" element={openConversation} />

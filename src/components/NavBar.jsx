@@ -20,7 +20,8 @@ const NavBar = () => {
   };
 
   const [dp, setDp] = useState("");
-  const [name, setName] = useState("C");
+  const [name, setName] = useState("A");
+  let data ={};
 
   const getuser = async () => {
     const res = await fetch("http://localhost:5000/api/v1/auth/getuser", {
@@ -31,7 +32,7 @@ const NavBar = () => {
       },
     });
     if (res.status === 200) {
-      const data = await res.json();
+      data = await res.json();
       setName((data.name[0]).toUpperCase());
       if (data.dp) {
         setDp(data.dp);
@@ -41,7 +42,7 @@ const NavBar = () => {
 
   useEffect(() => {
     getuser();
-  }, []);
+  }, [data]);
 
   return (
 

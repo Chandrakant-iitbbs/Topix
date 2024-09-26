@@ -7,7 +7,8 @@ import makeAnimated from "react-select/animated";
 import { Link, useNavigate } from "react-router-dom";
 import showAlert from "../Functions/Alert";
 
-const SignUp = () => {
+const SignUp = (props) => {
+  const { edit } = props;
   const animatedComponents = makeAnimated();
   const [passShow, setPassShow] = useState(false);
   const [info, setInfo] = useState({
@@ -18,6 +19,40 @@ const SignUp = () => {
     upiId: "",
     dp: "",
   });
+  useEffect(() => {
+    if (edit) {
+      getuser();
+    }
+  }, [edit]);
+  const getuser = async () => {
+    const token = localStorage.getItem("auth-token") || "";
+    const data = await fetch("http://localhost:5000/api/v1/auth/getuser", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "auth-header": token,
+      },
+    });
+    const user = await data.json();
+    if (data.status === 200) {
+      setInfo({
+        name: user.name,
+        email: user.email,
+        tags: user.interestedTopics,
+        upiId: user.UPIid,
+        dp: "",
+      });
+    }
+    else if (user.error && (user.error === "Enter the token" || user.error === "Please authenticate using a valid token")) {
+      navigate("/login");
+    }
+    else {
+      showAlert({
+        title: user.error ? user.error : user ? user : "Internal server error",
+        icon: "error",
+      });
+    }
+  };
   const [allTags, setAllTags] = useState([
     "Add a new tag",
     "General",
@@ -126,6 +161,47 @@ const SignUp = () => {
     }
   };
 
+  const handleEdit = async (e) => {
+    e.preventDefault();
+    if (info.tags.length === 0) {
+      setInfo({ ...info, tags: ["General"] });
+    }
+    const token = localStorage.getItem("auth-token") || "";
+    const res = await fetch("http://localhost:5000/api/v1/auth/updateuser", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "auth-header": token,
+      },
+      body: JSON.stringify(
+        {
+          name: info.name,
+          email: info.email,
+          dp: info.dp,
+          UPIid: info.upiId,
+          interestedTopics: info.tags
+        }
+      )
+    });
+    const data = await res.json();
+    if (res.status === 200) {
+      showAlert({
+        title: "User updated successfully",
+        icon: "success",
+      });
+      navigate("/questions");
+    }
+    else if (data.error && (data.error === "Enter the token" || data.error === "Please authenticate using a valid token")) {
+      navigate("/login");
+    }
+    else {
+      showAlert({
+        title: data.error ? data.error : data ? data : "Something went wrong",
+        icon: "error",
+      });
+    }
+  }
+
   useEffect(() => {
     getTags();
   }, []);
@@ -135,9 +211,9 @@ const SignUp = () => {
       style={{
         width: "80%",
         maxWidth: "700px",
-        margin: "auto",
-        marginTop: "6rem",
+        margin: "0 auto",
         padding: "1rem",
+        marginTop: '1rem'
       }}
     >
       <Form style={{ marginBottom: "2rem" }}>
@@ -150,6 +226,7 @@ const SignUp = () => {
               type="text"
               placeholder="Enter your name"
               onChange={(e) => setInfo({ ...info, name: e.target.value })}
+              value={info.name}
             />
           </Col>
         </Form.Group>
@@ -167,11 +244,12 @@ const SignUp = () => {
               type="email"
               placeholder="Enter your email id"
               onChange={(e) => setInfo({ ...info, email: e.target.value })}
+              value={info.email}
             />
           </Col>
         </Form.Group>
 
-        <Form.Group
+        {edit ? null : <Form.Group
           as={Row}
           controlId="formPlaintextPassword"
           style={{ marginBottom: "1rem" }}
@@ -184,6 +262,7 @@ const SignUp = () => {
               type={passShow ? "text" : "password"}
               placeholder="Enter your password"
               onChange={(e) => setInfo({ ...info, password: e.target.value })}
+              value={info.password}
             />
             <img
               src={passShow ? eye2 : eye1}
@@ -197,7 +276,7 @@ const SignUp = () => {
               onClick={() => setPassShow(!passShow)}
             />
           </Col>
-        </Form.Group>
+        </Form.Group>}
 
         <Form.Group as={Row} controlId="tags">
           <Form.Label column sm="2" style={{ marginTop: "-10px" }}>
@@ -217,7 +296,7 @@ const SignUp = () => {
                 if (e.length > 0 && e[e.length - 1].value === "Add a new tag") {
                   let newtag = prompt("Enter your tag");
                   if (newtag === null) {
-                   showAlert({
+                    showAlert({
                       title: "Tag can't be empty",
                       icon: "error",
                     });
@@ -247,6 +326,7 @@ const SignUp = () => {
               onChange={(e) =>
                 setInfo({ ...info, upiId: e.target.value })
               }
+              value={info.upiId}
             />
           </Col>
         </Form.Group>
@@ -260,15 +340,17 @@ const SignUp = () => {
           </Col>
         </Form.Group>
       </Form>
-      <Button
-        variant="primary"
-        type="submit"
-        style={{ width: "100%", marginBottom: "1rem" }}
-        onClick={(e) => HandleSubmit(e)}
-      >
-        Sign up Now
-      </Button>
-      Already have an account? <Link to="/login">Login</Link>
+      {edit ? <Button variant="primary" type="submit" style={{ width: "100%", margin: "0 auto", fontSize: "25px", marginBottom: "1rem" }} onClick={(e) => handleEdit(e)}>Update</Button> : <>
+        <Button
+          variant="primary"
+          type="submit"
+          style={{ width: "100%", marginBottom: "1rem" }}
+          onClick={(e) => HandleSubmit(e)}
+        >
+          Sign up Now
+        </Button>
+        <div>Already have an account? <Link to="/login">Login</Link></div>
+      </>}
     </div>
   );
 };

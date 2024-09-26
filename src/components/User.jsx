@@ -195,11 +195,34 @@ const User = () => {
   }, []);
 
   const handleEdit = () => {
-    console.log("Edit");
+    navigate("/user/editProfile");
   };
 
-  const handleDelete = () => {
-    console.log("Delete");
+  const handleDelete = async() => {
+    const data = await fetch("http://localhost:5000//api/v1/auth/deleteuser", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        "auth-header": token,
+      },
+    });
+    const res = await data.json();
+    if (data.status === 200) {
+      showAlert({
+        title: "You account deleted successfully",
+        icon: "success",
+      });
+      navigate("/questions");
+    } else if (res.error && (res.error === "Enter the token" ||
+      res.error === "Please authenticate using a valid token"
+    )){
+      navigate("/login");
+    } else {
+      showAlert({
+        title: res.error ? res.error : res ? res : "Something went wrong",
+        icon: "error",
+      });
+    }
   };
   const handleChat = () => {
     console.log("Chat");

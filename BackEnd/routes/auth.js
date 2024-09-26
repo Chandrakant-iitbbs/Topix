@@ -14,18 +14,18 @@ router.use(bodyParser.json());
 // ROUTE 1  
 // Creating a user using : post "/api/v1/auth/createuser". No login required
 router.post('/createuser', UserMiddleWare, async (req, res) => {
-    const { name, email, password, dp, UPIid ,interestedTopics } = req.body;
-    try {        
+    const { name, email, password, dp, UPIid, interestedTopics } = req.body;
+    try {
         let user = await User.findOne({ email });
         if (user) {
             return res.status(400).json({ error: "Sorry a User with this email already exists." });
         }
-        let info = {name, email, password,interestedTopics};
-        if(dp){
-            info.dp=dp;
+        let info = { name, email, password, interestedTopics };
+        if (dp) {
+            info.dp = dp;
         }
-        if(UPIid){
-            info.UPIid=UPIid;
+        if (UPIid) {
+            info.UPIid = UPIid;
         }
         user = await User(info);
         user.save();
@@ -38,7 +38,7 @@ router.post('/createuser', UserMiddleWare, async (req, res) => {
         res.status(200).json({ auto_token });
     } catch (error) {
         console.error(error.message);
-        res.status(500).send("Internal server error");
+        res.status(500).json("Internal server error");
     }
 });
 
@@ -67,7 +67,7 @@ router.post('/login', async (req, res) => {
         res.status(200).json({ auto_token });
     } catch (error) {
         console.error(error.message);
-        res.status(500).send("Internal server error");
+        res.status(500).json("Internal server error");
     }
 }
 );
@@ -77,10 +77,10 @@ router.post('/login', async (req, res) => {
 router.get('/getuser', Fetchuser, async (req, res) => {
     try {
         const user = await User.findById(req.user.id).select("-password");
-        res.status(200).send(user);
+        res.status(200).json(user);
     } catch (error) {
         console.error(error.message);
-        res.status(500).send("Internal server error");
+        res.status(500).json("Internal server error");
     }
 }
 )
@@ -108,19 +108,19 @@ router.put('/updateuser', Fetchuser, async (req, res) => {
         if (dp) {
             newUser.dp = dp;
         }
-        if(UPIid){
-            newUser.UPIid= UPIid;
+        if (UPIid) {
+            newUser.UPIid = UPIid;
         }
 
         let user = await User.findById(req.user.id);
         if (!user) {
-            return res.status(404).send("Not Found");
+            return res.status(404).json("Not Found");
         }
         user = await User.findByIdAndUpdate(req.user.id, { $set: newUser }, { new: true });
         res.status(200).json({ user });
     } catch (error) {
         console.error(error.message);
-        res.status(500).send("Internal server error");
+        res.status(500).json("Internal server error");
     }
 }
 );
@@ -129,16 +129,15 @@ router.put('/updateuser', Fetchuser, async (req, res) => {
 // Delete user using : delete "/api/v1/auth/deleteuser". Login required
 router.delete('/deleteuser', Fetchuser, async (req, res) => {
     try {
-        let user = await User.findById(req.user.id
-        );
+        let user = await User.findById(req.user.id);
         if (!user) {
-            return res.status(404).send("Not Found");
+            return res.status(404).json("User not found");
         }
         user = await User.findByIdAndDelete(req.user.id);
-        res.status(200).json({ "Success": "User has been deleted", user: user });
+        res.status(200).json({ user });
     } catch (error) {
         console.error(error.message);
-        res.status(500).send("Internal server error");
+        res.status(500).json("Internal server error");
     }
 }
 );
@@ -148,10 +147,10 @@ router.delete('/deleteuser', Fetchuser, async (req, res) => {
 router.get('/getallusers', Fetchuser, async (req, res) => {
     try {
         const user = await User.find().select("-password");
-        res.status(200).send(user);
+        res.status(200).json(user);
     } catch (error) {
         console.error(error.message);
-        res.status(500).send("Internal server error");
+        res.status(500).json("Internal server error");
     }
 }
 );
@@ -162,10 +161,10 @@ router.get('/getuserbyid/:id', Fetchuser, async (req, res) => {
     try {
         const id = req.params.id;
         const user = await User.findById(id).select("-password");
-        res.status(200).send(user);
+        res.status(200).json(user);
     } catch (error) {
         console.error(error.message);
-        res.status(500).send("Internal server error");
+        res.status(500).json("Internal server error");
     }
 }
 );
@@ -187,13 +186,13 @@ router.put('/updateuserbyid/:id', Fetchuser, async (req, res) => {
         }
         let user = await User.findById(req.params.id);
         if (!user) {
-            return res.status(404).send("Not Found");
+            return res.status(404).json("Not Found");
         }
         user = await User.findByIdAndUpdate(req.params.id, { $set: newUser }, { new: true });
         res.status(200).json({ user });
     } catch (error) {
         console.error(error.message);
-        res.status(500).send("Internal server error");
+        res.status(500).json("Internal server error");
     }
 }
 );
