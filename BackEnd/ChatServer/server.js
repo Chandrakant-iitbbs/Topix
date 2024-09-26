@@ -1,16 +1,18 @@
 const io = require('socket.io')(6006);
 const express = require('express');
 const app = express();
+const cors = require('cors');
+app.use(cors());
 
 io.on('connection', (socket) => {
-    const id = socket.handshake.query.id;
-    socket.join(id);
+    const chatId = socket.handshake.query.chatId;
+    socket.join(chatId);
     socket.on('send-message', ({ recipients, text }) => {
         recipients.forEach(recipient => {
             const newRecipients = recipients.filter(rec => rec !== recipient);
-            newRecipients.push(id);
+            newRecipients.push(chatId);
             socket.broadcast.to(recipient).emit('receive-message', {
-                recipients: newRecipients, sender: id, text
+                recipients: newRecipients, sender: chatId, text
             });
         });
     });

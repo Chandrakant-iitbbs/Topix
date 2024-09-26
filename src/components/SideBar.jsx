@@ -5,9 +5,10 @@ import { Button, Col, Nav, Row, Tab } from "react-bootstrap";
 import ContactModal from "./ContactModal";
 import ConversationModal from "./ConversationModal";
 import copy from "../Assets/clone-regular.svg";
+import { useSelector } from "react-redux";
 
-const SideBar = ({id}) => {
-  
+const SideBar = () => {
+  const chatId = useSelector((state) => state.ChatId);  
   const [isContact, setIsContact] = useState(false);
   const [openModal, setOpenModal] = useState(false);
 
@@ -33,7 +34,7 @@ const SideBar = ({id}) => {
                   <Nav.Link style={{ textAlign: "center" }} eventKey="Contact">
                     Contacts
                   </Nav.Link>
-                  <Contact id={id} />
+                  <Contact chatId={chatId} />
                 </Nav.Item>
               </Col>
             </Row>
@@ -46,8 +47,8 @@ const SideBar = ({id}) => {
               flexWrap:"wrap"
             }}
           >
-            your id : {id}
-            <img src={copy} alt="" width="16px" style={{marginLeft:"10px", cursor:"pointer"}} onClick={()=>navigator.clipboard.writeText(id)}/>
+            your id : {chatId}
+            <img src={copy} alt="" width="16px" style={{marginLeft:"10px", cursor:"pointer"}} onClick={()=>navigator.clipboard.writeText(chatId)}/>
           </div>
           <Button
             variant="primary"

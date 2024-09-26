@@ -1,12 +1,16 @@
 import { useRef } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
+import { useContacts } from "../context/ContactProvider";
 
 const ContactModal = (props) => {
   const { show, setShow } = props;
+  const { createContact } = useContacts();
   const idref = useRef();
   const nameref = useRef();
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log(idref.current.value, nameref.current.value);
+    createContact(idref.current.value, nameref.current.value);
     setShow(false);
   };
 

@@ -8,7 +8,7 @@ const OpenConversation = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     sendMessage(
-      selectedConversation.recipients.map(r => r.id),
+      selectedConversation.recipients.map(r => r.chatId),
       text
     )
     setText('')

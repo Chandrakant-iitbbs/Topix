@@ -10,9 +10,9 @@ export const useContacts=()=> {
 export const ContactProvider = (props)=> {
   const { children } = props;
   const [contacts, setContacts] = useLocalStorage("contacts", []);
-  const createContact = (id, name) => {
+  const createContact = (chatId, name) => {
     setContacts((prevContacts) => {
-      return [...prevContacts, { id, name }];
+      return [...prevContacts, { chatId, name }];
     });
   };
 

@@ -18,14 +18,14 @@ const ConversationModal = (props) => {
     setShow(false);
   };
 
-  const handleCheckBoxChange = (id) => {
+  const handleCheckBoxChange = (chatId) => {
     setSelectedContactIds((prevSelectedContactIds) => {
-      if (prevSelectedContactIds.includes(id)) {
+      if (prevSelectedContactIds.includes(chatId)) {
         return prevSelectedContactIds.filter((prevId) => {
-          return id !== prevId;
+          return chatId !== prevId;
         });
       } else {
-        return [...prevSelectedContactIds, id];
+        return [...prevSelectedContactIds, chatId];
       }
     });
   };
@@ -46,15 +46,15 @@ const ConversationModal = (props) => {
           {contacts.map((contact,index) => (
             <Row key={index} style={{ marginLeft: "20px" }}>
               <FormLabel
-                id={contact.id}
-                onChange={() => handleCheckBoxChange(contact.id)}
+                chatId={contact.chatId}
+                onChange={() => handleCheckBoxChange(contact.chatId)}
                 ref={idref}
               >
                 <Form.Check
                   type={"checkbox"}
-                  id={contact.id}
+                  chatId={contact.chatId}
                   label={contact.name}
-                  value={selectedContactIds.includes(contact.id)}
+                  value={selectedContactIds.includes(contact.chatId)}
                   ref={nameref}
                 />
               </FormLabel>

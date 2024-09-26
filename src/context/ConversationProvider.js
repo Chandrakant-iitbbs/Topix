@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useState } from 'rea
 import useLocalStorage from '../hooks/useLocalStorage.js';
 import { useContacts } from './ContactProvider.js';
 import { useSocket } from './SocketProvider.js';
+import { useSelector } from 'react-redux';
 
 const ConversationContext = createContext();
 
@@ -10,8 +11,9 @@ export const useConversations = () => {
 }
 
 export const ConversationsProvider = (props) => {
-  const { children, id } = props;
+  const { children } = props;
   const socket = useSocket();
+  const chatId = useSelector(state => state.ChatId);
 
   const [conversations, setConversations] = useLocalStorage("conversations", []);
 
@@ -27,19 +29,19 @@ export const ConversationsProvider = (props) => {
   const formattedConversations = conversations.map((conversation, index) => {
     const recipients = conversation.selectedContactIds.map((recipient) => {
       const contact = contacts.find((contact) => {
-        return contact.id === recipient;
+        return contact.chatId === recipient;
       })
       const name = (contact && contact.name) || recipient;
-      return { id: recipient, name }
+      return { chatId: recipient, name }
     });
 
     const message = conversation.message.map((message) => {
       const contact = contacts.find(contact => {
-        return contact.id === message.sender;
+        return contact.chatId === message.sender;
       });
 
       const name = (contact && contact.name) || message.sender;
-      const fromMe = id === message.sender;
+      const fromMe = chatId === message.sender;
       return { ...message, senderName: name, fromMe }
     });
 
@@ -82,7 +84,7 @@ export const ConversationsProvider = (props) => {
 
   const sendMessage = (recipients, text) => {
     socket.emit('send-message', { recipients, text });
-    addMessageToConversation({ recipients, text, sender: id })
+    addMessageToConversation({ recipients, text, sender: chatId })
   }
 
   return (

@@ -22,27 +22,26 @@ const App = () => {
   const UserId = useSelector(state => state.UserId);
   const QuesId = useSelector(state => state.QuesId);
   const dispatch = useDispatch();
-
-  const id = useSelector(state => state.ChatId);
+  const chatId = useSelector(state => state.ChatId);
 
   useEffect(() => {
     dispatch(setOnline(true));
   }, []);
 
   const sideBar = (
-    <SocketProvider id={id}>
+    <SocketProvider >
       <ContactProvider>
-        <ConversationsProvider id={id}>
-          <SideBar id={id} />
+        <ConversationsProvider >
+          <SideBar  />
         </ConversationsProvider>
       </ContactProvider>
     </SocketProvider>
   )
 
   const openConversation = (
-    <SocketProvider id={id}>
+    <SocketProvider >
       <ContactProvider>
-        <ConversationsProvider id={id}>
+        <ConversationsProvider >
           <OpenConversation />
         </ConversationsProvider>
       </ContactProvider>
@@ -65,7 +64,7 @@ const App = () => {
           <Route exact path={`/question/${QuesId}`} element={<Question />} />
           <Route exact path="/signup" element={<SignUp edit={false} />} />
           <Route exact path='/askQues' element={<AskQuestion />} />
-          <Route exact path="/chatting" element={id ? sideBar : <ChatLogin />} />
+          <Route exact path="/chatting" element={chatId ? sideBar : <ChatLogin />} />
           <Route exact path="/chat" element={openConversation} />
         </Routes>
       </Router>

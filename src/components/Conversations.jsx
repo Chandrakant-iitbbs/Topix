@@ -1,11 +1,11 @@
-import {  useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useConversations } from "../context/ConversationProvider.js";
 import { ListGroup } from "react-bootstrap";
 
 
 const Conversations = () => {
   const navigate = useNavigate();
-  const { conversations,setSelectedIndex } = useConversations();
+  const { conversations, setSelectedIndex } = useConversations();
 
   return (
     <ListGroup variant="flush">
@@ -17,10 +17,10 @@ const Conversations = () => {
               setSelectedIndex(index);
               e.preventDefault();
               navigate("/chat");
-              
+
             }}
           >
-             {conversation.recipients
+            {conversation.recipients
               .map((recipient) => recipient.name)
               .join(", ")}
           </ListGroup.Item>
