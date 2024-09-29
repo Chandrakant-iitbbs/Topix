@@ -1,17 +1,29 @@
 import { useState } from "react";
-import { useConversations } from "../context/ConversationProvider";
 import { Form, Button } from "react-bootstrap";
+import { useSelector, useDispatch } from "react-redux";
+import { addMessage } from "../Redux/Actions";
+import { contactNamebyId } from "../Functions/ContactIdToContactName";
 
 const OpenConversation = () => {
-  const [text, setText] = useState('')
-  const { sendMessage , selectedConversation } = useConversations();
+  const [text, setText] = useState('');
+  const ChatIndex = useSelector(state => state.ChatIndex);
+  const conversations = useSelector(state => state.conversations);
+
+  const selectedConversation = conversations.length > 0 ? conversations[ChatIndex] : { ContactIds: [], message: [] };
+
+  const contacts = useSelector(state => state.contacts);
+  const chatId = useSelector(state => state.ChatId);
+  const recipients = selectedConversation.ContactIds;
+
+  const socket = useSelector(state => state.socket);
+  const dispatch = useDispatch();
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    sendMessage(
-      selectedConversation.recipients.map(r => r.chatId),
-      text
-    )
-    setText('')
+    if (text.trim() === '') return
+    socket.emit('send-message', { recipients, text, senderId: chatId });
+    dispatch(addMessage(recipients, text, chatId));
+    setText('');
   };
 
   return (
@@ -30,32 +42,35 @@ const OpenConversation = () => {
           }}
         >
           {selectedConversation.message.map(
-            (message, index) => (
-              <div
-                key={index}
-                style={{
-                  margin: "10px",
-                  padding: "10px",
-                  borderRadius: "10px",
-                  backgroundColor: message.fromMe ? "#2E8B57" : "#D3D3D3",
-                  color: message.fromMe ? "white" : "black",
-                  fontSize: "20px",
-                  alignSelf: message.fromMe ? "flex-end" : "flex-start",
-                  alignItems: message.fromMe ? "end" : "flex-start",
-                }}
-              >
-                {message.text}
+            (message, index) => {
+              const SenderName = contactNamebyId(contacts, message.senderId);
+              return (
                 <div
+                  key={index}
                   style={{
-                    fontSize: "10px",
-                    color: "black",
-                    alignSelf: message.fromMe ? "flex-end" : "flex-start",
+                    margin: "10px",
+                    padding: "10px",
+                    borderRadius: "10px",
+                    backgroundColor: message.senderId === chatId ? "#2E8B57" : "#D3D3D3",
+                    color: message.senderId === chatId ? "white" : "black",
+                    fontSize: "20px",
+                    alignSelf: message.senderId === chatId ? "flex-end" : "flex-start",
+                    alignItems: message.senderId === chatId ? "end" : "flex-start",
                   }}
                 >
-                  {message.fromMe ? "You" : message.senderName}
+                  {message.text}
+                  <div
+                    style={{
+                      fontSize: "10px",
+                      color: "black",
+                      alignSelf: message.senderId === chatId ? "flex-end" : "flex-start",
+                    }}
+                  >
+                    {message.senderId === chatId ? "You" : SenderName}
+                  </div>
                 </div>
-              </div>
-            )
+              )
+            }
           )}
         </div>
       </div>

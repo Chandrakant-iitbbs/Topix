@@ -1,11 +1,13 @@
 import { useNavigate } from "react-router-dom";
-import { useConversations } from "../context/ConversationProvider.js";
 import { ListGroup } from "react-bootstrap";
-
+import { useSelector, useDispatch } from "react-redux";
+import { setChatIndex } from "../Redux/Actions";
 
 const Conversations = () => {
   const navigate = useNavigate();
-  const { conversations, setSelectedIndex } = useConversations();
+  const dispatch = useDispatch();
+  const conversations = useSelector(state => state.conversations);
+  const contacts = useSelector(state => state.contacts);
 
   return (
     <ListGroup variant="flush">
@@ -14,15 +16,15 @@ const Conversations = () => {
           <ListGroup.Item
             key={index}
             onClick={(e) => {
-              setSelectedIndex(index);
               e.preventDefault();
-              navigate("/chat");
-
+              dispatch(setChatIndex(index));
+              navigate("/chat/" + index);
             }}
           >
-            {conversation.recipients
-              .map((recipient) => recipient.name)
-              .join(", ")}
+            {conversation.ContactIds.map((contactId) => {
+              const contact = contacts.find((contact) => contact.chatId === contactId);
+              return (contact && contact.name) || contactId;
+            }).join(", ")}
           </ListGroup.Item>
         );
       })}

@@ -1,4 +1,4 @@
-import { SetUserId, SetQuesId, IsOnline, ChatId, setToken, AddContact } from "./Constants"
+import { SetUserId, SetQuesId, IsOnline, ChatId, setToken, AddContact, AddConversations, ChatIndex, AddMessage, AddSocket } from "./Constants"
 
 const initialState = {
     UserId: localStorage.getItem("userId") || "",
@@ -7,6 +7,9 @@ const initialState = {
     ChatId: localStorage.getItem("chatId") || "",
     Token: localStorage.getItem("auth-token") || "",
     contacts: JSON.parse(localStorage.getItem("contacts")) || [],
+    conversations: JSON.parse(localStorage.getItem("conversations")) || [],
+    ChatIndex: localStorage.getItem("chatIndex") || 0,
+    soket: null
 }
 
 const reducers = (state = initialState, action) => {
@@ -43,15 +46,83 @@ const reducers = (state = initialState, action) => {
             }
         case AddContact:
             let contacts = state.contacts;
-            contacts= [...contacts, action.payload];
+            contacts = [...contacts, action.payload];
             localStorage.setItem("contacts", JSON.stringify(contacts));
             return {
                 ...state,
                 contacts: contacts
             }
+        case AddConversations: {
+            const updatedConversations = [
+                ...state.conversations,
+                {
+                    ContactIds: action.payload.ContactIds,
+                    message: action.payload.message
+                }
+            ];
+            localStorage.setItem("conversations", JSON.stringify(updatedConversations));
+            return {
+                ...state,
+                conversations: updatedConversations
+            };
+        }
+        case ChatIndex:
+            localStorage.setItem("chatIndex", action.payload);
+            return {
+                ...state,
+                ChatIndex: action.payload
+            }
+        case AddMessage:
+            const { recipientIds, text, senderId } = action.payload;
+            let madeChange = false;
+            const newMessage = { senderId, text };
+            const newConversations = state.conversations.map((conversation) => {
+                if (IsArrayEqual(conversation.ContactIds, recipientIds)) {
+                    madeChange = true;
+                    return {
+                        ...conversation,
+                        message: [...conversation.message, newMessage],
+                    };
+                }
+                return conversation;
+            });
+
+            if (madeChange) {
+                localStorage.setItem("conversations", JSON.stringify(newConversations));
+                return { ...state, conversations: newConversations };
+            } else {
+                const newConversations = [
+                    ...state.conversations,
+                    { ContactIds: recipientIds, message: [newMessage] },
+                ];
+                localStorage.setItem(
+                    "conversations",
+                    JSON.stringify(newConversations)
+                );
+
+                return {
+                    ...state,
+                    conversations: newConversations,
+                };
+            }
+        case AddSocket:
+            return {
+                ...state,
+                socket: action.payload
+            }
         default:
             return state;
     }
+}
+
+const IsArrayEqual = (arr1, arr2) => {
+    if (arr1.length !== arr2.length) return false;
+    arr1.sort();
+    arr2.sort();
+    for (let i = 0; i < arr1.length; i++) {
+        if (arr1[i] !== arr2[i]) return false;
+    }
+    return true;
 }
 
 export default reducers;

@@ -1,4 +1,4 @@
-import { SetUserId, SetQuesId, IsOnline, ChatId, SetToken, AddContact } from "./Constants";
+import { SetUserId, SetQuesId, IsOnline, ChatId, SetToken, AddContact, AddConversations, ChatIndex, AddMessage, AddSocket } from "./Constants";
 
 const setUserId = (id) => {
   return {
@@ -34,13 +34,42 @@ const setToken = (token) => {
     type: SetToken,
     payload: token,
   };
-} 
+};
 
-const addContact = (chatId,name) => {
+const addContact = (chatId, name) => {
   return {
     type: AddContact,
-    payload: {chatId,name},
+    payload: { chatId, name },
   };
 };
 
-export { setUserId, setQuesId, setOnline, setChatId,setToken, addContact };
+const addConversations = (ContactIds, message) => {
+  return {
+    type: AddConversations,
+    payload: { ContactIds, message },
+  };
+};
+
+const setChatIndex = (index) => {
+  return {
+    type: ChatIndex,
+    payload: index,
+  };
+};
+
+const addMessage = (recipients, text, chatId) => {
+  return {
+    type: AddMessage,
+    payload: { recipientIds: recipients, text, senderId: chatId },
+  };
+};
+
+const addSocket = (socket) => {
+  return {
+    type: AddSocket,
+    payload: socket,
+  };
+}
+
+
+export { setUserId, setQuesId, setOnline, setChatId, setToken, addContact, addConversations, setChatIndex, addMessage, addSocket };

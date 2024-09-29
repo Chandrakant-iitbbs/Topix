@@ -1,34 +1,33 @@
 import { useState, useRef } from "react";
-import { useConversations } from "../context/ConversationProvider.js";
 import { Modal, Form, Button, FormLabel, Row } from "react-bootstrap";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { addConversations } from "../Redux/Actions.js"
 
 const ConversationModal = (props) => {
   const { show, setShow } = props;
-  const [selectedContactIds, setSelectedContactIds] = useState([])
+  const [contactIds, setContactIds] = useState([])
   const contacts = useSelector((state) => state.contacts);
-
-  const { createConversation } = useConversations();
+  const dispatch = useDispatch();
 
   const idref = useRef();
   const nameref = useRef();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    createConversation(selectedContactIds)
-    setShow(false);
-  };
-
   const handleCheckBoxChange = (chatId) => {
-    setSelectedContactIds((prevSelectedContactIds) => {
-      if (prevSelectedContactIds.includes(chatId)) {
-        return prevSelectedContactIds.filter((prevId) => {
+    setContactIds((prevContactIds) => {
+      if (prevContactIds.includes(chatId)) {
+        return prevContactIds.filter((prevId) => {
           return chatId !== prevId;
         });
       } else {
-        return [...prevSelectedContactIds, chatId];
+        return [...prevContactIds, chatId];
       }
     });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    dispatch(addConversations(contactIds, []))
+    setShow(false);
   };
 
   return (
@@ -44,7 +43,7 @@ const ConversationModal = (props) => {
       </Modal.Header>
       <Modal.Body>
         <Form>
-          {contacts.map((contact,index) => (
+          {contacts.map((contact, index) => (
             <Row key={index} style={{ marginLeft: "20px" }}>
               <FormLabel
                 chatId={contact.chatId}
@@ -55,7 +54,7 @@ const ConversationModal = (props) => {
                   type={"checkbox"}
                   chatId={contact.chatId}
                   label={contact.name}
-                  value={selectedContactIds.includes(contact.chatId)}
+                  value={contactIds.includes(contact.chatId)}
                   ref={nameref}
                 />
               </FormLabel>
@@ -67,7 +66,7 @@ const ConversationModal = (props) => {
         <Button variant="secondary" onClick={() => setShow(false)}>
           Close
         </Button>
-        <Button variant="primary" onClick={handleSubmit}>
+        <Button variant="primary" onClick={(e) => handleSubmit(e)}>
           Create New
         </Button>
       </Modal.Footer>

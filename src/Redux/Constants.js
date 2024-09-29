@@ -4,6 +4,11 @@ const IsOnline = "IsOnline";
 const ChatId = "ChatId";
 const SetToken = "SetToken";
 const AddContact = "AddContact";
+const AddConversations = "AddConversations";
+const ChatIndex = "ChatIndex";
+const AddMessage = "AddMessage";
+const ReceiveMessage = "ReceiveMessage";
+const AddSocket = "AddSocket";
 
 module.exports = {
   SetUserId,
@@ -11,5 +16,10 @@ module.exports = {
   IsOnline,
   ChatId,
   SetToken,
-  AddContact
+  AddContact,
+  AddConversations,
+  ChatIndex,
+  AddMessage,
+  ReceiveMessage,
+  AddSocket
 };
