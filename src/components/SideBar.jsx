@@ -6,9 +6,10 @@ import ContactModal from "./ContactModal";
 import ConversationModal from "./ConversationModal";
 import copy from "../Assets/clone-regular.svg";
 import { useSelector } from "react-redux";
+import showAlert from "../Functions/Alert";
 
 const SideBar = () => {
-  const chatId = useSelector((state) => state.ChatId);  
+  const chatId = useSelector((state) => state.ChatId);
   const [isContact, setIsContact] = useState(false);
   const [openModal, setOpenModal] = useState(false);
 
@@ -44,11 +45,15 @@ const SideBar = () => {
               display: "flex",
               justifyContent: "center",
               marginTop: "20px",
-              flexWrap:"wrap"
+              flexWrap: "wrap"
             }}
           >
-            your id : {chatId}
-            <img src={copy} alt="" width="16px" style={{marginLeft:"10px", cursor:"pointer"}} onClick={()=>navigator.clipboard.writeText(chatId)}/>
+            your's chat id : {chatId}
+            <img src={copy} alt="" width="16px" style={{ marginLeft: "10px", cursor: "pointer" }} onClick={() => {
+              navigator.clipboard.writeText(chatId);
+              showAlert({title:"Your ID has been copied to the clipboard", icon:"success"});
+            }
+            } />
           </div>
           <Button
             variant="primary"

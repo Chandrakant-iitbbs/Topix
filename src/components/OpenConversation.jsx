@@ -3,6 +3,8 @@ import { Form, Button } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
 import { addMessage } from "../Redux/Actions";
 import { contactNamebyId } from "../Functions/ContactIdToContactName";
+import copy from "../Assets/clone-regular.svg";
+import showAlert from "../Functions/Alert";
 
 const OpenConversation = () => {
   const [text, setText] = useState('');
@@ -66,7 +68,14 @@ const OpenConversation = () => {
                       alignSelf: message.senderId === chatId ? "flex-end" : "flex-start",
                     }}
                   >
-                    {message.senderId === chatId ? "You" : SenderName}
+                    {message.senderId === chatId ? "You" : <div>
+                      {SenderName}
+                      {SenderName === message.senderId ? <img src={copy} alt ="" width="16px" style={{ marginLeft: "10px", cursor: "pointer" }} onClick={() => {
+                        navigator.clipboard.writeText(SenderName);
+                        showAlert({ title: "Id Copied", icon: "success" });
+                      }} />:null
+                      }
+                    </div> }
                   </div>
                 </div>
               )
