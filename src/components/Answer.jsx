@@ -8,6 +8,8 @@ import { Button } from "react-bootstrap";
 import { addContact, addConversations, SetPaymentInfo } from "../Redux/Actions";
 
 const Answer = (props) => {
+  const { ans, rewardPrice, askedUserId } = props;
+
   const dispatch = useDispatch();
   const token = localStorage.getItem("auth-token") || "";
   const navigate = useNavigate();
@@ -15,11 +17,12 @@ const Answer = (props) => {
     navigate("/login");
   }
 
-  let { ans, rewardPrice } = props;
   const [name, setName] = useState("Anonymous");
   const [ChatId, setChatId] = useState("");
   const [UPI_Id, setUPI_Id] = useState("");
   const [votes, setVotes] = useState(ans.upVotes.length - ans.downVotes.length);
+  const personalObjectId = useSelector((state) => state.personalObjectId);
+
 
   const getUserName = async () => {
     const data = await fetch(
@@ -48,6 +51,39 @@ const Answer = (props) => {
     }
   };
 
+  const handleBestAnswerClick = async (e, id, userid) => {
+    e.preventDefault();
+    const data = await fetch(
+      "http://localhost:5000/api/v1/auth/bestanswer",
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "auth-header": token,
+        },
+        body: JSON.stringify({ answerId: id, answeredPersonId: userid })
+      }
+    );
+    const ans = await data.json();
+    if (data.status === 200) {
+      showAlert({
+        title: "Best Answer Selected",
+        icon: "success",
+      });
+    } else if (
+      ans.error === "Enter the token" ||
+      ans.error === "Please authenticate using a valid token"
+    ) {
+      navigate("/login");
+    } else {
+      showAlert({
+        title: ans.error ? ans.error : ans ? ans : "Something went wrong",
+        icon: "error",
+      });
+    }
+
+  }
+
   const contacts = useSelector((state) => state.contacts);
   const handleChat = () => {
     const contact = contacts.find((contact) => contact.chatId === ChatId);
@@ -62,7 +98,7 @@ const Answer = (props) => {
     }
   };
 
-  const handlePayment = () => {    
+  const handlePayment = () => {
     dispatch(SetPaymentInfo({
       UPI_Id: UPI_Id,
       Amount: rewardPrice
@@ -153,32 +189,35 @@ const Answer = (props) => {
       >
         <i
           className="fa-regular fa-thumbs-up"
-          style={{ fontSize: "1.6rem", margin: "auto" }}
+          style={{ fontSize: `${askedUserId === personalObjectId ? "1rem" : "1.5rem"}`, margin: "auto" }}
           onClick={() => upVote(ans._id)}
         ></i>
         <div style={{ textAlign: "center" }}>{votes}</div>
         <i
           className="fa-regular fa-thumbs-down"
-          style={{ fontSize: "1.6rem", margin: "auto" }}
+          style={{ fontSize: `${askedUserId === personalObjectId ? "1rem" : "1.5rem"}`, margin: "auto" }}
           onClick={() => downVote(ans._id)}
         ></i>
+        {
+          askedUserId === personalObjectId ? <i class="fa-regular fa-heart" style={{ margin: 'auto', fontSize: "1.2rem" }} onClick={(e) => handleBestAnswerClick(e, ans._id, ans.user)}></i> : null
+        }
       </div>
       <div style={{ width: "94%", paddingLeft: "20px" }}>
         <div>
           {<HtmlToText html={ans.answer} index={ans._id} isfull={true} />}
         </div>
-        <div style={{ marginTop: "1rem", display:"flex", justifyContent:"space-between"}}>
-          <div style={{justifyContent:"center", display:'flex'}}>
-          <div style={{margin:"0 1rem"}}> 
-            <Button variant="primary" onClick={() => {
-              handleChat();
-            }}>Chat with {name}</Button>
+        <div style={{ marginTop: "1rem", display: "flex", justifyContent: "space-between" }}>
+          <div style={{ justifyContent: "center", display: 'flex' }}>
+            <div style={{ margin: "0 1rem" }}>
+              <Button variant="primary" onClick={() => {
+                handleChat();
+              }}>Chat with {name}</Button>
+            </div>
+            <div style={{ margin: "0 1rem" }}>
+              <Button variant="primary" onClick={() => handlePayment()}>Pay to {name}</Button>
+            </div>
           </div>
-          <div style={{margin:"0 1rem"}}>
-            <Button variant="primary" onClick={() => handlePayment()}>Pay to {name}</Button>
-          </div>
-          </div>
-          <div style={{width:"full", display:'flex',margin:"0 1rem"}}>
+          <div style={{ width: "full", display: 'flex', margin: "0 1rem" }}>
             Answered : {getTimeDifference(ans.date)} by {name}
           </div>
 

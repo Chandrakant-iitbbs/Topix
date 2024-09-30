@@ -4,50 +4,53 @@ const bcrypt = require('bcryptjs');
 const saltRounds = 10
 
 const UserSchema = new Schema({
-    name:{
+    name: {
         type: String,
         required: true,
     },
-    email:{
-        type : String,
-        required : true,
-        unique:true
+    email: {
+        type: String,
+        required: true,
+        unique: true
     },
-    password:{
-        type : String,
-        required : true,
+    password: {
+        type: String,
+        required: true,
     },
-    interestedTopics:{
-        type : [String],
-    } ,
-    date:{
-        type : Date,
-        default : Date.now
+    interestedTopics: {
+        type: [String],
     },
-    questionsAsked:{
-        type : Number,
-        default : 0
+    date: {
+        type: Date,
+        default: Date.now
     },
-    questionsAnswered:{
-        type : Number,
-        default : 0
+    questionsAsked: {
+        type: Number,
+        default: 0
     },
-    totalLikes:{
-        type : Number,
-        default : 0
+    questionsAnswered: {
+        type: Number,
+        default: 0
     },
-    dp:{
-        type:String
+    totalLikes: {
+        type: Number,
+        default: 0
     },
-    UPIid:{
-        type : String
+    dp: {
+        type: String
     },
-    ChatId:{
-        type : String
-    }
+    UPIid: {
+        type: String
+    },
+    ChatId: {
+        type: String
+    },
+    BestAnswers: [
+        { type: mongoose.Schema.Types.ObjectId, ref: 'answer' }
+    ],
 });
 
-UserSchema.pre('save',async function (next) {
+UserSchema.pre('save', async function (next) {
     try {
         const salt = await bcrypt.genSalt(saltRounds);
         const hash = await bcrypt.hash(this.password, salt);
@@ -56,7 +59,7 @@ UserSchema.pre('save',async function (next) {
     } catch (error) {
         next(error);
     }
-}); 
+});
 
-const User = mongoose.model("user",UserSchema)   
+const User = mongoose.model("user", UserSchema)
 module.exports = User;

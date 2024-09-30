@@ -1,4 +1,4 @@
-import { SetUserId, SetQuesId, ChatId, SetToken, AddContact, AddConversations, ChatIndex, AddMessage, AddSocket,PaymentInfo } from "./Constants";
+import { SetUserId, SetQuesId, ChatId, SetToken, AddContact, AddConversations, ChatIndex, AddMessage, AddSocket, PaymentInfo, PersonalObjectId } from "./Constants";
 
 const setUserId = (id) => {
   return {
@@ -72,5 +72,12 @@ const SetPaymentInfo = (paymentInfo) => {
   };
 }
 
+const setPersonalObjectId = (id) => {
+  return {
+    type: PersonalObjectId,
+    payload: id,
+  };
+}
 
-export { setUserId, setQuesId, setChatId, setToken, addContact, addConversations, setChatIndex, addMessage, addSocket,SetPaymentInfo };
+
+export { setUserId, setQuesId, setChatId, setToken, addContact, addConversations, setChatIndex, addMessage, addSocket, SetPaymentInfo, setPersonalObjectId };

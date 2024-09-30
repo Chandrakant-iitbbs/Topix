@@ -2,9 +2,12 @@ import { Navbar, Nav, Button, Image, Col, Form, Row } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../logo.svg";
 import { useEffect, useState } from "react";
+import { setPersonalObjectId } from "../Redux/Actions";
+import { useDispatch } from "react-redux";
 
 const NavBar = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [search, setSearch] = useState("");
   const token = localStorage.getItem("auth-token") || "";
   const handleSearch = (e) => {
@@ -16,12 +19,12 @@ const NavBar = () => {
   const handleLogOut = (e) => {
     e.preventDefault();
     localStorage.removeItem("auth-token");
-    navigate("/")
+    navigate("/about");
   };
 
   const [dp, setDp] = useState("");
   const [name, setName] = useState("A");
-  let data ={};
+  let data = {};
 
   const getuser = async () => {
     const res = await fetch("http://localhost:5000/api/v1/auth/getuser", {
@@ -33,7 +36,8 @@ const NavBar = () => {
     });
     if (res.status === 200) {
       data = await res.json();
-      if(data && data.name){
+      dispatch(setPersonalObjectId(data._id));
+      if (data && data.name) {
         setName((data.name[0]).toUpperCase());
       }
       if (data.dp) {
@@ -46,19 +50,23 @@ const NavBar = () => {
     getuser();
   }, [data]);
 
+  useEffect(() => {
+    getuser();
+  }, []);
+
   return (
 
     <div style={{
       width: "100%", padding: "16px"
     }}>
-      {token?<Navbar
+      {token ? <Navbar
         collapseOnSelect
         expand="md"
         className="bg-body-tertiary"
         width="100%"
         style={{ padding: "0px" }}
       >
-      <Col style={{ minWidth: "140px", paddingLeft: 0 }}>
+        <Col style={{ minWidth: "140px", paddingLeft: 0 }}>
           <Image
             src={logo}
             alt="logo"
@@ -144,7 +152,7 @@ const NavBar = () => {
             </Nav>
           </Col>
           <Col>
-            <Form className="d-flex"  onSubmit={(e) => {
+            <Form className="d-flex" onSubmit={(e) => {
               handleSearch(e);
             }}>
               <Form.Control
@@ -159,14 +167,14 @@ const NavBar = () => {
             </Form>
           </Col>
 
-          <Col sm={2} style={{ minWidth: "150px", cursor: "pointer", alignItems: "center", display: "flex" , paddingLeft:0, justifyContent:"center"}} onClick={() => navigate("/user")}>
+          <Col sm={2} style={{ minWidth: "150px", cursor: "pointer", alignItems: "center", display: "flex", paddingLeft: 0, justifyContent: "center" }} onClick={() => navigate("/user")}>
             {dp ? (
               <Image
                 src={`data:image/jpeg;base64,${dp}`}
                 roundedCircle
                 width={35}
                 height={35}
-                style={{ marginLeft: "10px", marginRight: "10px", display:"flex" }}
+                style={{ marginLeft: "10px", marginRight: "10px", display: "flex" }}
               />
             ) : (
               <span
@@ -189,62 +197,62 @@ const NavBar = () => {
             </Button>
           </Col>
         </Navbar.Collapse>
-      </Navbar>:<Navbar
-      collapseOnSelect
-      expand="sm"
-      className="bg-body-tertiary"
-      style={{ justifyItems: "center" }}
-    >
-      <Col sm={2} style={{ minWidth: "200px" }}>
-        <Image
-          src={logo}
-          alt="logo"
-          width="50"
-          height="50"
-          onClick={() => navigate("/")}
-        />
-        <Link
-          to="/"
-          style={{
-            color: "black",
-            fontSize: "30px",
-            cursor: "pointer",
-            textDecoration: "none",
-          }}
-        >
-          Topix
-        </Link>
-      </Col>
-      <Navbar.Collapse
-        id="responsive-navbar-nav"
-        style={{ width: "100%", display: "flex", justifyContent: "end" }}
+      </Navbar> : <Navbar
+        collapseOnSelect
+        expand="sm"
+        className="bg-body-tertiary"
+        style={{ justifyItems: "center" }}
       >
-        <Col
-          sm={3}
-          style={{
-            minWidth: "250px",
-            marginRight: "10px",
-            display: "flex",
-            justifyContent: "flex-end",
-          }}
-        >
-          <Button
-            variant="primary"
-            style={{ height: "40px", margin: "auto" }}
-            onClick={() => navigate("/login")}
+        <Col sm={2} style={{ minWidth: "200px" }}>
+          <Image
+            src={logo}
+            alt="logo"
+            width="50"
+            height="50"
+            onClick={() => navigate("/")}
+          />
+          <Link
+            to="/"
+            style={{
+              color: "black",
+              fontSize: "30px",
+              cursor: "pointer",
+              textDecoration: "none",
+            }}
           >
-            Login
-          </Button>
-          <Button
-            variant="primary"
-            style={{ height: "40px", margin: "auto" }}
-            onClick={() => navigate("/signup")}
-          >
-            Sign up
-          </Button>
+            Topix
+          </Link>
         </Col>
-      </Navbar.Collapse>
-    </Navbar>}
+        <Navbar.Collapse
+          id="responsive-navbar-nav"
+          style={{ width: "100%", display: "flex", justifyContent: "end" }}
+        >
+          <Col
+            sm={3}
+            style={{
+              minWidth: "250px",
+              marginRight: "10px",
+              display: "flex",
+              justifyContent: "flex-end",
+            }}
+          >
+            <Button
+              variant="primary"
+              style={{ height: "40px", margin: "auto" }}
+              onClick={() => navigate("/login")}
+            >
+              Login
+            </Button>
+            <Button
+              variant="primary"
+              style={{ height: "40px", margin: "auto" }}
+              onClick={() => navigate("/signup")}
+            >
+              Sign up
+            </Button>
+          </Col>
+        </Navbar.Collapse>
+      </Navbar>}
     </div>
   );
 };

@@ -21,6 +21,7 @@ const Question = () => {
   const [addAnswer, setAddAnswer] = useState("");
   const isWrap = window.innerWidth < 900;
   const [ChatId, setChatId] = useState("");
+  const [askedUserId, setAskedUserId] = useState("");
 
   const getUserName = async (user) => {
     const data = await fetch(
@@ -37,6 +38,7 @@ const Question = () => {
     if (data.status === 200) {
       setName(res.name);
       setChatId(res.ChatId);
+      setAskedUserId(res._id);
     } else if (res.error && (res.error === "Enter the token" || res.error === "Please authenticate using a valid token")) {
       navigate("/login");
     } else {
@@ -268,7 +270,7 @@ const Question = () => {
           <div>
             <h2>Answers</h2>
             {answers.map((ans, index) => {
-              return <Answer ans={ans} key={index} rewardPrice={ques.rewardPrice} />;
+              return <Answer ans={ans} key={index} rewardPrice={ques.rewardPrice} askedUserId={askedUserId} />;
             })}
           </div>
         ) : (

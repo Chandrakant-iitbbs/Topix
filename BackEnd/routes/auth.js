@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
+const Answer = require('../models/Answer');
 const bodyParser = require('body-parser');
 const UserMiddleWare = require('../middleWare/UserMiddleWare');
 
@@ -9,7 +10,6 @@ const jwt = require('jsonwebtoken');
 const Fetchuser = require('../middleWare/FetchUser');
 const JWT_secret = "CK@K@nt";
 const { v4 } = require('uuid');
-
 router.use(bodyParser.json());
 
 // ROUTE 1  
@@ -28,7 +28,7 @@ router.post('/createuser', UserMiddleWare, async (req, res) => {
         if (UPIid) {
             info.UPIid = UPIid;
         }
-        info.ChatId= v4();
+        info.ChatId = v4();
         user = await User(info);
         user.save();
         const data = {
@@ -198,6 +198,35 @@ router.put('/updateuserbyid/:id', Fetchuser, async (req, res) => {
     }
 }
 );
+
+// ROUTE 9
+// Add best answer using : put "/api/v1/auth/bestanswer". Login required
+router.put('/bestanswer', Fetchuser, async (req, res) => {
+    try {
+        const { answerId, answeredPersonId } = req.body;
+
+        let ans = await Answer.findById(answerId);
+        if (!ans) {
+            return res.status(404).json("Answer not found");
+        }
+
+        let user = await User.findById(answeredPersonId);
+        if (!user) {
+            return res.status(404).json("User not found");
+        }
+        if (user.BestAnswers.includes(answerId)) {
+            return res.status(400).json("You already selected this answer as best answer");
+        }
+        user.BestAnswers.push(answerId);
+        user = await User.findByIdAndUpdate(answeredPersonId, { $set: user }, { new: true });
+        res.status(200).json(user);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json("Internal server error");
+    }
+}
+);
+
 
 
 module.exports = router

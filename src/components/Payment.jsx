@@ -2,11 +2,14 @@ import copy from '../Assets/clone-regular.svg';
 import showAlert from '../Functions/Alert';
 import { useSelector } from 'react-redux';
 import { QRCodeSVG } from 'qrcode.react'
-
+import { Button } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 const Payment = () => {
+    const Navigate = useNavigate();
     const UPI_Id = useSelector((state) => state.paymentInfo.UPI_Id);
     const Amount = useSelector((state) => state.paymentInfo.Amount);
-    if(!UPI_Id){
+    const quesId = useSelector((state) => state.QuesId);
+    if (!UPI_Id) {
         showAlert({
             title: "Please set UPI Id",
             icon: "error"
@@ -35,6 +38,17 @@ const Payment = () => {
                         navigator.clipboard.writeText(UPI_Id);
                         showAlert({ title: "UPI Id copied to clipboard", icon: "success" });
                     }} />
+                </div>
+                <div>
+                    <Button variant="primary" style={{ margin: "1rem auto", display: "flex", justifyContent: "center" }} onClick={(e) => {
+                        e.preventDefault();
+                        if (quesId) {
+                            Navigate(`/question/${quesId}`)
+                        }
+                        else {
+                            Navigate("/questions")
+                        }
+                    }}> Go {quesId ? "back to question" : "to questions"}</Button>
                 </div>
             </div>
         </div>
