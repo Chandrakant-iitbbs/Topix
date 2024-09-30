@@ -1,20 +1,24 @@
 import { useEffect, useState } from "react";
 import HtmlToText from "./HtmlToText";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import {getTimeDifference} from "../Functions/GetTime";
+import { useSelector, useDispatch } from "react-redux";
+import { getTimeDifference } from "../Functions/GetTime";
 import showAlert from "../Functions/Alert";
+import { Button } from "react-bootstrap";
+import { addContact, addConversations, SetPaymentInfo } from "../Redux/Actions";
 
 const Answer = (props) => {
+  const dispatch = useDispatch();
   const token = localStorage.getItem("auth-token") || "";
   const navigate = useNavigate();
   if (!token || token === "") {
     navigate("/login");
   }
 
-  let { ans } = props;
-
+  let { ans, rewardPrice } = props;
   const [name, setName] = useState("Anonymous");
+  const [ChatId, setChatId] = useState("");
+  const [UPI_Id, setUPI_Id] = useState("");
   const [votes, setVotes] = useState(ans.upVotes.length - ans.downVotes.length);
 
   const getUserName = async () => {
@@ -31,6 +35,8 @@ const Answer = (props) => {
     const user = await data.json();
     if (data.status === 200) {
       setName(user.name);
+      setChatId(user.ChatId);
+      setUPI_Id(user.UPIid);
     } else if (user.error && (user.error === "Enter the token" || user.error === "Please authenticate using a valid token")
     ) {
       navigate("/login");
@@ -40,6 +46,28 @@ const Answer = (props) => {
         icon: "error",
       });
     }
+  };
+
+  const contacts = useSelector((state) => state.contacts);
+  const handleChat = () => {
+    const contact = contacts.find((contact) => contact.chatId === ChatId);
+    if (contact) {
+      navigate("/chatting");
+      return;
+    }
+    else {
+      dispatch(addContact(ChatId, name));
+      dispatch(addConversations([ChatId], []));
+      navigate("/chatting");
+    }
+  };
+
+  const handlePayment = () => {    
+    dispatch(SetPaymentInfo({
+      UPI_Id: UPI_Id,
+      Amount: rewardPrice
+    }))
+    navigate("/payment");
   };
 
   useEffect(() => {
@@ -60,7 +88,7 @@ const Answer = (props) => {
     const ans = await data.json();
     if (data.status === 200) {
       setVotes(ans);
-    }  else if (
+    } else if (
       ans.error === "Enter the token" ||
       ans.error === "Please authenticate using a valid token"
     ) {
@@ -88,7 +116,7 @@ const Answer = (props) => {
     if (data.status === 200) {
       setVotes(ans);
       return;
-    }  else if (
+    } else if (
       ans.error === "Enter the token" ||
       ans.error === "Please authenticate using a valid token"
     ) {
@@ -139,9 +167,21 @@ const Answer = (props) => {
         <div>
           {<HtmlToText html={ans.answer} index={ans._id} isfull={true} />}
         </div>
-        <div style={{ marginTop: "1rem" }}>
-          {" "}
-          Answered : {getTimeDifference(ans.date)} by {name}
+        <div style={{ marginTop: "1rem", display:"flex", justifyContent:"space-between"}}>
+          <div style={{justifyContent:"center", display:'flex'}}>
+          <div style={{margin:"0 1rem"}}> 
+            <Button variant="primary" onClick={() => {
+              handleChat();
+            }}>Chat with {name}</Button>
+          </div>
+          <div style={{margin:"0 1rem"}}>
+            <Button variant="primary" onClick={() => handlePayment()}>Pay to {name}</Button>
+          </div>
+          </div>
+          <div style={{width:"full", display:'flex',margin:"0 1rem"}}>
+            Answered : {getTimeDifference(ans.date)} by {name}
+          </div>
+
         </div>
       </div>
     </div>

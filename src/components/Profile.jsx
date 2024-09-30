@@ -3,7 +3,7 @@ import { Button, Row, Col, Image, Card } from "react-bootstrap";
 import HtmlToText from "./HtmlToText";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { addConversations, setQuesId } from "../Redux/Actions";
+import { addConversations, setQuesId, SetPaymentInfo } from "../Redux/Actions";
 import showAlert from "../Functions/Alert";
 import { getMembershipTime } from "../Functions/GetTime";
 import { getStars } from "../Functions/GetStars";
@@ -193,7 +193,8 @@ const Profile = () => {
     }
   };
   const handlePayment = () => {
-    console.log("Payment");
+    dispatch(SetPaymentInfo({ UPI_Id: user.UPIid }));
+    navigate("/payment");
   };
 
   const handleQuestionClick = (id) => {

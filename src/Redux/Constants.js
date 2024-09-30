@@ -9,6 +9,7 @@ const ChatIndex = "ChatIndex";
 const AddMessage = "AddMessage";
 const ReceiveMessage = "ReceiveMessage";
 const AddSocket = "AddSocket";
+const PaymentInfo = "PaymentInfo";
 
 module.exports = {
   SetUserId,
@@ -21,5 +22,6 @@ module.exports = {
   ChatIndex,
   AddMessage,
   ReceiveMessage,
-  AddSocket
+  AddSocket,
+  PaymentInfo
 };

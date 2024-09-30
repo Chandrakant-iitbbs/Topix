@@ -16,6 +16,7 @@ import Profile from './components/Profile';
 import { useSelector, useDispatch } from "react-redux";
 import { addSocket, addMessage } from "./Redux/Actions"
 import io from 'socket.io-client';
+import Payment from './components/Payment';
 
 const App = () => {
   const UserId = useSelector(state => state.UserId);
@@ -24,7 +25,6 @@ const App = () => {
   const dispatch = useDispatch();
   const chatId = useSelector(state => state.ChatId);
   const chatIndex = useSelector(state => state.ChatIndex);
-
   useEffect(() => {
     const newSocket = io('http://localhost:6006', { transports: ['websocket'], query: { chatId } });
     dispatch(addSocket(newSocket));
@@ -46,6 +46,7 @@ const App = () => {
       <Router>
         <NavBar />
         <Routes>
+          <Route exact path='/payment' element={<Payment  />} />
           <Route exact path="/" element={<About />} />
           <Route exact path='/about' element={<About />} />
           <Route exact path='/login' element={<Login />} />

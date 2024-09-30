@@ -3,12 +3,14 @@ import JoditEditor from "jodit-react";
 import { Button } from "react-bootstrap";
 import Answer from "./Answer";
 import HtmlToText from "./HtmlToText";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import {getTimeDifference} from "../Functions/GetTime";
+import { getTimeDifference } from "../Functions/GetTime";
 import showAlert from "../Functions/Alert";
+import { addContact, addConversations } from "../Redux/Actions";
 
 const Question = () => {
+  const dispatch = useDispatch();
 
   const id = useSelector((state) => state.QuesId);
   const token = localStorage.getItem("auth-token") || "";
@@ -18,6 +20,7 @@ const Question = () => {
   const [name, setName] = useState("Anonymous");
   const [addAnswer, setAddAnswer] = useState("");
   const isWrap = window.innerWidth < 900;
+  const [ChatId, setChatId] = useState("");
 
   const getUserName = async (user) => {
     const data = await fetch(
@@ -33,11 +36,12 @@ const Question = () => {
     const res = await data.json();
     if (data.status === 200) {
       setName(res.name);
+      setChatId(res.ChatId);
     } else if (res.error && (res.error === "Enter the token" || res.error === "Please authenticate using a valid token")) {
       navigate("/login");
     } else {
-      showAlert ({
-        title: res.error ? res.error: res ? res : "Internal server error",
+      showAlert({
+        title: res.error ? res.error : res ? res : "Internal server error",
         icon: "error",
       });
     }
@@ -52,9 +56,9 @@ const Question = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     let plainText = htmlToPlainText(addAnswer);
-    plainText = plainText.replace(/\s/g, "").trim();  
-    if(plainText === "" ) {
-     showAlert({
+    plainText = plainText.replace(/\s/g, "").trim();
+    if (plainText === "") {
+      showAlert({
         title: "Answer can not be empty",
         icon: "error",
       });
@@ -76,7 +80,7 @@ const Question = () => {
     );
     const a = await res.json();
     if (res.status === 200) {
-     showAlert({
+      showAlert({
         title: "Answer added successfully",
         icon: "success",
       });
@@ -158,6 +162,20 @@ const Question = () => {
     }
   };
 
+  const contacts = useSelector((state) => state.contacts);
+  const handleChat = () => {
+    const contact = contacts.find((contact) => contact.chatId === ChatId);
+    if (contact) {
+      navigate("/chatting");
+      return;
+    }
+    else {
+      dispatch(addContact(ChatId, name));
+      dispatch(addConversations([ChatId], []));
+      navigate("/chatting");
+    }
+  };
+
   useEffect(() => {
     fetchQuestion();
     fetchAnswers();
@@ -211,6 +229,13 @@ const Question = () => {
             >
               Asked : {getTimeDifference(ques.date)} by {name}
             </div>
+            <div>
+              <Button onClick={() => {
+                handleChat();
+              }}>
+                Chat with {name}
+              </Button>
+            </div>
           </div>
           <hr></hr>
           <div style={{ textWrap: "wrap", margin: "1rem 0" }}>
@@ -227,7 +252,7 @@ const Question = () => {
                   backgroundColor: "#d3d3d3",
                 }}
               >
-                {tag}{" "}
+                {tag}
               </span>
             ))}
           </div>
@@ -243,7 +268,7 @@ const Question = () => {
           <div>
             <h2>Answers</h2>
             {answers.map((ans, index) => {
-              return <Answer ans={ans} key={index} />;
+              return <Answer ans={ans} key={index} rewardPrice={ques.rewardPrice} />;
             })}
           </div>
         ) : (

@@ -1,4 +1,4 @@
-import { SetUserId, SetQuesId, ChatId, setToken, AddContact, AddConversations, ChatIndex, AddMessage, AddSocket } from "./Constants"
+import { SetUserId, SetQuesId, ChatId, setToken, AddContact, AddConversations, ChatIndex, AddMessage, AddSocket, PaymentInfo } from "./Constants"
 
 const initialState = {
     UserId: localStorage.getItem("userId") || "",
@@ -8,7 +8,11 @@ const initialState = {
     contacts: JSON.parse(localStorage.getItem("contacts")) || [],
     conversations: JSON.parse(localStorage.getItem("conversations")) || [],
     ChatIndex: localStorage.getItem("chatIndex") || 0,
-    soket: null
+    soket: null,
+    paymentInfo: {
+        UPI_Id: "",
+        Amount: ""
+    }
 }
 
 const reducers = (state = initialState, action) => {
@@ -102,6 +106,14 @@ const reducers = (state = initialState, action) => {
             return {
                 ...state,
                 socket: action.payload
+            }
+        case PaymentInfo:
+            return {
+                ...state,
+                paymentInfo: {
+                    UPI_Id: action.payload.UPI_Id,
+                    Amount: action.payload.Amount
+                }
             }
         default:
             return state;
