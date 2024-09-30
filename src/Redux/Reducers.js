@@ -1,9 +1,8 @@
-import { SetUserId, SetQuesId, IsOnline, ChatId, setToken, AddContact, AddConversations, ChatIndex, AddMessage, AddSocket } from "./Constants"
+import { SetUserId, SetQuesId, ChatId, setToken, AddContact, AddConversations, ChatIndex, AddMessage, AddSocket } from "./Constants"
 
 const initialState = {
     UserId: localStorage.getItem("userId") || "",
     QuesId: localStorage.getItem("quesId") || "",
-    IsOnline: false,
     ChatId: localStorage.getItem("chatId") || "",
     Token: localStorage.getItem("auth-token") || "",
     contacts: JSON.parse(localStorage.getItem("contacts")) || [],
@@ -25,12 +24,6 @@ const reducers = (state = initialState, action) => {
             return {
                 ...state,
                 QuesId: action.payload
-            }
-
-        case IsOnline:
-            return {
-                ...state,
-                IsOnline: action.payload
             }
         case ChatId:
             localStorage.setItem("chatId", action.payload)

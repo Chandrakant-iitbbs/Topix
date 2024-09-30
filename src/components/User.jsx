@@ -3,15 +3,15 @@ import { Button, Row, Col, Image, Card } from "react-bootstrap";
 import HtmlToText from "./HtmlToText";
 import { useNavigate } from "react-router-dom";
 import { setQuesId } from "../Redux/Actions";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import showAlert from "../Functions/Alert";
 import {getMembershipTime} from "../Functions/GetTime";
 import { getStars } from "../Functions/GetStars";
+import copy from "../Assets/clone-regular.svg";
 
 const User = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const isOnline = useSelector((state) => state.IsOnline);
   const [ques, setQues] = useState([]);
   const [answered, setAnswered] = useState([]);
   const [user, setUser] = useState([]);
@@ -224,13 +224,7 @@ const User = () => {
       });
     }
   };
-  const handleChat = () => {
-    console.log("Chat");
-  };
-  const handlePayment = () => {
-    console.log("Payment");
-  };
-
+  
   const handleQuestionClick = (id) => {
     dispatch(setQuesId(id));
     navigate(`/question/${id}`);
@@ -292,7 +286,11 @@ const User = () => {
           <div>{user.email}</div>
           <div>{user.interestedTopics && user.interestedTopics.join(", ")}</div>
           <div>{user.UPIid}</div>
-          <div>{isOnline ? "Online" : "Offline"}</div>
+          <div>
+          <div>Chat id: {user.ChatId} 
+            <img src={copy} alt="copy" width="16px" height="16px" style={{cursor: "pointer", marginLeft:"10px", marginTop:"-2px"}} onClick={() => navigator.clipboard.writeText(user.ChatId)} />
+          </div>
+          </div>
         </Col>
         <Col
           style={{
@@ -331,20 +329,6 @@ const User = () => {
           {ques && ques.length} questions and answered{" "}
           {answered && answered.length} questions, you recived {likes} likes.
         </div>
-        <Button
-          variant="primary"
-          onClick={handlePayment}
-          style={{ margin: "10px" }}
-        >
-          Pay
-        </Button>
-        <Button
-          variant="primary"
-          onClick={handleChat}
-          style={{ margin: "10px" }}
-        >
-          Chat
-        </Button>
       </Row>
       <Row style={{ margin: "2rem 0" }}>
         <Col>

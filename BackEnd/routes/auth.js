@@ -8,6 +8,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Fetchuser = require('../middleWare/FetchUser');
 const JWT_secret = "CK@K@nt";
+const { v4 } = require('uuid');
 
 router.use(bodyParser.json());
 
@@ -27,6 +28,7 @@ router.post('/createuser', UserMiddleWare, async (req, res) => {
         if (UPIid) {
             info.UPIid = UPIid;
         }
+        info.ChatId= v4();
         user = await User(info);
         user.save();
         const data = {

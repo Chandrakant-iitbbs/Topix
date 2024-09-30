@@ -3,19 +3,21 @@ import { Button, Row, Col, Image, Card } from "react-bootstrap";
 import HtmlToText from "./HtmlToText";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { setQuesId } from "../Redux/Actions";
+import { addConversations, setQuesId } from "../Redux/Actions";
 import showAlert from "../Functions/Alert";
 import { getMembershipTime } from "../Functions/GetTime";
 import { getStars } from "../Functions/GetStars";
+import { addContact } from "../Redux/Actions";
+import copy from "../Assets/clone-regular.svg";
 
 const Profile = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const isOnline = useSelector((state) => state.IsOnline);
   const [ques, setQues] = useState([]);
   const [answered, setAnswered] = useState([]);
   const [user, setUser] = useState([]);
   const [likes, setLikes] = useState(0);
+  const contacts = useSelector((state) => state.contacts);
 
   const userId = useSelector((state) => state.UserId);
 
@@ -179,7 +181,16 @@ const Profile = () => {
   }, []);
 
   const handleChat = () => {
-    console.log("Chat");
+    const contact = contacts.find((contact) => contact.chatId === user.ChatId);
+    if (contact) {
+      navigate("/chatting");
+      return;
+    }
+    else{
+      dispatch(addContact(user.ChatId, user.name));
+      dispatch(addConversations([ user.ChatId], []));
+      navigate("/chatting");
+    }
   };
   const handlePayment = () => {
     console.log("Payment");
@@ -199,7 +210,7 @@ const Profile = () => {
         flexDirection: "column",
       }}
     >
-      <Row style={{ display: "flex", justifyContent: "space-around"}}>
+      <Row style={{ display: "flex", justifyContent: "space-around" }}>
         <Col
           style={{
             maxWidth: "200px",
@@ -248,7 +259,15 @@ const Profile = () => {
           <div>{user.email}</div>
           <div>{user.interestedTopics && user.interestedTopics.join(", ")}</div>
           <div>{user.UPIid}</div>
-          <div>{isOnline ? "Online" : "Offline"}</div>
+          <div>Chat id: {user.ChatId} 
+            <img src={copy} alt="copy" width="16px" height="16px" style={{cursor: "pointer", marginLeft:"10px", marginTop:"-2px"}} onClick={() => {
+              navigator.clipboard.writeText(user.ChatId);
+              showAlert({
+                title: `${user.name}'s chat ID copied to clipboard`,
+                icon: "success",
+              });
+              }} />
+          </div>
         </Col>
       </Row>
       <Row

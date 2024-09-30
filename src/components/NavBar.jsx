@@ -33,7 +33,9 @@ const NavBar = () => {
     });
     if (res.status === 200) {
       data = await res.json();
-      setName((data.name[0]).toUpperCase());
+      if(data && data.name){
+        setName((data.name[0]).toUpperCase());
+      }
       if (data.dp) {
         setDp(data.dp);
       }

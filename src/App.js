@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import ChatLogin from './components/ChatLogin';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import OpenConversation from './components/OpenConversation';
@@ -14,7 +14,7 @@ import Questions from './components/Questions';
 import Question from './components/Question';
 import Profile from './components/Profile';
 import { useSelector, useDispatch } from "react-redux";
-import { setOnline,addSocket,addMessage } from "./Redux/Actions"
+import { addSocket, addMessage } from "./Redux/Actions"
 import io from 'socket.io-client';
 
 const App = () => {
@@ -26,13 +26,11 @@ const App = () => {
   const chatIndex = useSelector(state => state.ChatIndex);
 
   useEffect(() => {
-    dispatch(setOnline(true));
-  }, []);
-
-  useEffect(() => {
     const newSocket = io('http://localhost:6006', { transports: ['websocket'], query: { chatId } });
     dispatch(addSocket(newSocket));
-    return () => newSocket.close();
+    return () =>{
+      newSocket.close();
+    }
   }, [chatId]);
 
   useEffect(() => {
@@ -43,8 +41,7 @@ const App = () => {
     return () => socket.off('receive-message');
   }, [socket, dispatch]);
 
-
- return (
+  return (
     <>
       <Router>
         <NavBar />
@@ -61,7 +58,7 @@ const App = () => {
           <Route exact path="/signup" element={<SignUp edit={false} />} />
           <Route exact path='/askQues' element={<AskQuestion />} />
           <Route exact path="/chatting" element={chatId ? <SideBar /> : <ChatLogin />} />
-          <Route exact path={`/chat/${chatIndex}`} element={ <OpenConversation />} />
+          <Route exact path={`/chat/${chatIndex}`} element={<OpenConversation />} />
         </Routes>
       </Router>
     </>

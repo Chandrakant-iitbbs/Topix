@@ -1,4 +1,4 @@
-import { SetUserId, SetQuesId, IsOnline, ChatId, SetToken, AddContact, AddConversations, ChatIndex, AddMessage, AddSocket } from "./Constants";
+import { SetUserId, SetQuesId, ChatId, SetToken, AddContact, AddConversations, ChatIndex, AddMessage, AddSocket } from "./Constants";
 
 const setUserId = (id) => {
   return {
@@ -14,12 +14,6 @@ const setQuesId = (id) => {
   };
 };
 
-const setOnline = (status) => {
-  return {
-    type: IsOnline,
-    payload: status,
-  };
-};
 
 const setChatId = (id) => {
   return {
@@ -72,4 +66,4 @@ const addSocket = (socket) => {
 }
 
 
-export { setUserId, setQuesId, setOnline, setChatId, setToken, addContact, addConversations, setChatIndex, addMessage, addSocket };
+export { setUserId, setQuesId, setChatId, setToken, addContact, addConversations, setChatIndex, addMessage, addSocket };

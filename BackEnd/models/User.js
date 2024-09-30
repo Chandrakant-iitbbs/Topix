@@ -41,8 +41,10 @@ const UserSchema = new Schema({
     },
     UPIid:{
         type : String
+    },
+    ChatId:{
+        type : String
     }
-
 });
 
 UserSchema.pre('save',async function (next) {
