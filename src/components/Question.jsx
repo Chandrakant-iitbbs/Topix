@@ -22,6 +22,38 @@ const Question = () => {
   const isWrap = window.innerWidth < 900;
   const [ChatId, setChatId] = useState("");
   const [askedUserId, setAskedUserId] = useState("");
+  const PersonalObjectId = useSelector((state) => state.personalObjectId);
+
+  const deleteQuestion = async (e, id) => {
+    e.preventDefault();
+    const res = await fetch(
+      `http://localhost:5000/api/v1/ques/deleteQuestion/${id}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "auth-header": token,
+        },
+      }
+    );
+    const a = await res.json();
+    if (res.status === 200) {
+      showAlert({
+        title: "Question deleted successfully",
+        icon: "success",
+      });
+      navigate("/questions");
+      // todo : remove the answers of the question
+    } else if (a.error && (a.error === "Enter the token" || a.error === "Please authenticate using a valid token")) {
+      navigate("/login");
+    } else {
+      showAlert({
+        title: a.error ? a.error : a ? a : "Internal server error",
+        icon: "error",
+      });
+    }
+  };
+
 
   const getUserName = async (user) => {
     const data = await fetch(
@@ -193,6 +225,7 @@ const Question = () => {
               flexDirection: "row",
               flexWrap: "wrap",
               justifyContent: "space-between",
+              gap: "10px",
             }}
           >
             <div
@@ -229,19 +262,37 @@ const Question = () => {
                 marginRight: "10px",
               }}
             >
-              Asked : {getTimeDifference(ques.date)} by {name}
+              Asked : {getTimeDifference(ques.date)} by {ques.user === PersonalObjectId ? "You" : name}
             </div>
-            <div>
+            {ques.user === PersonalObjectId ? (<>
+              <div>
+                <Button style={{ marginRight: "10px" }}
+                  onClick={() => {
+                    navigate(`/editQuestion/${ques.user}`);
+                  }}
+                >
+                  Edit
+                </Button>
+              </div>
+              <div>
+                <Button
+                  onClick={(e) => deleteQuestion(e, ques._id)}
+                >
+                  Delete
+                </Button>
+              </div>
+            </>
+            ) : (<div>
               <Button onClick={() => {
                 handleChat();
               }}>
                 Chat with {name}
               </Button>
-            </div>
+            </div>)}
           </div>
           <hr></hr>
           <div style={{ textWrap: "wrap", margin: "1rem 0" }}>
-            {ques.alreadyKnew && < HtmlToText html={ques.alreadyKnew} index={ques._id + 'c'} />}
+            {ques.alreadyKnew && < HtmlToText html={ques.alreadyKnew} index={ques._id + 'c'} isfull={true} />}
           </div>
           <div style={{ display: "flex", flexWrap: "wrap" }}>
             {ques.tags.map((tag) => (

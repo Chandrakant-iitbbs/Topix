@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import HtmlToText from "./HtmlToText";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setQuesId } from "../Redux/Actions";
 import {getTimeDifference} from "../Functions/GetTime";
 import showAlert from "../Functions/Alert";
@@ -11,6 +11,7 @@ const QuesCard = (props) => {
   const { user, question, rewardPrice, tags, views, date, _id } = ques;
   const [name, setName] = useState("Anonymous");
   const dispatch = useDispatch();
+  const PersonalObjectId = useSelector(state => state.personalObjectId);
   const token = localStorage.getItem("auth-token") || "";
 
   const navigate = useNavigate();
@@ -85,7 +86,7 @@ const QuesCard = (props) => {
             flexDirection: "row",
           }}
         >
-          <div>Asked by: {name}</div>
+          <div>Asked by: {ques.user === PersonalObjectId?"You":name}</div>
           <div style={{ marginRight: "10px" }}>{getTimeDifference(date)}</div>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { SetUserId, SetQuesId, ChatId, setToken, AddContact, AddConversations, ChatIndex, AddMessage, AddSocket, PaymentInfo, PersonalObjectId } from "./Constants"
+import { SetUserId, SetQuesId, ChatId, setToken, AddContact, AddConversations, ChatIndex, AddMessage, AddSocket, PaymentInfo, PersonalObjectId, UpdateAnsId } from "./Constants"
 
 const initialState = {
     UserId: localStorage.getItem("userId") || "",
@@ -13,7 +13,8 @@ const initialState = {
         UPI_Id: "",
         Amount: ""
     },
-    personalObjectId: ""
+    personalObjectId: "",
+    updateAnsId: localStorage.getItem("updateAnsId") || ""
 }
 
 const reducers = (state = initialState, action) => {
@@ -120,6 +121,12 @@ const reducers = (state = initialState, action) => {
             return {
                 ...state,
                 personalObjectId: action.payload
+            }
+        case UpdateAnsId:
+            localStorage.setItem("updateAnsId", action.payload)
+            return {
+                ...state,
+                updateAnsId: action.payload
             }
         default:
             return state;

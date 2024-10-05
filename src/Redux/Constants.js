@@ -11,6 +11,7 @@ const ReceiveMessage = "ReceiveMessage";
 const AddSocket = "AddSocket";
 const PaymentInfo = "PaymentInfo";
 const PersonalObjectId = "PersonalObjectId";
+const UpdateAnsId = "UpdateAnsId";
 
 module.exports = {
   SetUserId,
@@ -25,5 +26,6 @@ module.exports = {
   ReceiveMessage,
   AddSocket,
   PaymentInfo,
-  PersonalObjectId
+  PersonalObjectId,
+  UpdateAnsId,
 };

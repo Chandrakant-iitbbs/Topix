@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { getTimeDifference } from "../Functions/GetTime";
 import showAlert from "../Functions/Alert";
 import { Button } from "react-bootstrap";
-import { addContact, addConversations, SetPaymentInfo } from "../Redux/Actions";
+import { addContact, addConversations, SetPaymentInfo, updateAnsId } from "../Redux/Actions";
 
 const Answer = (props) => {
   const { ans, rewardPrice, askedUserId } = props;
@@ -22,7 +22,6 @@ const Answer = (props) => {
   const [UPI_Id, setUPI_Id] = useState("");
   const [votes, setVotes] = useState(ans.upVotes.length - ans.downVotes.length);
   const personalObjectId = useSelector((state) => state.personalObjectId);
-
 
   const getUserName = async () => {
     const data = await fetch(
@@ -84,6 +83,35 @@ const Answer = (props) => {
 
   }
 
+  const handleDelete = async (e, id) => {
+    e.preventDefault();
+    const data = await fetch(`http://localhost:5000/api/v1/answer/deleteAnswer/${id}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "auth-header": token,
+        }
+      });
+    const ans = await data.json();
+    if (data.status === 200) {
+      showAlert({
+        title: "Answer Deleted",
+        icon: "success",
+      });
+    } else if (
+      ans.error === "Enter the token" ||
+      ans.error === "Please authenticate using a valid token"
+    ) {
+      navigate("/login");
+    } else {
+      showAlert({
+        title: ans.error ? ans.error : ans ? ans : "Something went wrong",
+        icon: "error",
+      });
+    }
+  }
+  
   const contacts = useSelector((state) => state.contacts);
   const handleChat = () => {
     const contact = contacts.find((contact) => contact.chatId === ChatId);
@@ -199,29 +227,45 @@ const Answer = (props) => {
           onClick={() => downVote(ans._id)}
         ></i>
         {
-          askedUserId === personalObjectId ? <i class="fa-regular fa-heart" style={{ margin: 'auto', fontSize: "1.2rem" }} onClick={(e) => handleBestAnswerClick(e, ans._id, ans.user)}></i> : null
+          askedUserId === personalObjectId ? <i className="fa-regular fa-heart" style={{ margin: 'auto', fontSize: "1.2rem" }} onClick={(e) => handleBestAnswerClick(e, ans._id, ans.user)}></i> : null
         }
       </div>
       <div style={{ width: "94%", paddingLeft: "20px" }}>
         <div>
           {<HtmlToText html={ans.answer} index={ans._id} isfull={true} />}
         </div>
-        <div style={{ marginTop: "1rem", display: "flex", justifyContent: "space-between" }}>
-          <div style={{ justifyContent: "center", display: 'flex' }}>
-            <div style={{ margin: "0 1rem" }}>
-              <Button variant="primary" onClick={() => {
-                handleChat();
-              }}>Chat with {name}</Button>
+        {ans.user === personalObjectId ?
+          <div style={{ marginTop: "1rem", display: "flex", justifyContent: "space-between", alignContent: "center" }}>
+            <div style={{ justifyContent: "center", display: 'flex', fontSize: "1.4rem" }}>
+              <div style={{ margin: "0.5rem 1rem" }}>
+                <i className="fa-regular fa-pen-to-square fa-beat" style={{ cursor: "pointer" }} onClick={() => {
+                  dispatch(updateAnsId(ans._id));
+                  navigate(`/editAnswer/${ans._id}`);
+                }}>
+                </i>
+              </div>
+              <div style={{ margin: "0.5rem 1rem" }}>
+                <i className="fa-solid fa-trash-can fa-beat" style={{ cursor: "pointer" }} onClick={(e) => handleDelete(e, ans._id)}>
+                </i>
+              </div>
             </div>
-            <div style={{ margin: "0 1rem" }}>
-              <Button variant="primary" onClick={() => handlePayment()}>Pay to {name}</Button>
+            <div style={{ width: "full", display: 'flex', margin: "1rem" }}>
+              Answered : {getTimeDifference(ans.date)} by you  </div>
+          </div> : <div style={{ marginTop: "1rem", display: "flex", justifyContent: "space-between" }}>
+            <div style={{ justifyContent: "center", display: 'flex' }}>
+              <div style={{ margin: "0 1rem" }}>
+                <Button variant="primary" onClick={() => {
+                  handleChat();
+                }}>Chat with {name}</Button>
+              </div>
+              <div style={{ margin: "0 1rem" }}>
+                <Button variant="primary" onClick={() => handlePayment()}>Pay to {name}</Button>
+              </div>
             </div>
-          </div>
-          <div style={{ width: "full", display: 'flex', margin: "0 1rem" }}>
-            Answered : {getTimeDifference(ans.date)} by {name}
-          </div>
-
-        </div>
+            <div style={{ width: "full", display: 'flex', margin: "0 1rem" }}>
+              Answered : {getTimeDifference(ans.date)} by {name}
+            </div>
+          </div>}
       </div>
     </div>
   );
