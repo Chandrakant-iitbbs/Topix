@@ -268,7 +268,7 @@ const Question = () => {
               <div>
                 <Button style={{ marginRight: "10px" }}
                   onClick={() => {
-                    navigate(`/editQuestion/${ques.user}`);
+                    navigate(`/editQuestion/${ques._id}`);
                   }}
                 >
                   Edit
@@ -303,6 +303,7 @@ const Question = () => {
                   border: "1px solid gray",
                   borderRadius: "5px",
                   backgroundColor: "#d3d3d3",
+                  margin:"5px"
                 }}
               >
                 {tag}

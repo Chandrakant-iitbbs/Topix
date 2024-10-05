@@ -43,39 +43,37 @@ const EditQuestion = () => {
 
   useEffect(() => {
     fetchQuestion();
-}, []);
+  }, []);
 
-const fetchQuestion = async () => {
+  const fetchQuestion = async () => {
     const data = await fetch(
-        `http://localhost:5000/api/v1/ques/getQuestion/${id}`,
-        {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "auth-header": token,
-            },
-        }
+      `http://localhost:5000/api/v1/ques/getQuestion/${id}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "auth-header": token,
+        },
+      }
     );
     const a = await data.json();
     if (data.status === 200) {
-        setInfo({
-            ques: a.question,
-            alreadyKnew: a.alreadyKnew,
-            rewardPrice: a.rewardPrice,
-            tags: a.tags,
-        });
+      setInfo({
+        ques: a.question,
+        alreadyKnew: a.alreadyKnew,
+        rewardPrice: a.rewardPrice,
+        tags: a.tags,
+      });
     } else if (a.error && (a.error === "Enter the token" || a.error === "Please authenticate using a valid token")) {
-        navigate("/login");
+      navigate("/login");
     } else {
-        showAlert({
-            title: a.error ? a.error : a ? a : "Internal server error",
-            icon: "error",
-        });
+      showAlert({
+        title: a.error ? a.error : a ? a : "Internal server error",
+        icon: "error",
+      });
     }
-};
-
-
- 
+    return
+  };
 
   const htmlToPlainText = (html) => {
     let tempDiv = document.createElement("div");
@@ -108,8 +106,8 @@ const fetchQuestion = async () => {
       return;
     }
 
-    const res = await fetch("http://localhost:5000/api/v1/ques/addQuestion", {
-      method: "POST",
+    const res = await fetch(`http://localhost:5000/api/v1/ques/updateQuestion/${id}`, {
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
         "auth-header": token,
@@ -124,10 +122,11 @@ const fetchQuestion = async () => {
     const data = await res.json();
     if (res.status === 200) {
       showAlert({
-        title: "Question added successfully",
+        title: "Question updated successfully",
         icon: "success",
       });
       setInfo({ ques: "", alreadyKnew: "", rewardPrice: 0, tags: [] });
+      navigate(`/question/${id}`);
     }
     else if (data.error === "Enter the token" || data.error === "Please authenticate using a valid token") {
       navigate("/login");
@@ -281,20 +280,43 @@ const fetchQuestion = async () => {
           </Col>
         </Form.Group>
       </Form>
-      <Button
-        variant="primary"
-        type="submit"
-        style={{
-          width: "30%",
-          minWidth: "200px",
-          marginBottom: "1rem",
-          margin: "auto",
-          display: "block",
-        }}
-        onClick={(e) => HandleSubmit(e)}
-      >
-        Send
-      </Button>
+      <div style={{ display: "flex", justifyContent: "space-evenly", flexWrap: "wrap", gap: "10px" }} >
+        <div style={{ margin: "0 1rem" }}>
+          <Button
+            variant="secondary"
+            type="submit"
+            style={{
+              width: "30%",
+              minWidth: "200px",
+              marginBottom: "1rem",
+              margin: "auto",
+              display: "block",
+            }}
+            onClick={(e) => {
+              e.preventDefault();
+              navigate(`/question/${id}`);
+            }}
+          >
+            Cancel
+          </Button>
+        </div>
+        <div>
+          <Button
+            variant="primary"
+            type="submit"
+            style={{
+              width: "30%",
+              minWidth: "200px",
+              marginBottom: "1rem",
+              margin: "auto",
+              display: "block",
+            }}
+            onClick={(e) => HandleSubmit(e)}
+          >
+            Update
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };
