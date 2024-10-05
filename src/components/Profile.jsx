@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { addConversations, setQuesId, SetPaymentInfo } from "../Redux/Actions";
 import showAlert from "../Functions/Alert";
-import { getMembershipTime } from "../Functions/GetTime";
+import { getMembershipTime, getTimeDifference } from "../Functions/GetTime";
 import { getStars } from "../Functions/GetStars";
 import { addContact } from "../Redux/Actions";
 import copy from "../Assets/clone-regular.svg";
@@ -35,7 +35,7 @@ const Profile = () => {
     );
     const res = await data.json();
     if (data.status === 200) {
-      setQues(res);
+      setQues(res.reverse());
     }
     else if (res.error && (res.error === "Enter the token" || res.error === "Please authenticate using a valid token")) {
       navigate("/login");
@@ -49,6 +49,7 @@ const Profile = () => {
   };
 
   const removeDuplicateAnswers = (res) => {
+    res.reverse();
     const newData = {};
     res.forEach((answer) => {
       if (!newData[answer.question]) {
@@ -186,9 +187,9 @@ const Profile = () => {
       navigate("/chatting");
       return;
     }
-    else{
+    else {
       dispatch(addContact(user.ChatId, user.name));
-      dispatch(addConversations([ user.ChatId], []));
+      dispatch(addConversations([user.ChatId], []));
       navigate("/chatting");
     }
   };
@@ -260,14 +261,15 @@ const Profile = () => {
           <div>{user.email}</div>
           <div>{user.interestedTopics && user.interestedTopics.join(", ")}</div>
           <div>{user.UPIid}</div>
-          <div>Chat id: {user.ChatId} 
-            <img src={copy} alt="copy" width="16px" height="16px" style={{cursor: "pointer", marginLeft:"10px", marginTop:"-2px"}} onClick={() => {
+          <div>{user.BestAnswers && user.BestAnswers.length} best Answers</div>
+          <div>Chat id: {user.ChatId}
+            <img src={copy} alt="copy" width="16px" height="16px" style={{ cursor: "pointer", marginLeft: "10px", marginTop: "-2px" }} onClick={() => {
               navigator.clipboard.writeText(user.ChatId);
               showAlert({
                 title: `${user.name}'s chat ID copied to clipboard`,
                 icon: "success",
               });
-              }} />
+            }} />
           </div>
         </Col>
       </Row>
@@ -309,13 +311,11 @@ const Profile = () => {
                 style={{
                   width: "100%",
                   marginTop: "1rem",
-                  cursor: "pointer",
                 }}
                 key={index}
-                onClick={() => handleQuestionClick(question._id)}
               >
                 <Card.Body>
-                  <Card.Title>
+                  <Card.Title style={{ cursor: "pointer" }} onClick={() => handleQuestionClick(question._id)}>
                     {
                       <HtmlToText
                         html={question.question}
@@ -323,6 +323,16 @@ const Profile = () => {
                       />
                     }
                   </Card.Title>
+                  <Card.Text>
+                    <div style={{
+                      display: "flex", justifyContent: "space-between", flexWrap: "wrap",
+                      gap: "10px"
+                    }}>
+                      <div style={{margin:"10px", marginLeft:0}}>{question.views.length} views
+                      </div>
+                      <div style={{margin:"10px"}}>{getTimeDifference(question.date)}</div>
+                    </div>
+                  </Card.Text>
                 </Card.Body>
               </Card>
             ))}
@@ -339,13 +349,12 @@ const Profile = () => {
                   key={index}
                   style={{
                     width: "100%",
-                    marginTop: "1rem",
-                    cursor: "pointer",
+                    marginTop: "1rem"
                   }}
-                  onClick={() => handleQuestionClick(answer.question.id)}
+
                 >
                   <Card.Body>
-                    <Card.Title>
+                    <Card.Title style={{ cursor: "pointer" }} onClick={() => handleQuestionClick(answer.question.id)}>
                       {
                         <HtmlToText
                           html={answer.question.html}
@@ -353,6 +362,16 @@ const Profile = () => {
                         />
                       }
                     </Card.Title>
+                    <Card.Text>
+                      <div style={{
+                        display: "flex", justifyContent: "space-between", flexWrap: "wrap",
+                        gap: "10px"
+                      }}>
+                        <div style={{margin:"10px", marginLeft:0}}>{answer.upVotes.length - answer.downVotes.length} likes received</div>
+                    {user.BestAnswers && user.BestAnswers.includes(answer._id) ? <div style={{margin:"10px"}}>Best Answer</div> : null}
+                        <div style={{margin:"10px"}}>{getTimeDifference(answer.date)}</div>
+                      </div>
+                    </Card.Text>
                   </Card.Body>
                 </Card>
               ))}

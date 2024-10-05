@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { setQuesId } from "../Redux/Actions";
 import { useDispatch } from "react-redux";
 import showAlert from "../Functions/Alert";
-import {getMembershipTime} from "../Functions/GetTime";
+import { getMembershipTime, getTimeDifference } from "../Functions/GetTime";
 import { getStars } from "../Functions/GetStars";
 import copy from "../Assets/clone-regular.svg";
 
@@ -30,10 +30,10 @@ const User = () => {
     );
     const res = await data.json();
     if (data.status === 200) {
-      setQues(res);
+      setQues(res.reverse());
     } else if (res.error && (res.error === "Enter the token" ||
-        res.error === "Please authenticate using a valid token"
-      )) {
+      res.error === "Please authenticate using a valid token"
+    )) {
       navigate("/login");
     } else {
       showAlert({
@@ -44,6 +44,7 @@ const User = () => {
   };
 
   const removeDuplicateAnswers = (res) => {
+    res.reverse();
     const newData = {};
     res.forEach((answer) => {
       if (!newData[answer.question]) {
@@ -114,14 +115,14 @@ const User = () => {
       setAnswered(uniqueAnswers);
     } else if (res.error && (res.error === "Enter the token" ||
       res.error === "Please authenticate using a valid token"
-    )){
-        navigate("/login");
-      } else {
-        showAlert({
-          title: res.error ? res.error : res ? res : "Something went wrong",
-          icon: "error",
-        });
-      }
+    )) {
+      navigate("/login");
+    } else {
+      showAlert({
+        title: res.error ? res.error : res ? res : "Something went wrong",
+        icon: "error",
+      });
+    }
   };
 
   const getUser = async () => {
@@ -136,7 +137,7 @@ const User = () => {
       setUser(res);
     } else if (res.error && (res.error === "Enter the token" ||
       res.error === "Please authenticate using a valid token"
-    )){
+    )) {
       navigate("/login");
     } else {
       showAlert({
@@ -174,7 +175,7 @@ const User = () => {
       }
       else if (res.error && (res.error === "Enter the token" ||
         res.error === "Please authenticate using a valid token"
-      )){
+      )) {
         navigate("/login");
       }
       else {
@@ -198,7 +199,7 @@ const User = () => {
     navigate("/user/editProfile");
   };
 
-  const handleDelete = async() => {
+  const handleDelete = async () => {
     const data = await fetch("http://localhost:5000//api/v1/auth/deleteuser", {
       method: "DELETE",
       headers: {
@@ -215,7 +216,7 @@ const User = () => {
       navigate("/questions");
     } else if (res.error && (res.error === "Enter the token" ||
       res.error === "Please authenticate using a valid token"
-    )){
+    )) {
       navigate("/login");
     } else {
       showAlert({
@@ -224,7 +225,7 @@ const User = () => {
       });
     }
   };
-  
+
   const handleQuestionClick = (id) => {
     dispatch(setQuesId(id));
     navigate(`/question/${id}`);
@@ -251,7 +252,7 @@ const User = () => {
             alignItems: "center",
           }}
         >
-           {user.dp ? (
+          {user.dp ? (
             <Image
               src={`data:image/jpeg;base64,${user.dp}`}
               roundedCircle
@@ -282,14 +283,15 @@ const User = () => {
           }}
         >
           <div>{user.name}</div>
-          <div>Rating : {getStars(answered.length,likes, ques.length)}</div>
+          <div>Rating : {getStars(answered.length, likes, ques.length)}</div>
           <div>{user.email}</div>
           <div>{user.interestedTopics && user.interestedTopics.join(", ")}</div>
           <div>{user.UPIid}</div>
+          <div>{user.BestAnswers && user.BestAnswers.length} best Answers</div>
           <div>
-          <div>Chat id: {user.ChatId} 
-            <img src={copy} alt="copy" width="16px" height="16px" style={{cursor: "pointer", marginLeft:"10px", marginTop:"-2px"}} onClick={() => navigator.clipboard.writeText(user.ChatId)} />
-          </div>
+            <div>Chat id: {user.ChatId}
+              <img src={copy} alt="copy" width="16px" height="16px" style={{ cursor: "pointer", marginLeft: "10px", marginTop: "-2px" }} onClick={() => navigator.clipboard.writeText(user.ChatId)} />
+            </div>
           </div>
         </Col>
         <Col
@@ -340,13 +342,11 @@ const User = () => {
                 style={{
                   width: "100%",
                   marginTop: "1rem",
-                  cursor: "pointer",
                 }}
                 key={index}
-                onClick={() => handleQuestionClick(question._id)}
               >
                 <Card.Body>
-                  <Card.Title>
+                  <Card.Title style={{ cursor: "pointer" }} onClick={() => handleQuestionClick(question._id)}>
                     {
                       <HtmlToText
                         html={question.question}
@@ -355,6 +355,16 @@ const User = () => {
                       />
                     }
                   </Card.Title>
+                  <Card.Text>
+                    <div style={{
+                      display: "flex", justifyContent: "space-between", flexWrap: "wrap",
+                      gap: "10px"
+                    }}>
+                      <div style={{margin:"10px", marginLeft:0}}>{question.views.length} views
+                      </div>
+                      <div style={{margin:"10px"}}>{getTimeDifference(question.date)}</div>
+                    </div>
+                  </Card.Text>
                 </Card.Body>
               </Card>
             ))}
@@ -371,13 +381,11 @@ const User = () => {
                   key={index}
                   style={{
                     width: "100%",
-                    marginTop: "1rem",
-                    cursor: "pointer",
+                    marginTop: "1rem"
                   }}
-                  onClick={() => handleQuestionClick(answer.question.id)}
                 >
                   <Card.Body>
-                    <Card.Title>
+                    <Card.Title style={{ cursor: "pointer" }} onClick={() => handleQuestionClick(answer.question.id)}>
                       {
                         <HtmlToText
                           html={answer.question.html}
@@ -386,6 +394,16 @@ const User = () => {
                         />
                       }
                     </Card.Title>
+                    <Card.Text>
+                      <div style={{
+                        display: "flex", justifyContent: "space-between", flexWrap: "wrap",
+                        gap: "10px"
+                      }}>
+                        <div style={{margin:"10px", marginLeft:0}}>{answer.upVotes.length - answer.downVotes.length} likes received</div>
+                    {user.BestAnswers && user.BestAnswers.includes(answer._id) ? <div style={{margin:"10px"}}>Best Answer</div> : null}
+                        <div style={{margin:"10px"}}>{getTimeDifference(answer.date)}</div>
+                      </div>
+                    </Card.Text>
                   </Card.Body>
                 </Card>
               ))}
