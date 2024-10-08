@@ -12,10 +12,11 @@ const QuesCard = (props) => {
   const [name, setName] = useState("Anonymous");
   const dispatch = useDispatch();
   const PersonalObjectId = useSelector(state => state.personalObjectId);
-  const token = localStorage.getItem("auth-token") || "";
+  const token = useSelector(state => state.Token);
 
   const navigate = useNavigate();
-  const handleQuesClick = () => {
+  const handleQuesClick = (e) => {
+    e.preventDefault();
     dispatch(setQuesId(_id));
     navigate(`/question/${_id}`);
   };
@@ -73,7 +74,7 @@ const QuesCard = (props) => {
       <div style={{ width: "78%" }}>
         <div
           style={{ fontSize: "1.5rem", cursor: "pointer" }}
-          onClick={handleQuesClick}
+          onClick={(e)=>handleQuesClick(e)}
         >
           {quesText}
         </div>

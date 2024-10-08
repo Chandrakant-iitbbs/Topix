@@ -12,6 +12,7 @@ const ChatLogin = () => {
     if (!idref.current.value) return;
     dispatch(setChatId(idref.current.value));
   };
+
   const createNewId = (e) => {
     e.preventDefault();
     dispatch(setChatId(v4()));
@@ -29,7 +30,7 @@ const ChatLogin = () => {
       <Row className="d-flex justify-content-around">
         <Button
           style={{ width: "20%", minWidth: "100px", justifyContent: "center" }}
-          onClick={handleSubmit}
+          onClick={(e)=>handleSubmit(e)}
           className="d-flex"
         >
           Login

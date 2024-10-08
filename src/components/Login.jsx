@@ -3,14 +3,15 @@ import { Form, Row, Col, Button } from "react-bootstrap";
 import eye1 from "../Assets/eye-regular.svg";
 import eye2 from "../Assets/eye-slash-regular.svg";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import showAlert from "../Functions/Alert";
+import { setToken } from "../Redux/Actions";
+import { useDispatch } from "react-redux";
 
 const Login = () => {
-  const dispatch = useDispatch();
   const [info, setInfo] = useState({ email: "", password: "" });
   const [passShow, setPassShow] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const HandleSubmit = async (e) => {
     e.preventDefault();
@@ -23,8 +24,8 @@ const Login = () => {
     });
     const data = await res.json();
     if (res.status === 200) {
-      localStorage.setItem("auth-token", data.auto_token);
-      navigate("/questions");
+      dispatch(setToken(data.auto_token));
+      navigate("/about");
     } 
     else{
       showAlert({

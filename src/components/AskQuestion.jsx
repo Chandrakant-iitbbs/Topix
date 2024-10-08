@@ -5,6 +5,7 @@ import JoditEditor from "jodit-react";
 import makeAnimated from "react-select/animated";
 import showAlert from "../Functions/Alert";
 import { useNavigate } from "react-router-dom";
+import showPrompt from "../Functions/Prompt";
 
 const AskQuestion = () => {
   const navigate = useNavigate();
@@ -164,14 +165,15 @@ const AskQuestion = () => {
                 }))
               }
               isMulti
-              onChange={(e) => {
+              onChange={async(e) => {
                 if (e.length > 0 && e[e.length - 1].value === "Add a new tag") {
-                  let newtag = prompt("Enter your tag");
-                  if (newtag === null) {
+                  let newtag = await showPrompt({ title: "Enter your tag" });
+                  if (!newtag) {
                     showAlert({
                       icon: "error",
                       title: "Tag can't be empty",
                     });
+                    e = e.slice(0, e.length - 1);
                   } else {
                     newtag = newtag && newtag.trim();
                     e[e.length - 1].value = newtag;
@@ -181,7 +183,6 @@ const AskQuestion = () => {
                     }
                   }
                 }
-
                 setInfo({ ...info, tags: e.map((item) => item.value) });
               }}
             />
@@ -203,7 +204,10 @@ const AskQuestion = () => {
               placeholder="Enter reward price"
               value={info.rewardPrice}
               onChange={(e) =>
+              {
+                e.preventDefault();
                 setInfo({ ...info, rewardPrice: e.target.value })
+              }
               }
             />
           </Col>

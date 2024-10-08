@@ -13,7 +13,7 @@ const Question = () => {
   const dispatch = useDispatch();
 
   const id = useSelector((state) => state.QuesId);
-  const token = localStorage.getItem("auth-token") || "";
+  const token = useSelector((state) => state.Token);
   const navigate = useNavigate();
   const [ques, setQues] = useState();
   const [answers, setAnswers] = useState([]);
@@ -267,7 +267,8 @@ const Question = () => {
             {ques.user === PersonalObjectId ? (<>
               <div>
                 <Button style={{ marginRight: "10px" }}
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.preventDefault();
                     navigate(`/editQuestion/${ques._id}`);
                   }}
                 >
@@ -283,7 +284,8 @@ const Question = () => {
               </div>
             </>
             ) : (<div>
-              <Button onClick={() => {
+              <Button onClick={(e) => {
+                e.preventDefault();
                 handleChat();
               }}>
                 Chat with {name}
@@ -295,8 +297,8 @@ const Question = () => {
             {ques.alreadyKnew && < HtmlToText html={ques.alreadyKnew} index={ques._id + 'c'} isfull={true} />}
           </div>
           <div style={{ display: "flex", flexWrap: "wrap" }}>
-            {ques.tags.map((tag) => (
-              <span
+            {ques.tags.map((tag, index) => (
+              <span key={index}
                 style={{
                   paddingLeft: "5px",
                   paddingRight: "5px",

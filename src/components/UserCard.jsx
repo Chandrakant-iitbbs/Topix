@@ -43,7 +43,8 @@ const UserCard = (props) => {
         
       </div>
       <div style={{ display: "flex", flexDirection: "column" }}>
-        <span style={{ fontSize: "20px", cursor:"pointer" }} onClick={ () => {
+        <span style={{ fontSize: "20px", cursor:"pointer" }} onClick={ (e) => {
+          e.preventDefault();
           dispatch(setUserId(user._id));
           navigate(`/profile/${user._id}`);
         }

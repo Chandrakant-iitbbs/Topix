@@ -111,9 +111,10 @@ const Answer = (props) => {
       });
     }
   }
-  
+
   const contacts = useSelector((state) => state.contacts);
-  const handleChat = () => {
+  const handleChat = (e) => {
+    e.preventDefault();
     const contact = contacts.find((contact) => contact.chatId === ChatId);
     if (contact) {
       navigate("/chatting");
@@ -126,7 +127,8 @@ const Answer = (props) => {
     }
   };
 
-  const handlePayment = () => {
+  const handlePayment = (e) => {
+    e.preventDefault();
     dispatch(SetPaymentInfo({
       UPI_Id: UPI_Id,
       Amount: rewardPrice
@@ -218,13 +220,19 @@ const Answer = (props) => {
         <i
           className="fa-regular fa-thumbs-up"
           style={{ fontSize: `${askedUserId === personalObjectId ? "1rem" : "1.5rem"}`, margin: "auto" }}
-          onClick={() => upVote(ans._id)}
+          onClick={(e) => {
+            e.preventDefault();
+            upVote(ans._id)
+          }}
         ></i>
         <div style={{ textAlign: "center" }}>{votes}</div>
         <i
           className="fa-regular fa-thumbs-down"
           style={{ fontSize: `${askedUserId === personalObjectId ? "1rem" : "1.5rem"}`, margin: "auto" }}
-          onClick={() => downVote(ans._id)}
+          onClick={(e) => {
+            e.preventDefault();
+            downVote(ans._id)
+          }}
         ></i>
         {
           askedUserId === personalObjectId ? <i className="fa-regular fa-heart" style={{ margin: 'auto', fontSize: "1.2rem" }} onClick={(e) => handleBestAnswerClick(e, ans._id, ans.user)}></i> : null
@@ -238,14 +246,18 @@ const Answer = (props) => {
           <div style={{ marginTop: "1rem", display: "flex", justifyContent: "space-between", alignContent: "center" }}>
             <div style={{ justifyContent: "center", display: 'flex', fontSize: "1.4rem" }}>
               <div style={{ margin: "0.5rem 1rem" }}>
-                <i className="fa-regular fa-pen-to-square fa-beat" style={{ cursor: "pointer" }} onClick={() => {
+                <i className="fa-regular fa-pen-to-square fa-beat" style={{ cursor: "pointer" }} onClick={(e) => {
+                  e.preventDefault();
                   dispatch(updateAnsId(ans._id));
                   navigate(`/editAnswer/${ans._id}`);
                 }}>
                 </i>
               </div>
               <div style={{ margin: "0.5rem 1rem" }}>
-                <i className="fa-solid fa-trash-can fa-beat" style={{ cursor: "pointer" }} onClick={(e) => handleDelete(e, ans._id)}>
+                <i className="fa-solid fa-trash-can fa-beat" style={{ cursor: "pointer" }} onClick={(e) => {
+                  e.preventDefault();
+                  handleDelete(e, ans._id)
+                }}>
                 </i>
               </div>
             </div>
@@ -254,12 +266,12 @@ const Answer = (props) => {
           </div> : <div style={{ marginTop: "1rem", display: "flex", justifyContent: "space-between" }}>
             <div style={{ justifyContent: "center", display: 'flex' }}>
               <div style={{ margin: "0 1rem" }}>
-                <Button variant="primary" onClick={() => {
-                  handleChat();
+                <Button variant="primary" onClick={(e) => {
+                  handleChat(e);
                 }}>Chat with {name}</Button>
               </div>
               <div style={{ margin: "0 1rem" }}>
-                <Button variant="primary" onClick={() => handlePayment()}>Pay to {name}</Button>
+                <Button variant="primary" onClick={(e) => handlePayment(e)}>Pay to {name}</Button>
               </div>
             </div>
             <div style={{ width: "full", display: 'flex', margin: "0 1rem" }}>

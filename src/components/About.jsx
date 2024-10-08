@@ -7,6 +7,16 @@ const About = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("auth-token")|| "";
 
+  const handleQuestionsClick = (e) => {
+    e.preventDefault();
+    navigate("/questions");
+  }
+
+  const handleAskQuestionsClick = (e) => {
+    e.preventDefault();
+    navigate("/askQues")
+  }
+
   return (
     <div style={{ margin: "2rem 4rem" }}>
       <Row
@@ -38,13 +48,13 @@ const About = () => {
               >
                 <Button
                   style={{ margin: "10px" }}
-                  onClick={() => navigate("/questions")}
+                  onClick={(e) => handleQuestionsClick(e)}
                 >
                   Go to questions
                 </Button>
                 <Button
                   style={{ margin: "10px" }}
-                  onClick={() => navigate("/askQues")}
+                  onClick={(e) => handleAskQuestionsClick(e)}
                 >
                   Ask a question
                 </Button>

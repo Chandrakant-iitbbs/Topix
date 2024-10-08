@@ -5,10 +5,11 @@ import makeAnimated from "react-select/animated";
 import QuesCard from "./QuesCard";
 import { useNavigate } from "react-router-dom";
 import showAlert from "../Functions/Alert";
+import { useSelector } from "react-redux";
 
 const Questions = () => {
   const navigate = useNavigate();
-  const token = localStorage.getItem("auth-token") || "";
+  const token = useSelector((state) => state.Token);
   const animatedComponents = makeAnimated();
   const [allTags, setAllTags] = useState([]);
   const [questions, setQuestions] = useState([]);
@@ -193,7 +194,9 @@ const Questions = () => {
           </Dropdown>
         </div>
         <div>
-          <Button onClick={() => navigate("/askQues")}>Ask a question</Button>
+          <Button onClick={(e) => {
+            e.preventDefault();
+            navigate("/askQues")}}>Ask a question</Button>
         </div>
       </div>
       <div

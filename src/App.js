@@ -6,7 +6,8 @@ import SideBar from './components/SideBar';
 import Login from './components/Login';
 import SignUp from './components/SignUp';
 import AskQuestion from './components/AskQuestion';
-import NavBar from './components/NavBar';
+import NavBarBeforeLogin from './components/NavBarBeforeLogin';
+import NavbarAfterLogin from './components/NavbarAfterLogin';
 import About from './components/About';
 import User from './components/User';
 import Users from './components/Users';
@@ -44,10 +45,13 @@ const App = () => {
     return () => socket.off('receive-message');
   }, [socket, dispatch]);
 
+  const token = useSelector(state => state.Token);
+  console.log(token);
+
   return (
     <>
       <Router>
-        <NavBar />
+      {token!==null ? <NavbarAfterLogin /> : <NavBarBeforeLogin />}
         <Routes>
           <Route exact path='/payment' element={<Payment  />} />
           <Route exact path="/" element={<About />} />

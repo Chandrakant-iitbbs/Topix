@@ -1,4 +1,4 @@
-import { SetUserId, SetQuesId, ChatId, SetToken, AddContact, AddConversations, ChatIndex, AddMessage, AddSocket, PaymentInfo, PersonalObjectId, UpdateAnsId } from "./Constants";
+import { SetUserId, SetQuesId, ChatId, SetToken, AddContact, AddConversations, ChatIndex, AddMessage, AddSocket, PaymentInfo, PersonalObjectId, UpdateAnsId, Deletetoken } from "./Constants";
 
 const setUserId = (id) => {
   return {
@@ -86,5 +86,11 @@ const updateAnsId = (id) => {
   };
 }
 
+const deletetoken = () => {
+  return {
+    type: Deletetoken,
+  };
+};
 
-export { setUserId, setQuesId, setChatId, setToken, addContact, addConversations, setChatIndex, addMessage, addSocket, SetPaymentInfo, setPersonalObjectId, updateAnsId };
+
+export { setUserId, setQuesId, setChatId, setToken, addContact, addConversations, setChatIndex, addMessage, addSocket, SetPaymentInfo, setPersonalObjectId, updateAnsId, deletetoken };

@@ -18,10 +18,8 @@ const Profile = () => {
   const [user, setUser] = useState([]);
   const [likes, setLikes] = useState(0);
   const contacts = useSelector((state) => state.contacts);
-
   const userId = useSelector((state) => state.UserId);
-
-  const token = localStorage.getItem("auth-token") || "";
+  const token = useSelector((state) => state.Token);
 
   const getQues = async () => {
     const data = await fetch(
@@ -315,7 +313,9 @@ const Profile = () => {
                 key={index}
               >
                 <Card.Body>
-                  <Card.Title style={{ cursor: "pointer" }} onClick={() => handleQuestionClick(question._id)}>
+                  <Card.Title style={{ cursor: "pointer" }} onClick={(e) => {
+                    e.preventDefault();
+                    handleQuestionClick(question._id)}}>
                     {
                       <HtmlToText
                         html={question.question}
@@ -354,7 +354,9 @@ const Profile = () => {
 
                 >
                   <Card.Body>
-                    <Card.Title style={{ cursor: "pointer" }} onClick={() => handleQuestionClick(answer.question.id)}>
+                    <Card.Title style={{ cursor: "pointer" }} onClick={(e) => 
+                     { e.preventDefault();
+                      handleQuestionClick(answer.question.id)}}>
                       {
                         <HtmlToText
                           html={answer.question.html}

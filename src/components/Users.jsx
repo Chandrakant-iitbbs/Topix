@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import UserCard from "./UserCard";
 import { useNavigate } from "react-router-dom";
 import showAlert from "../Functions/Alert";
+import { useSelector } from "react-redux";
 
 const Users = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
-  const token = localStorage.getItem("auth-token") || "";
+  const token = useSelector((state) => state.Token);
 
   const getallusers = async () => {
     const data = await fetch("http://localhost:5000/api/v1/auth/getallusers", {

@@ -1,10 +1,10 @@
-import { SetUserId, SetQuesId, ChatId, setToken, AddContact, AddConversations, ChatIndex, AddMessage, AddSocket, PaymentInfo, PersonalObjectId, UpdateAnsId } from "./Constants"
+import { SetUserId, SetQuesId, ChatId, SetToken, AddContact, AddConversations, ChatIndex, AddMessage, AddSocket, PaymentInfo, PersonalObjectId, UpdateAnsId, Deletetoken } from "./Constants"
 
 const initialState = {
     UserId: localStorage.getItem("userId") || "",
     QuesId: localStorage.getItem("quesId") || "",
     ChatId: localStorage.getItem("chatId") || "",
-    Token: localStorage.getItem("auth-token") || "",
+    Token: localStorage.getItem("auth-token"),
     contacts: JSON.parse(localStorage.getItem("contacts")) || [],
     conversations: JSON.parse(localStorage.getItem("conversations")) || [],
     ChatIndex: localStorage.getItem("chatIndex") || 0,
@@ -37,7 +37,7 @@ const reducers = (state = initialState, action) => {
                 ...state,
                 ChatId: action.payload
             }
-        case setToken:
+        case SetToken:
             localStorage.setItem("auth-token", action.payload)
             return {
                 ...state,
@@ -127,6 +127,12 @@ const reducers = (state = initialState, action) => {
             return {
                 ...state,
                 updateAnsId: action.payload
+            }
+        case Deletetoken:
+            localStorage.removeItem("auth-token");
+            return {
+                ...state,
+                Token: null
             }
         default:
             return state;

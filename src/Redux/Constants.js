@@ -12,6 +12,7 @@ const AddSocket = "AddSocket";
 const PaymentInfo = "PaymentInfo";
 const PersonalObjectId = "PersonalObjectId";
 const UpdateAnsId = "UpdateAnsId";
+const Deletetoken = "Deletetoken";
 
 module.exports = {
   SetUserId,
@@ -28,4 +29,5 @@ module.exports = {
   PaymentInfo,
   PersonalObjectId,
   UpdateAnsId,
+  Deletetoken,
 };

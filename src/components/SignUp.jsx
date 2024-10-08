@@ -6,11 +6,15 @@ import Select from "react-select";
 import makeAnimated from "react-select/animated";
 import { Link, useNavigate } from "react-router-dom";
 import showAlert from "../Functions/Alert";
+import { useSelector } from "react-redux";
+import { setToken } from "../Redux/Actions";
+import showPrompt from "../Functions/Prompt";
 
 const SignUp = (props) => {
   const { edit } = props;
   const animatedComponents = makeAnimated();
   const [passShow, setPassShow] = useState(false);
+  const token = useSelector((state) => state.Token);
   const [info, setInfo] = useState({
     name: "",
     email: "",
@@ -25,7 +29,6 @@ const SignUp = (props) => {
     }
   }, [edit]);
   const getuser = async () => {
-    const token = localStorage.getItem("auth-token") || "";
     const data = await fetch("http://localhost:5000/api/v1/auth/getuser", {
       method: "GET",
       headers: {
@@ -143,7 +146,7 @@ const SignUp = (props) => {
     });
     const data = await res.json();
     if (res.status === 200) {
-      localStorage.setItem("auth-token", data.auto_token);
+      setToken(data.auto_token);
       navigate("/questions");
       setInfo({
         name: "",
@@ -166,7 +169,7 @@ const SignUp = (props) => {
     if (info.tags.length === 0) {
       setInfo({ ...info, tags: ["General"] });
     }
-    const token = localStorage.getItem("auth-token") || "";
+    
     const res = await fetch("http://localhost:5000/api/v1/auth/updateuser", {
       method: "PUT",
       headers: {
@@ -294,12 +297,13 @@ const SignUp = (props) => {
               isMulti
               onChange={(e) => {
                 if (e.length > 0 && e[e.length - 1].value === "Add a new tag") {
-                  let newtag = prompt("Enter your tag");
+                  let newtag = showPrompt({ title: "Enter your tag" });
                   if (newtag === null) {
                     showAlert({
                       title: "Tag can't be empty",
                       icon: "error",
                     });
+                    e = e.slice(0, e.length - 1);
                   } else {
                     newtag = newtag && newtag.trim();
                     e[e.length - 1].value = newtag;

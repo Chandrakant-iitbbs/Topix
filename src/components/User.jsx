@@ -3,7 +3,7 @@ import { Button, Row, Col, Image, Card } from "react-bootstrap";
 import HtmlToText from "./HtmlToText";
 import { useNavigate } from "react-router-dom";
 import { setQuesId } from "../Redux/Actions";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import showAlert from "../Functions/Alert";
 import { getMembershipTime, getTimeDifference } from "../Functions/GetTime";
 import { getStars } from "../Functions/GetStars";
@@ -16,7 +16,7 @@ const User = () => {
   const [answered, setAnswered] = useState([]);
   const [user, setUser] = useState([]);
   const [likes, setLikes] = useState(0);
-  const token = localStorage.getItem("auth-token") || "";
+  const token = useSelector((state) => state.Token);
 
   const getQues = async () => {
     const data = await fetch(
@@ -195,7 +195,8 @@ const User = () => {
     GetData();
   }, []);
 
-  const handleEdit = () => {
+  const handleEdit = (e) => {
+    e.preventDefault();
     navigate("/user/editProfile");
   };
 

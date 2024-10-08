@@ -13,10 +13,9 @@ const EditAnswer = () => {
     const isWrap = window.innerWidth < 900;
     const [addAnswer, setAddAnswer] = useState("");
     const id = useSelector((state) => state.updateAnsId);
-    const token = localStorage.getItem("auth-token") || "";
-    const navigate = useNavigate();
+    const token = useSelector((state) => state.Token);
     const quesId = useSelector((state) => state.QuesId);
-
+    const navigate = useNavigate();
 
     const fetchAnswer = async () => {
         const res = await fetch(`http://localhost:5000/api/v1/answer/getAnswer/${id}`,
@@ -41,7 +40,6 @@ const EditAnswer = () => {
         }
     };
 
-
     const htmlToPlainText = (html) => {
         let tempDiv = document.createElement("div");
         tempDiv.innerHTML = html;
@@ -60,8 +58,7 @@ const EditAnswer = () => {
             return;
         }
 
-        const res = await fetch(
-            `http://localhost:5000/api/v1/answer/updateAnswer/${id}`,
+        const res = await fetch(`http://localhost:5000/api/v1/answer/updateAnswer/${id}`,
             {
                 method: "PUT",
                 headers: {
@@ -120,7 +117,8 @@ const EditAnswer = () => {
             <div
                 style={{ display: "flex", justifyContent: "space-evenly", margin: "1rem" }}
             >
-                <Button style={{backgroundColor:"gray", borderColor:"gray"}} onClick={()=> navigate(`/question/${quesId}`)}>Cancel</Button>
+                <Button style={{backgroundColor:"gray", borderColor:"gray"}} onClick={(e)=> {e.preventDefault();
+                navigate(`/question/${quesId}`)}}>Cancel</Button>
                 <Button onClick={handleSubmit}>Submit</Button>
             </div>
         </div>
