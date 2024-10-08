@@ -25,7 +25,7 @@ const Login = () => {
     const data = await res.json();
     if (res.status === 200) {
       dispatch(setToken(data.auto_token));
-      navigate("/about");
+      navigate("/questions");
     } 
     else{
       showAlert({

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import HtmlToText from "./HtmlToText";
 import { useDispatch, useSelector } from "react-redux";
-import { setQuesId } from "../Redux/Actions";
+import { setQuesId, setUserId } from "../Redux/Actions";
 import {getTimeDifference} from "../Functions/GetTime";
 import showAlert from "../Functions/Alert";
 
@@ -87,7 +87,11 @@ const QuesCard = (props) => {
             flexDirection: "row",
           }}
         >
-          <div>Asked by: {ques.user === PersonalObjectId?"You":name}</div>
+          <div>Asked by: <span style={{cursor:"pointer"}} onClick={(e)=>{
+            e.preventDefault();
+            dispatch(setUserId(ques.user));
+            navigate(`/profile/${ques.user}`);
+          }}>{ques.user === PersonalObjectId?"You":name}</span></div>
           <div style={{ marginRight: "10px" }}>{getTimeDifference(date)}</div>
         </div>
       </div>

@@ -7,7 +7,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { getTimeDifference } from "../Functions/GetTime";
 import showAlert from "../Functions/Alert";
-import { addContact, addConversations } from "../Redux/Actions";
+import { addContact, addConversations, setUserId } from "../Redux/Actions";
 
 const Question = () => {
   const dispatch = useDispatch();
@@ -262,7 +262,11 @@ const Question = () => {
                 marginRight: "10px",
               }}
             >
-              Asked : {getTimeDifference(ques.date)} by {ques.user === PersonalObjectId ? "You" : name}
+              Asked : {getTimeDifference(ques.date)} by <span style={{cursor:"pointer"}} onClick={(e)=>{
+                e.preventDefault();
+                dispatch(setUserId(ques.user));
+                navigate(`/profile/${ques.user}`);
+              }}> {ques.user === PersonalObjectId ? "You" : name}</span>
             </div>
             {ques.user === PersonalObjectId ? (<>
               <div>

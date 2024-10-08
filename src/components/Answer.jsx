@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { getTimeDifference } from "../Functions/GetTime";
 import showAlert from "../Functions/Alert";
 import { Button } from "react-bootstrap";
-import { addContact, addConversations, SetPaymentInfo, updateAnsId } from "../Redux/Actions";
+import { addContact, addConversations, SetPaymentInfo, setUserId, updateAnsId } from "../Redux/Actions";
 
 const Answer = (props) => {
   const { ans, rewardPrice, askedUserId } = props;
@@ -275,7 +275,11 @@ const Answer = (props) => {
               </div>
             </div>
             <div style={{ width: "full", display: 'flex', margin: "0 1rem" }}>
-              Answered : {getTimeDifference(ans.date)} by {name}
+              Answered : {getTimeDifference(ans.date)} by <span style={{cursor:"pointer", marginLeft:"5px"}} onClick={(e)=>{
+                e.preventDefault();
+                dispatch(setUserId(ans.user));
+                navigate(`/profile/${ans.user}`);
+              }}> {name}</span>
             </div>
           </div>}
       </div>

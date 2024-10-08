@@ -46,8 +46,6 @@ const App = () => {
   }, [socket, dispatch]);
 
   const token = useSelector(state => state.Token);
-  console.log(token);
-
   return (
     <>
       <Router>
