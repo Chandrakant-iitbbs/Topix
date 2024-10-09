@@ -56,4 +56,12 @@ const getMembershipTime = (date) => {
     return membership;
   };
 
-module.exports = { getTimeDifference, getMembershipTime };    
+  const getTimeDiff= (date) => {
+    const currentDate = new Date();
+    const givenDate = new Date(date);
+    const difference = currentDate - givenDate;
+    return difference;
+  };
+
+
+module.exports = { getTimeDifference, getMembershipTime,getTimeDiff };    

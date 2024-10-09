@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { setQuesId } from "../Redux/Actions";
 import { useDispatch, useSelector } from "react-redux";
 import showAlert from "../Functions/Alert";
-import { getMembershipTime, getTimeDifference } from "../Functions/GetTime";
+import { getMembershipTime, getTimeDifference ,getTimeDiff} from "../Functions/GetTime";
 import { getStars } from "../Functions/GetStars";
 import copy from "../Assets/clone-regular.svg";
 
@@ -195,6 +195,11 @@ const User = () => {
     GetData();
   }, []);
 
+  const intervalId = setInterval(() => {
+    getUser(); 
+    return () => clearInterval(intervalId);
+  }, 30000);
+
   const handleEdit = (e) => {
     e.preventDefault();
     navigate("/user/editProfile");
@@ -285,6 +290,7 @@ const User = () => {
         >
           <div>{user.name}</div>
           <div>Rating : {getStars(answered.length, likes, ques.length)}</div>
+          <div>{getTimeDiff(user.LastActive)<60001?"Online":"Offline"}</div>
           <div>{user.email}</div>
           <div>{user.interestedTopics && user.interestedTopics.join(", ")}</div>
           <div>{user.UPIid}</div>

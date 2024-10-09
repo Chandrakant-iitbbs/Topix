@@ -48,6 +48,10 @@ const UserSchema = new Schema({
     BestAnswers: [
         { type: mongoose.Schema.Types.ObjectId, ref: 'answer' }
     ],
+    LastActive: {
+        type: Date,
+        default: Date.now
+    }
 });
 
 UserSchema.pre('save', async function (next) {

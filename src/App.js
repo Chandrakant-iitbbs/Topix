@@ -45,6 +45,21 @@ const App = () => {
     return () => socket.off('receive-message');
   }, [socket, dispatch]);
 
+  const setLastSeen = async() => {
+    await fetch("http://localhost:5000/api/v1/auth/lastseen", {
+      method:"PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "auth-header": token,
+      }
+    });
+  };
+
+  const intervalId = setInterval(() => {
+    setLastSeen();
+    return () => clearInterval(intervalId);
+  }, 30000);
+
   const token = useSelector(state => state.Token);
   return (
     <>

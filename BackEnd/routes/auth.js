@@ -227,6 +227,22 @@ router.put('/bestanswer', Fetchuser, async (req, res) => {
 }
 );
 
-
+// ROUTE 10
+// Set user's last seen using : put "/api/v1/auth/lastseen". Login required
+router.put('/lastseen', Fetchuser, async (req, res) => {
+    try {
+        let user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json("User not found");
+        }   
+        user.LastActive = Date.now();
+        user = await User.findByIdAndUpdate(req.user.id, { $set: user }, { new: true }); 
+        res.status(200).json(user);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json("Internal server error");
+    }
+}
+);
 
 module.exports = router

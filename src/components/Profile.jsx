@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { addConversations, setQuesId, SetPaymentInfo } from "../Redux/Actions";
 import showAlert from "../Functions/Alert";
-import { getMembershipTime, getTimeDifference } from "../Functions/GetTime";
+import { getMembershipTime, getTimeDifference, getTimeDiff } from "../Functions/GetTime";
 import { getStars } from "../Functions/GetStars";
 import { addContact } from "../Redux/Actions";
 import copy from "../Assets/clone-regular.svg";
@@ -20,6 +20,11 @@ const Profile = () => {
   const contacts = useSelector((state) => state.contacts);
   const userId = useSelector((state) => state.UserId);
   const token = useSelector((state) => state.Token);
+
+  const intervalId = setInterval(() => {
+    getUser(); 
+    return () => clearInterval(intervalId);
+  }, 30000);
 
   const getQues = async () => {
     const data = await fetch(
@@ -256,6 +261,7 @@ const Profile = () => {
         >
           <div>{user.name}</div>
           <div>Rating : {getStars(answered.length, likes, ques.length)}</div>
+          <div>{getTimeDiff(user.LastActive)<60001?"Online":"Offline"}</div>
           <div>{user.email}</div>
           <div>{user.interestedTopics && user.interestedTopics.join(", ")}</div>
           <div>{user.UPIid}</div>
