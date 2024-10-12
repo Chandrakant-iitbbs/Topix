@@ -1,6 +1,6 @@
 import { Navbar, Button, Image, Col } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
-import logo from "../logo.svg";
+import logo from "../Assets/TopixLogo.png";
 
 const NavBarBeforeLogin = () => {
   const navigate = useNavigate();
@@ -8,7 +8,7 @@ const NavBarBeforeLogin = () => {
     <div style={{
       width: "100%", padding: "16px"
     }}>
-     <Navbar
+      <Navbar
         collapseOnSelect
         expand="sm"
         className="bg-body-tertiary"
@@ -18,12 +18,7 @@ const NavBarBeforeLogin = () => {
           <Image
             src={logo}
             alt="logo"
-            width="50"
-            height="50"
-            onClick={(e) => {
-              e.preventDefault();
-              navigate("/");
-            }}
+            style={{ marginLeft: "10px", marginRight: "10px", width: "40px", height: "32px", marginTop: "-5px" }}
           />
           <Link
             to="/"

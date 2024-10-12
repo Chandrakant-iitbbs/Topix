@@ -9,6 +9,7 @@ import { getMembershipTime, getTimeDifference, getTimeDiff } from "../Functions/
 import { getStars } from "../Functions/GetStars";
 import { addContact } from "../Redux/Actions";
 import copy from "../Assets/clone-regular.svg";
+import Pagination from "./Pagination";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -392,12 +393,7 @@ const Profile = () => {
                 </Card.Body>
               </Card>
             ))}
-
-              <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-                <button disabled={pageIdQues === 0} onClick={() => setPageIdQues(pageIdQues - 1)} style={{ margin: "10px" }}>Previous</button>
-                <h4>{pageIdQues + 1} of {totalPagesQues.length}</h4>
-                <button disabled={pageIdQues === totalPagesQues.length - 1} onClick={() => setPageIdQues(pageIdQues + 1)} style={{ margin: "10px" }}>Next</button>
-              </div>
+            <Pagination pageId={pageIdQues} totalPages={totalPagesQues} setPageId={setPageIdQues} />
             </>
           }
         </Col>
@@ -442,11 +438,7 @@ const Profile = () => {
                   </Card.Body>
                 </Card>
               ))}
-                <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-                  <button disabled={pageIdAns === 0} onClick={() => setPageIdAns(pageIdAns - 1)} style={{ margin: "10px" }}>Previous</button>
-                  <h4>{pageIdAns + 1} of {totalPagesAns.length}</h4>
-                  <button disabled={pageIdAns === totalPagesAns.length - 1} onClick={() => setPageIdAns(pageIdAns + 1)} style={{ margin: "10px" }}>Next</button>
-                </div>
+                <Pagination pageId={pageIdAns} totalPages={totalPagesAns} setPageId={setPageIdAns} />
               </>}
           </div>
         </Col>

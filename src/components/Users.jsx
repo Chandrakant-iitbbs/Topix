@@ -3,6 +3,7 @@ import UserCard from "./UserCard";
 import { useNavigate } from "react-router-dom";
 import showAlert from "../Functions/Alert";
 import { useSelector } from "react-redux";
+import Pagination from "./Pagination";
 
 const Users = () => {
   const navigate = useNavigate();
@@ -91,11 +92,7 @@ const Users = () => {
           return <UserCard key={user._id} user={user} />;
         })}
       </div>
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-        <button disabled={pageId === 0} onClick={() => setPageId(pageId - 1)} style={{ margin: "10px" }}>Previous</button>
-        <h4>{pageId+1} of {totalPages.length}</h4>
-        <button disabled={pageId === totalPages.length-1} onClick={() => setPageId(pageId + 1)} style={{ margin: "10px" }}>Next</button>
-      </div>
+     <Pagination totalPages={totalPages} setPageId={setPageId} pageId={pageId} />
     </div>
   );
 };

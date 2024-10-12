@@ -1,6 +1,6 @@
 import { Navbar, Nav, Button, Image, Col, Form, Row } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
-import logo from "../logo.svg";
+import logo from "../Assets/TopixLogo.png"
 import { useEffect, useState } from "react";
 import { deletetoken, setPersonalObjectId } from "../Redux/Actions";
 import { useDispatch, useSelector } from "react-redux";
@@ -73,8 +73,7 @@ const NavbarAfterLogin = () => {
           <Image
             src={logo}
             alt="logo"
-            width="50"
-            height="50"
+            style={{ marginLeft: "10px", marginRight: "10px", width: "40px", height: "32px", marginTop: "-5px" }}
           />
           <Link
             to="/"

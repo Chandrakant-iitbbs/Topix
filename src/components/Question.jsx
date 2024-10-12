@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { getTimeDifference } from "../Functions/GetTime";
 import showAlert from "../Functions/Alert";
 import { addContact, addConversations, setUserId } from "../Redux/Actions";
+import Pagination from "./Pagination";
 
 const Question = () => {
   const dispatch = useDispatch();
@@ -375,11 +376,7 @@ const Question = () => {
             {answers.map((ans, index) => {
               return <Answer ans={ans} key={index} rewardPrice={ques.rewardPrice} askedUserId={askedUserId} />;
             })}
-            <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-              <button disabled={pageIdAns === 0} onClick={() => setPageIdAns(pageIdAns - 1)} style={{ margin: "10px" }}>Previous</button>
-              <h4>{pageIdAns + 1} of {totalPagesAns.length}</h4>
-              <button disabled={pageIdAns === totalPagesAns.length - 1} onClick={() => setPageIdAns(pageIdAns + 1)} style={{ margin: "10px" }}>Next</button>
-            </div>
+           <Pagination totalPages={totalPagesAns} setPageId={setPageIdAns} pageId={pageIdAns} />
           </div>
         ) : (
           <h1>No answers till now...</h1>

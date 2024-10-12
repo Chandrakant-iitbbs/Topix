@@ -6,7 +6,7 @@ import QuesCard from "./QuesCard";
 import { useNavigate } from "react-router-dom";
 import showAlert from "../Functions/Alert";
 import { useSelector } from "react-redux";
-
+import Pagination from "./Pagination";
 const Questions = () => {
   const navigate = useNavigate();
   const token = useSelector((state) => state.Token);
@@ -254,11 +254,7 @@ const Questions = () => {
             />
           );
         })}
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-          <button disabled={pageIdQues === 0} onClick={() => setPageIdQues(pageIdQues - 1)} style={{ margin: "10px" }}>Previous</button>
-          <h4>{pageIdQues + 1} of {totalPagesQues.length}</h4>
-          <button disabled={pageIdQues === totalPagesQues.length - 1} onClick={() => setPageIdQues(pageIdQues + 1)} style={{ margin: "10px" }}>Next</button>
-        </div>
+        <Pagination totalPages={totalPagesQues} pageId={pageIdQues} setPageId={setPageIdQues} />
       </div>
     </div>
   );
