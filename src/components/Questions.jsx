@@ -13,10 +13,18 @@ const Questions = () => {
   const animatedComponents = makeAnimated();
   const [allTags, setAllTags] = useState([]);
   const [questions, setQuestions] = useState([]);
+  const [pageIdQues, setPageIdQues] = useState(0);
+  const [totalPagesQues, setTotalPagesQues] = useState([]);
+  const pageSize = 5;
+
+  useEffect(() => {
+    getQuestions();
+  }, [pageIdQues]);
+
 
   const getQuestions = async () => {
     const data = await fetch(
-      "http://localhost:5000/api/v1/ques/getAllQuestions",
+      `http://localhost:5000/api/v1/ques/getAllQuestions/${pageIdQues}/${pageSize}`,
       {
         method: "GET",
         headers: {
@@ -53,9 +61,38 @@ const Questions = () => {
     }
   };
 
+  const getTotalQuestionLength = async () => {
+    const res = await fetch("http://localhost:5000/api/v1/ques/getTotalQuestions", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "auth-header": token,
+      },
+    });
+
+    const a = await res.json();
+    if (res.status === 200) {
+      const totalPages = Math.ceil(a / pageSize);
+      const pages = [];
+      for (let i = 0; i < totalPages; i++) {
+        pages.push(i);
+      }
+      setTotalPagesQues(pages);
+    } else if (res.error && (res.error == "Enter the token" || res.error == "Please authenticate using a valid token")) {
+      navigate("/login");
+    }
+    else {
+      showAlert({
+        title: res.error ? res.error : res ? res : "Internal server error",
+        icon: "error",
+      });
+    }
+  };
+
+
   useEffect(() => {
-    getQuestions();
     getAllTags();
+    getTotalQuestionLength();
   }, []);
 
   const sortByTime = async () => {
@@ -196,7 +233,8 @@ const Questions = () => {
         <div>
           <Button onClick={(e) => {
             e.preventDefault();
-            navigate("/askQues")}}>Ask a question</Button>
+            navigate("/askQues")
+          }}>Ask a question</Button>
         </div>
       </div>
       <div
@@ -216,6 +254,11 @@ const Questions = () => {
             />
           );
         })}
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <button disabled={pageIdQues === 0} onClick={() => setPageIdQues(pageIdQues - 1)} style={{ margin: "10px" }}>Previous</button>
+          <h4>{pageIdQues + 1} of {totalPagesQues.length}</h4>
+          <button disabled={pageIdQues === totalPagesQues.length - 1} onClick={() => setPageIdQues(pageIdQues + 1)} style={{ margin: "10px" }}>Next</button>
+        </div>
       </div>
     </div>
   );

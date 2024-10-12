@@ -23,6 +23,50 @@ const Question = () => {
   const [ChatId, setChatId] = useState("");
   const [askedUserId, setAskedUserId] = useState("");
   const PersonalObjectId = useSelector((state) => state.personalObjectId);
+  const [pageIdAns, setPageIdAns] = useState(0);
+  const [totalPagesAns, setTotalPagesAns] = useState([]);
+  const pageSize = 5;
+  const [totalAnswersLength, setTotalAnswersLength] = useState(0);
+
+  const getAnswersLength = async () => {
+    const data = await fetch(
+      `http://localhost:5000/api/v1/answer/getAnswersLength/${id}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "auth-header": token,
+        },
+      }
+    );
+    const a = await data.json();
+    if (data.status === 200) {
+      setTotalAnswersLength(a);
+      let pages = Math.ceil(a / pageSize);
+      let arr = [];
+      for (let i = 0; i < pages; i++) {
+        arr.push(i);
+      }
+      setTotalPagesAns(arr);
+    } else if (a.error && (a.error === "Enter the token" || a.error === "Please authenticate using a valid token")) {
+      navigate("/login");
+    } else {
+      showAlert({
+        title: a.error ? a.error : a ? a : "Internal server error",
+        icon: "error",
+      });
+    }
+  };
+
+  useEffect(() => {
+    getAnswersLength();
+  }, []);
+
+  useEffect(() => {
+    fetchAnswers();
+  }, [pageIdAns]);
+
+
 
   const deleteQuestion = async (e, id) => {
     e.preventDefault();
@@ -147,8 +191,9 @@ const Question = () => {
   };
 
   const fetchAnswers = async () => {
+    setAnswers([]);
     const data = await fetch(
-      `http://localhost:5000/api/v1/answer/getAnswers/${id}`,
+      `http://localhost:5000/api/v1/answer/getAnswers/${id}/${pageIdAns}/${pageSize}`,
       {
         method: "GET",
         headers: {
@@ -253,7 +298,7 @@ const Question = () => {
                 marginRight: "10px",
               }}
             >
-              Answers: {answers.length}
+              Answers: {totalAnswersLength}
             </div>
             <div
               style={{
@@ -262,7 +307,7 @@ const Question = () => {
                 marginRight: "10px",
               }}
             >
-              Asked : {getTimeDifference(ques.date)} by <span style={{cursor:"pointer"}} onClick={(e)=>{
+              Asked : {getTimeDifference(ques.date)} by <span style={{ cursor: "pointer" }} onClick={(e) => {
                 e.preventDefault();
                 dispatch(setUserId(ques.user));
                 navigate(`/profile/${ques.user}`);
@@ -309,7 +354,7 @@ const Question = () => {
                   border: "1px solid gray",
                   borderRadius: "5px",
                   backgroundColor: "#d3d3d3",
-                  margin:"5px"
+                  margin: "5px"
                 }}
               >
                 {tag}
@@ -330,6 +375,11 @@ const Question = () => {
             {answers.map((ans, index) => {
               return <Answer ans={ans} key={index} rewardPrice={ques.rewardPrice} askedUserId={askedUserId} />;
             })}
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+              <button disabled={pageIdAns === 0} onClick={() => setPageIdAns(pageIdAns - 1)} style={{ margin: "10px" }}>Previous</button>
+              <h4>{pageIdAns + 1} of {totalPagesAns.length}</h4>
+              <button disabled={pageIdAns === totalPagesAns.length - 1} onClick={() => setPageIdAns(pageIdAns + 1)} style={{ margin: "10px" }}>Next</button>
+            </div>
           </div>
         ) : (
           <h1>No answers till now...</h1>

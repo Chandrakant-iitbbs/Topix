@@ -20,15 +20,58 @@ const Profile = () => {
   const contacts = useSelector((state) => state.contacts);
   const userId = useSelector((state) => state.UserId);
   const token = useSelector((state) => state.Token);
+  const [pageIdQues, setPageIdQues] = useState(0);
+  const [totalPagesQues, setTotalPagesQues] = useState([]);
+  const [pageIdAns, setPageIdAns] = useState(0);
+  const [totalPagesAns, setTotalPagesAns] = useState([]);
+  const pageSize = 5;
+  const [fullAns, setFullAns] = useState([]);
 
   const intervalId = setInterval(() => {
-    getUser(); 
+    getUser();
     return () => clearInterval(intervalId);
   }, 30000);
 
+  useEffect(() => {
+    getQues();
+  }, [pageIdQues]);
+
+  useEffect(() => {
+    setAnswered(fullAns.slice(pageIdAns * pageSize, (pageIdAns + 1) * pageSize));
+  }, [pageIdAns]);
+
+
+  const getLengthQuestions = async () => {
+    const data = await fetch("http://localhost:5000/api/v1/ques/getTotalQuestionsLength", {
+      headers: {
+        "Content-Type": "application/json",
+        "auth-header": token,
+      },
+    });
+    const res = await data.json();
+    if (data.status === 200) {
+      console.log(res);
+      let arr = [];
+      for (let i = 0; i < Math.ceil(res / pageSize); i++) {
+        arr.push(i);
+      }
+      setTotalPagesQues(arr);
+    } else if (res.error && (res.error === "Enter the token" ||
+      res.error === "Please authenticate using a valid token"
+    )) {
+      navigate("/login");
+    } else {
+      showAlert({
+        title: res.error ? res.error : res ? res : "Something went wrong",
+        icon: "error",
+      });
+    }
+  };
+
+
   const getQues = async () => {
     const data = await fetch(
-      `http://localhost:5000/api/v1/ques/getAllQuestionsByUser/${userId}`,
+      `http://localhost:5000/api/v1/ques/getAllQuestionsByUser/${userId}/${pageIdQues}/${pageSize}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -38,7 +81,7 @@ const Profile = () => {
     );
     const res = await data.json();
     if (data.status === 200) {
-      setQues(res.reverse());
+      setQues(res);
     }
     else if (res.error && (res.error === "Enter the token" || res.error === "Please authenticate using a valid token")) {
       navigate("/login");
@@ -120,7 +163,12 @@ const Profile = () => {
           };
         }
       }
-      setAnswered(uniqueAnswers);
+      setFullAns(uniqueAnswers);
+      let arr = [];
+      for (let i = 0; i < Math.ceil(uniqueAnswers.length / pageSize); i++) {
+        arr.push(i);
+      }
+      setTotalPagesAns(arr);
     } else if (res.error && (res.error === "Enter the token" || res.error === "Please authenticate using a valid token")) {
       navigate("/login");
     }
@@ -182,6 +230,7 @@ const Profile = () => {
   }
   useEffect(() => {
     GetData();
+    getLengthQuestions();
   }, []);
 
   const handleChat = () => {
@@ -261,7 +310,7 @@ const Profile = () => {
         >
           <div>{user.name}</div>
           <div>Rating : {getStars(answered.length, likes, ques.length)}</div>
-          <div>{getTimeDiff(user.LastActive)<60001?"Online":"Offline"}</div>
+          <div>{getTimeDiff(user.LastActive) < 60001 ? "Online" : "Offline"}</div>
           <div>{user.email}</div>
           <div>{user.interestedTopics && user.interestedTopics.join(", ")}</div>
           <div>{user.UPIid}</div>
@@ -310,7 +359,7 @@ const Profile = () => {
           <h3>Question Asked</h3>
           {ques.length === 0
             ? "No question asked"
-            : ques.map((question, index) => (
+            : <>{ques.map((question, index) => (
               <Card
                 style={{
                   width: "100%",
@@ -321,7 +370,8 @@ const Profile = () => {
                 <Card.Body>
                   <Card.Title style={{ cursor: "pointer" }} onClick={(e) => {
                     e.preventDefault();
-                    handleQuestionClick(question._id)}}>
+                    handleQuestionClick(question._id)
+                  }}>
                     {
                       <HtmlToText
                         html={question.question}
@@ -334,14 +384,22 @@ const Profile = () => {
                       display: "flex", justifyContent: "space-between", flexWrap: "wrap",
                       gap: "10px"
                     }}>
-                      <div style={{margin:"10px", marginLeft:0}}>{question.views.length} views
+                      <div style={{ margin: "10px", marginLeft: 0 }}>{question.views.length} views
                       </div>
-                      <div style={{margin:"10px"}}>{getTimeDifference(question.date)}</div>
+                      <div style={{ margin: "10px" }}>{getTimeDifference(question.date)}</div>
                     </div>
                   </Card.Text>
                 </Card.Body>
               </Card>
             ))}
+
+              <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                <button disabled={pageIdQues === 0} onClick={() => setPageIdQues(pageIdQues - 1)} style={{ margin: "10px" }}>Previous</button>
+                <h4>{pageIdQues + 1} of {totalPagesQues.length}</h4>
+                <button disabled={pageIdQues === totalPagesQues.length - 1} onClick={() => setPageIdQues(pageIdQues + 1)} style={{ margin: "10px" }}>Next</button>
+              </div>
+            </>
+          }
         </Col>
       </Row>
       <Row style={{ margin: "2rem 0" }}>
@@ -350,7 +408,7 @@ const Profile = () => {
           <div>
             {answered.length === 0
               ? "No answer given from you"
-              : answered.map((answer, index) => (
+              : <>{answered.map((answer, index) => (
                 <Card
                   key={index}
                   style={{
@@ -360,9 +418,10 @@ const Profile = () => {
 
                 >
                   <Card.Body>
-                    <Card.Title style={{ cursor: "pointer" }} onClick={(e) => 
-                     { e.preventDefault();
-                      handleQuestionClick(answer.question.id)}}>
+                    <Card.Title style={{ cursor: "pointer" }} onClick={(e) => {
+                      e.preventDefault();
+                      handleQuestionClick(answer.question.id)
+                    }}>
                       {
                         <HtmlToText
                           html={answer.question.html}
@@ -375,14 +434,20 @@ const Profile = () => {
                         display: "flex", justifyContent: "space-between", flexWrap: "wrap",
                         gap: "10px"
                       }}>
-                        <div style={{margin:"10px", marginLeft:0}}>{answer.upVotes.length - answer.downVotes.length} likes received</div>
-                    {user.BestAnswers && user.BestAnswers.includes(answer._id) ? <div style={{margin:"10px"}}>Best Answer</div> : null}
-                        <div style={{margin:"10px"}}>{getTimeDifference(answer.date)}</div>
+                        <div style={{ margin: "10px", marginLeft: 0 }}>{answer.upVotes.length - answer.downVotes.length} likes received</div>
+                        {user.BestAnswers && user.BestAnswers.includes(answer._id) ? <div style={{ margin: "10px" }}>Best Answer</div> : null}
+                        <div style={{ margin: "10px" }}>{getTimeDifference(answer.date)}</div>
                       </div>
                     </Card.Text>
                   </Card.Body>
                 </Card>
               ))}
+                <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                  <button disabled={pageIdAns === 0} onClick={() => setPageIdAns(pageIdAns - 1)} style={{ margin: "10px" }}>Previous</button>
+                  <h4>{pageIdAns + 1} of {totalPagesAns.length}</h4>
+                  <button disabled={pageIdAns === totalPagesAns.length - 1} onClick={() => setPageIdAns(pageIdAns + 1)} style={{ margin: "10px" }}>Next</button>
+                </div>
+              </>}
           </div>
         </Col>
       </Row>

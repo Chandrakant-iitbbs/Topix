@@ -145,10 +145,11 @@ router.delete('/deleteuser', Fetchuser, async (req, res) => {
 );
 
 // ROUTE 6
-// Get all users using : get "/api/v1/auth/getallusers". Login required
-router.get('/getallusers', Fetchuser, async (req, res) => {
+// Get all users using : get "/api/v1/auth/getallusersd". Login required
+router.get('/getallusers/:pageId/:pageSize', Fetchuser, async (req, res) => {
     try {
-        const user = await User.find().select("-password");
+        const pageSize = parseInt(req.params.pageSize), pageId = parseInt(req.params.pageId);
+        const user = await User.find().select("-password").skip(req.params.pageId * pageSize).limit(pageSize);
         res.status(200).json(user);
     } catch (error) {
         console.error(error.message);
@@ -206,6 +207,7 @@ router.put('/bestanswer', Fetchuser, async (req, res) => {
         const { answerId, answeredPersonId } = req.body;
 
         let ans = await Answer.findById(answerId);
+
         if (!ans) {
             return res.status(404).json("Answer not found");
         }
@@ -219,6 +221,8 @@ router.put('/bestanswer', Fetchuser, async (req, res) => {
         }
         user.BestAnswers.push(answerId);
         user = await User.findByIdAndUpdate(answeredPersonId, { $set: user }, { new: true });
+        ans.isBestAnswer = true;
+        ans = await Answer.findByIdAndUpdate(answerId, { $set: ans }, { new: true });
         res.status(200).json(user);
     } catch (error) {
         console.error(error.message);
@@ -234,9 +238,21 @@ router.put('/lastseen', Fetchuser, async (req, res) => {
         let user = await User.findById(req.user.id);
         if (!user) {
             return res.status(404).json("User not found");
-        }   
+        }
         user.LastActive = Date.now();
-        user = await User.findByIdAndUpdate(req.user.id, { $set: user }, { new: true }); 
+        user = await User.findByIdAndUpdate(req.user.id, { $set: user }, { new: true });
+        res.status(200).json(user);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json("Internal server error");
+    }
+});
+
+// ROUTE 11
+// Get all users length using : get "/api/v1/auth/getallusersLength". Login required
+router.get('/getallusersLength', Fetchuser, async (req, res) => {
+    try {
+        const user = await User.find().select("-password").countDocuments();
         res.status(200).json(user);
     } catch (error) {
         console.error(error.message);
@@ -244,5 +260,8 @@ router.put('/lastseen', Fetchuser, async (req, res) => {
     }
 }
 );
+
+
+
 
 module.exports = router

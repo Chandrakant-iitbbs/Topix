@@ -8,7 +8,7 @@ const Ques = require('../models/Ques');
 // get all the answers of the user using : Get "/api/v1/answer/getAllAnswers". Login required
 router.get("/getAllAnswers", FetchUser, async (req, res) => {
     try {
-        const answers = await Answer.find({ user: req.user.id });   
+        const answers = await Answer.find({ user: req.user.id });
         res.status(200).json(answers);
     }
     catch (error) {
@@ -108,13 +108,15 @@ router.get("/getAnswer/:id", FetchUser, async (req, res) => {
 
 // Route 6
 // Get all the answers of a question using : Get "api/v1/answer/getAnswers/:QId". Login required
-router.get("/getAnswers/:QId", FetchUser, async (req, res) => {
+router.get("/getAnswers/:QId/:pageIdAns/:pageSize", FetchUser, async (req, res) => {
     try {
+        const pageId = req.params.pageIdAns;
+        const pageSize = req.params.pageSize;
         const ques = await Ques.findById(req.params.QId);
         if (!ques) {
             return res.status(404).json("Question not found");
         }
-        const answers = await Answer.find({ question: req.params.QId });
+        const answers = await Answer.find({ question: req.params.QId }).skip((pageId) * pageSize).limit(pageSize).sort({ date: -1 });
         res.status(200).json(answers);
     }
     catch (error) {
@@ -184,5 +186,20 @@ router.get("/getUserAnswers/:id", FetchUser, async (req, res) => {
     }
 });
 
-
+// Route 10
+// Get all the answers length by question id using : Get "api/v1/answer/getAnswersLength/:id". Login required
+router.get("/getAnswersLength/:QId", FetchUser, async (req, res) => {
+    try {
+        const ques = await Ques.findById(req.params.QId);
+        if (!ques) {
+            return res.status(404).json("Question not found");
+        }
+        const answers = await Answer.find({ question: req.params.QId });
+        res.status(200).json(answers.length);
+    }
+    catch (error) {
+        console.error(error.message);
+        res.status(500).json("Internal server error");
+    }
+});
 module.exports = router;

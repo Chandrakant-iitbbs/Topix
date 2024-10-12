@@ -23,6 +23,10 @@ const AnswerSchema = new Schema({
     date:{
         type : Date,
         default : Date.now
+    },
+    isBestAnswer:{
+        type: Boolean,
+        default: false
     }
 });
 

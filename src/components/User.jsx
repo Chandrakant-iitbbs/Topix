@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { setQuesId } from "../Redux/Actions";
 import { useDispatch, useSelector } from "react-redux";
 import showAlert from "../Functions/Alert";
-import { getMembershipTime, getTimeDifference ,getTimeDiff} from "../Functions/GetTime";
+import { getMembershipTime, getTimeDifference, getTimeDiff } from "../Functions/GetTime";
 import { getStars } from "../Functions/GetStars";
 import copy from "../Assets/clone-regular.svg";
 
@@ -18,9 +18,56 @@ const User = () => {
   const [likes, setLikes] = useState(0);
   const token = useSelector((state) => state.Token);
 
+  const [pageIdQues, setPageIdQues] = useState(0);
+  const [totalPagesQues, setTotalPagesQues] = useState([]);
+  const [pageIdAns, setPageIdAns] = useState(0);
+  const [totalPagesAns, setTotalPagesAns] = useState([]);
+  const pageSize = 5;
+  const [fullAns, setFullAns] = useState([]);
+
+
+  useEffect(() => {
+    setAnswered(fullAns.slice(pageIdAns * pageSize, (pageIdAns + 1) * pageSize));
+  }, [pageIdAns]);
+
+  useEffect(() => {
+    getLengthQuestions();
+  }, []);
+
+
+
+  const getLengthQuestions = async () => {
+    const data = await fetch("http://localhost:5000/api/v1/ques/getTotalQuestionsLength", {
+      headers: {
+        "Content-Type": "application/json",
+        "auth-header": token,
+      },
+    });
+    const res = await data.json();
+    if (data.status === 200) {
+      console.log(res);
+      let arr = [];
+      for (let i = 0; i < Math.ceil(res / pageSize); i++) {
+        arr.push(i);
+      }
+      setTotalPagesQues(arr);
+
+    } else if (res.error && (res.error === "Enter the token" ||
+      res.error === "Please authenticate using a valid token"
+    )) {
+      navigate("/login");
+    } else {
+      showAlert({
+        title: res.error ? res.error : res ? res : "Something went wrong",
+        icon: "error",
+      });
+    }
+  };
+
+
   const getQues = async () => {
     const data = await fetch(
-      "http://localhost:5000/api/v1/ques/getAllQuestionsOfUser",
+      `http://localhost:5000/api/v1/ques/getAllQuestionsOfUser/${pageIdQues}/${pageSize}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -30,7 +77,7 @@ const User = () => {
     );
     const res = await data.json();
     if (data.status === 200) {
-      setQues(res.reverse());
+      setQues(res);
     } else if (res.error && (res.error === "Enter the token" ||
       res.error === "Please authenticate using a valid token"
     )) {
@@ -87,7 +134,7 @@ const User = () => {
 
   const getAns = async () => {
     const data = await fetch(
-      "http://localhost:5000/api/v1/answer/getAllAnswers",
+      `http://localhost:5000/api/v1/answer/getAllAnswers`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -99,9 +146,7 @@ const User = () => {
     if (data.status === 200) {
       const totalLikes = getLikes(res);
       setLikes(totalLikes);
-
       const uniqueAnswers = removeDuplicateAnswers(res);
-
       for (let answer of uniqueAnswers) {
         const id = answer.question;
         const question = await fetchQuestionById(id);
@@ -112,7 +157,11 @@ const User = () => {
           };
         }
       }
-      setAnswered(uniqueAnswers);
+      setFullAns(uniqueAnswers);
+      const totalPages = Math.ceil(uniqueAnswers.length / pageSize);
+      for (let i = 0; i < totalPages; i++) {
+        setTotalPagesAns((prev) => [...prev, i]);
+      }
     } else if (res.error && (res.error === "Enter the token" ||
       res.error === "Please authenticate using a valid token"
     )) {
@@ -195,8 +244,12 @@ const User = () => {
     GetData();
   }, []);
 
+  useEffect(() => {
+    getQues();
+  }, [pageIdQues]);
+
   const intervalId = setInterval(() => {
-    getUser(); 
+    getUser();
     return () => clearInterval(intervalId);
   }, 30000);
 
@@ -290,7 +343,7 @@ const User = () => {
         >
           <div>{user.name}</div>
           <div>Rating : {getStars(answered.length, likes, ques.length)}</div>
-          <div>{getTimeDiff(user.LastActive)<60001?"Online":"Offline"}</div>
+          <div>{getTimeDiff(user.LastActive) < 60001 ? "Online" : "Offline"}</div>
           <div>{user.email}</div>
           <div>{user.interestedTopics && user.interestedTopics.join(", ")}</div>
           <div>{user.UPIid}</div>
@@ -344,7 +397,7 @@ const User = () => {
           <h3>Question Asked</h3>
           {ques.length === 0
             ? "No question asked"
-            : ques.map((question, index) => (
+            : <> {ques.map((question, index) => (
               <Card
                 style={{
                   width: "100%",
@@ -367,14 +420,21 @@ const User = () => {
                       display: "flex", justifyContent: "space-between", flexWrap: "wrap",
                       gap: "10px"
                     }}>
-                      <div style={{margin:"10px", marginLeft:0}}>{question.views.length} views
+                      <div style={{ margin: "10px", marginLeft: 0 }}>{question.views.length} views
                       </div>
-                      <div style={{margin:"10px"}}>{getTimeDifference(question.date)}</div>
+                      <div style={{ margin: "10px" }}>{getTimeDifference(question.date)}</div>
                     </div>
                   </Card.Text>
                 </Card.Body>
               </Card>
             ))}
+              <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                <button disabled={pageIdQues === 0} onClick={() => setPageIdQues(pageIdQues - 1)} style={{ margin: "10px" }}>Previous</button>
+                <h4>{pageIdQues + 1} of {totalPagesQues.length}</h4>
+                <button disabled={pageIdQues === totalPagesQues.length - 1} onClick={() => setPageIdQues(pageIdQues + 1)} style={{ margin: "10px" }}>Next</button>
+              </div>
+            </>
+          }
         </Col>
       </Row>
       <Row style={{ margin: "2rem 0" }}>
@@ -383,7 +443,7 @@ const User = () => {
           <div>
             {answered.length === 0
               ? "No answer given from you"
-              : answered.map((answer, index) => (
+              : <> {answered.map((answer, index) => (
                 <Card
                   key={index}
                   style={{
@@ -406,14 +466,20 @@ const User = () => {
                         display: "flex", justifyContent: "space-between", flexWrap: "wrap",
                         gap: "10px"
                       }}>
-                        <div style={{margin:"10px", marginLeft:0}}>{answer.upVotes.length - answer.downVotes.length} likes received</div>
-                    {user.BestAnswers && user.BestAnswers.includes(answer._id) ? <div style={{margin:"10px"}}>Best Answer</div> : null}
-                        <div style={{margin:"10px"}}>{getTimeDifference(answer.date)}</div>
+                        <div style={{ margin: "10px", marginLeft: 0 }}>{answer.upVotes.length - answer.downVotes.length} likes received</div>
+                        {user.BestAnswers && user.BestAnswers.includes(answer._id) ? <div style={{ margin: "10px" }}>Best Answer</div> : null}
+                        <div style={{ margin: "10px" }}>{getTimeDifference(answer.date)}</div>
                       </div>
                     </Card.Text>
                   </Card.Body>
                 </Card>
               ))}
+                <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                  <button disabled={pageIdAns === 0} onClick={() => setPageIdAns(pageIdAns - 1)} style={{ margin: "10px" }}>Previous</button>
+                  <h4>{pageIdAns + 1} of {totalPagesAns.length}</h4>
+                  <button disabled={pageIdAns === totalPagesAns.length - 1} onClick={() => setPageIdAns(pageIdAns + 1)} style={{ margin: "10px" }}>Next</button>
+                </div>
+              </>}
           </div>
         </Col>
       </Row>

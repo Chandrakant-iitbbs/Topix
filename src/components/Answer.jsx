@@ -235,7 +235,7 @@ const Answer = (props) => {
           }}
         ></i>
         {
-          askedUserId === personalObjectId ? <i className="fa-regular fa-heart" style={{ margin: 'auto', fontSize: "1.2rem" }} onClick={(e) => handleBestAnswerClick(e, ans._id, ans.user)}></i> : null
+          ans.isBestAnswer ?<i className="fa-regular fa-heart" style={{ margin: 'auto', fontSize: "1.2rem", color:"red" }} ></i> : askedUserId === personalObjectId? <i className="fa-regular fa-heart" style={{ margin: 'auto', fontSize: "1.2rem", color: "grey" }} onClick={(e) => handleBestAnswerClick(e, ans._id, ans.user)}></i> : <></>
         }
       </div>
       <div style={{ width: "94%", paddingLeft: "20px" }}>

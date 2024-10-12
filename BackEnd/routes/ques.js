@@ -6,9 +6,11 @@ const Ques = require('../models/Ques');
 
 // ROUTE 1
 // get all the questions of the user using : Get "/api/v1/ques/getAllQuestions". Login required
-router.get("/getAllQuestionsOfUser", FetchUser, async (req, res) => {
+router.get("/getAllQuestionsOfUser/:pageIdQues/:pageSize", FetchUser, async (req, res) => {
     try {
-        const questions = await Ques.find({ user: req.user.id });   // fetching all questions of user, where user = req.user.id, where req.user is varified user and this is available because of fetchuser middleware.
+        const pageIdQues = parseInt(req.params.pageIdQues);
+        const pageSize = parseInt(req.params.pageSize);
+        const questions = await Ques.find({ user: req.user.id }).skip(pageIdQues * pageSize).limit(pageSize).sort({ date: -1 });  // fetching all questions of user, where user = req.user.id, where req.user is varified user and this is available because of fetchuser middleware.
         res.status(200).json(questions);
     }
     catch (error) {
@@ -136,9 +138,11 @@ router.get("/getQuestion/:id", FetchUser, async (req, res) => {
 
 // ROUTE 6
 // get all the questions using : Get "/api/v1/ques/getAllQuestions". Login required
-router.get("/getAllQuestions", FetchUser, async (req, res) => {
+router.get("/getAllQuestions/:pageIdQues/:pageSize", FetchUser, async (req, res) => {
     try {
-        const questions = await Ques.find();
+        const pageIdQues = parseInt(req.params.pageIdQues);
+        const pageSize = parseInt(req.params.pageSize);
+        const questions = await Ques.find().skip(pageIdQues * pageSize).limit(pageSize).sort({ date: -1 });
         res.status(200).json(questions);
     }
     catch (error) {
@@ -209,9 +213,11 @@ router.get("/getAllQuestionsByTime", FetchUser, async (req, res) => {
 
 // ROUTE 11
 // get all question by user id using : Get "/api/v1/ques/getAllQuestionsByUser". Login required
-router.get("/getAllQuestionsByUser/:id", FetchUser, async (req, res) => {
+router.get("/getAllQuestionsByUser/:id/:pageIdQues/:pageSize", FetchUser, async (req, res) => {
     try {
-        const questions = await Ques.find({ user: req.params.id });
+        const pageIdQues = parseInt(req.params.pageIdQues);
+        const pageSize = parseInt(req.params.pageSize);
+        const questions = await Ques.find({ user: req.params.id }).skip(pageIdQues * pageSize).limit(pageSize).sort({ date: -1 });
         res.status(200).json(questions);
     }
     catch (error) {
@@ -220,5 +226,48 @@ router.get("/getAllQuestionsByUser/:id", FetchUser, async (req, res) => {
     }
 }
 );
+
+// ROUTE 12
+// get Total number of questions of user using : Get "/api/v1/ques/getTotalQuestionsLength". Login required
+router.get("/getTotalQuestionsLength", FetchUser, async (req, res) => {
+    try {
+        const questions = await Ques.find({ user: req.user.id });
+        res.status(200).json(questions.length);
+    }
+    catch (error) {
+        console.error(error.message);
+        res.status(500).send("Internal server error");
+    }
+}
+);
+
+// ROUTE 13
+// get Total number of questions of user by id : Get "/api/v1/ques/getTotalQuestions/:userId". Login required
+router.get("/getTotalQuestions/:userId", FetchUser, async (req, res) => {
+    try {
+        const questions = await Ques.find({ user: req.params.userId });
+        res.status(200).json(questions.length);
+    }
+    catch (error) {
+        console.error(error.message);
+        res.status(500).send("Internal server error");
+    }
+}
+);
+
+// ROUTE 14
+// get total number the questions using : Get "api/v1/ques/getTotalQuestions". Login required
+router.get("/getTotalQuestions", FetchUser, async (req, res) => {
+    try {
+        const questions = await Ques.find();
+        res.status(200).json(questions.length);
+    }
+    catch (error) {
+        console.error(error.message);
+        res.status(500).send("Internal server error");
+    }
+}
+);
+
 
 module.exports = router;
