@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { Modal, Form, Button, FormLabel, Row } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
 import { addConversations } from "../Redux/Actions.js"
+import showAlert from "../Functions/Alert";
 
 const ConversationModal = (props) => {
   const { show, setShow } = props;
@@ -26,6 +27,13 @@ const ConversationModal = (props) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (contactIds.length === 0) {
+      showAlert({
+        title: "Please select at least one contact",
+        icon: "error",
+      });
+      return;
+    }
     dispatch(addConversations(contactIds, []))
     setShow(false);
   };

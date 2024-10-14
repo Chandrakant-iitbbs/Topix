@@ -12,13 +12,13 @@ const ContactModal = (props) => {
   const nameref = useRef();
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!idref.current.value || !nameref.current.value){
+    if (!idref.current.value || !nameref.current.value) {
       showAlert({
         title: "Please fill all fields",
         icon: "error",
       });
       return;
-    } 
+    }
     dispatch(addContact(idref.current.value, nameref.current.value));
     setShow(false);
   };
@@ -62,7 +62,8 @@ const ContactModal = (props) => {
       <Modal.Footer>
         <Button variant="secondary" onClick={(e) => {
           e.preventDefault();
-          setShow(false)}}>
+          setShow(false)
+        }}>
           Close
         </Button>
         <Button variant="primary" onClick={handleSubmit}>

@@ -12,6 +12,7 @@ const SideBar = () => {
   const chatId = useSelector((state) => state.ChatId);
   const [isContact, setIsContact] = useState(false);
   const [openModal, setOpenModal] = useState(false);
+  const contacts = useSelector((state) => state.contacts);
 
   return (
     <>
@@ -44,7 +45,7 @@ const SideBar = () => {
             style={{
               display: "flex",
               justifyContent: "center",
-              marginTop: "20px",
+              margin: "3rem 0 1.5rem 0",
               flexWrap: "wrap"
             }}
           >
@@ -60,6 +61,7 @@ const SideBar = () => {
             onClick={() => {
               setOpenModal(true);
             }}
+            disabled={!contacts.length && !isContact}
           >
             New {isContact ? "Contact" : "Conversation"}
           </Button>
