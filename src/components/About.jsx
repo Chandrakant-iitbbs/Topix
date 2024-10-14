@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 
 const About = () => {
   const navigate = useNavigate();
-  const token = localStorage.getItem("auth-token")|| "";
+  const token = useSelector((state) => state.Token);
 
   const handleQuestionsClick = (e) => {
     e.preventDefault();
@@ -38,7 +38,7 @@ const About = () => {
               display: "flex",
             }}
           >
-            {token ? (
+            {token!==null ? (
               <div
                 style={{
                   display: "flex",

@@ -40,11 +40,14 @@ const NavbarAfterLogin = () => {
       });
       if (res.status === 200) {
         data = await res.json();
-        dispatch(setPersonalObjectId(data._id));
+        if (data && data._id) {
+          dispatch(setPersonalObjectId(data._id));
+          
+        }
         if (data && data.name) {
           setName((data.name[0]).toUpperCase());
         }
-        if (data.dp) {
+        if (data && data.dp) {
           setDp(data.dp);
         }
       }

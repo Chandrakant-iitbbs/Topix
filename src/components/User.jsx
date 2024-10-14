@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Button, Row, Col, Image, Card } from "react-bootstrap";
 import HtmlToText from "./HtmlToText";
 import { useNavigate } from "react-router-dom";
-import { setQuesId } from "../Redux/Actions";
+import { deletetoken, setQuesId, setToken } from "../Redux/Actions";
 import { useDispatch, useSelector } from "react-redux";
 import showAlert from "../Functions/Alert";
 import { getMembershipTime, getTimeDifference, getTimeDiff } from "../Functions/GetTime";
@@ -46,7 +46,6 @@ const User = () => {
     });
     const res = await data.json();
     if (data.status === 200) {
-      console.log(res);
       let arr = [];
       for (let i = 0; i < Math.ceil(res / pageSize); i++) {
         arr.push(i);
@@ -260,7 +259,7 @@ const User = () => {
   };
 
   const handleDelete = async () => {
-    const data = await fetch("http://localhost:5000//api/v1/auth/deleteuser", {
+    const data = await fetch("http://localhost:5000/api/v1/auth/deleteuser", {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -273,7 +272,8 @@ const User = () => {
         title: "You account deleted successfully",
         icon: "success",
       });
-      navigate("/questions");
+      dispatch(deletetoken());
+      navigate("/");
     } else if (res.error && (res.error === "Enter the token" ||
       res.error === "Please authenticate using a valid token"
     )) {

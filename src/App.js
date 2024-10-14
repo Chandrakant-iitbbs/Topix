@@ -60,7 +60,7 @@ const App = () => {
     return () => clearInterval(intervalId);
   }, 30000);
 
-  const token = useSelector(state => state.Token);
+  const token = useSelector((state) => state.Token);
   return (
     <>
       <Router>

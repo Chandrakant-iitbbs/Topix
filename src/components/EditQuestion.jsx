@@ -205,7 +205,7 @@ const EditQuestion = () => {
               onChange={async(e) => {
                 if (e.length > 0 && e[e.length - 1].value === "Add a new tag") {
                   let newtag =  await showPrompt({title: "Enter your tag"});
-                  if (!newtag) {
+                  if (newtag== null || newtag=="" || newtag.trim() === "") {
                     showAlert({
                       icon: "error",
                       title: "Tag can't be empty",

@@ -6,11 +6,13 @@ import Select from "react-select";
 import makeAnimated from "react-select/animated";
 import { Link, useNavigate } from "react-router-dom";
 import showAlert from "../Functions/Alert";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setToken } from "../Redux/Actions";
 import showPrompt from "../Functions/Prompt";
 
+
 const SignUp = (props) => {
+  const dispatch = useDispatch();
   const { edit } = props;
   const animatedComponents = makeAnimated();
   const [passShow, setPassShow] = useState(false);
@@ -73,23 +75,35 @@ const SignUp = (props) => {
   const navigate = useNavigate();
 
   const ConvertToBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      const fileReader = new FileReader();
-      fileReader.readAsDataURL(file);
-      fileReader.onload = () => {
-        resolve(fileReader.result);
-      };
-      fileReader.onerror = (error) => {
-        reject(error);
-      };
-    });
+
+    try {
+      if (!file) {
+        return;
+      }
+      return new Promise((resolve, reject) => {
+        const fileReader = new FileReader();
+        fileReader.readAsDataURL(file);
+        fileReader.onload = () => {
+          resolve(fileReader.result);
+        };
+        fileReader.onerror = (error) => {
+          reject(error);
+        };
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const HandleImage = async (e) => {
-    const file = e.target.files[0];
-    const base64 = await ConvertToBase64(file);
-    const res = base64.split(",")[1];
-    setInfo({ ...info, dp: res });
+    try {
+      const file = e.target.files[0];
+      const base64 = await ConvertToBase64(file);
+      const res = base64.split(",")[1];
+      setInfo({ ...info, dp: res });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const getTags = async () => {
@@ -146,7 +160,12 @@ const SignUp = (props) => {
     });
     const data = await res.json();
     if (res.status === 200) {
-      setToken(data.auto_token);
+      dispatch(setToken(data.auto_token));
+      showAlert({
+        title: "User created successfully",
+        icon: "success",
+      });
+
       navigate("/questions");
       setInfo({
         name: "",
@@ -156,6 +175,7 @@ const SignUp = (props) => {
         upiId: "",
         dp: "",
       });
+     
     } else {
       showAlert({
         title: data.error ? data.error : data ? data : "Something went wrong",
@@ -169,7 +189,7 @@ const SignUp = (props) => {
     if (info.tags.length === 0) {
       setInfo({ ...info, tags: ["General"] });
     }
-    
+
     const res = await fetch("http://localhost:5000/api/v1/auth/updateuser", {
       method: "PUT",
       headers: {
@@ -295,10 +315,10 @@ const SignUp = (props) => {
                 label: topic,
               }))}
               isMulti
-              onChange={(e) => {
+              onChange={async (e) => {
                 if (e.length > 0 && e[e.length - 1].value === "Add a new tag") {
-                  let newtag = showPrompt({ title: "Enter your tag" });
-                  if (newtag === null) {
+                  let newtag = await showPrompt({ title: "Enter your tag" });
+                  if (newtag === null || newtag === "" || newtag.trim() === "") {
                     showAlert({
                       title: "Tag can't be empty",
                       icon: "error",
