@@ -6,10 +6,11 @@ import makeAnimated from "react-select/animated";
 import showAlert from "../Functions/Alert";
 import { useNavigate } from "react-router-dom";
 import showPrompt from "../Functions/Prompt";
+import { useSelector } from "react-redux";
 
 const AskQuestion = () => {
   const navigate = useNavigate();
-  const token = localStorage.getItem("auth-token") || "";
+  const token = useSelector((state) => state.Token);
   const animatedComponents = makeAnimated();
   const isWrap = window.innerWidth < 900;
   const config = {
@@ -17,15 +18,21 @@ const AskQuestion = () => {
     uploader: {
       insertImageAsBase64URI: true,
     },
+    removeButtons: ['file', 'about', "classSpan", "source", "className_input", "speechRecognize"],
+    showXPathInStatusbar: false,
     toolbarAdaptive: isWrap,
+    disablePlugins: 'search',
     height: 300,
     hidePoweredByJodit: true,
-    speechRecognize: true,
-    beautifyHTMLbeautifyHTML: true,
-    usePopupForSpecialCharacters: true,
+    reloadForSpecialCharacters: true,
     showTooltipDelay: 0,
     useNativeTooltip: true,
     saveSelectionOnBlur: true,
+    restoreCursorOnFocus: true,
+    askBeforePasteHTML: false,
+    askBeforePasteFromWord: false,
+    cursorAfterAutofocus: 'end',
+    saveSelectionOnBlur: true
   };
 
   const questionRef = useRef("");
@@ -165,7 +172,7 @@ const AskQuestion = () => {
                 }))
               }
               isMulti
-              onChange={async(e) => {
+              onChange={async (e) => {
                 if (e.length > 0 && e[e.length - 1].value === "Add a new tag") {
                   let newtag = await showPrompt({ title: "Enter your tag" });
                   if (newtag === null || newtag === "" || newtag.trim() === "") {
@@ -203,8 +210,7 @@ const AskQuestion = () => {
               type="number"
               placeholder="Enter reward price"
               value={info.rewardPrice}
-              onChange={(e) =>
-              {
+              onChange={(e) => {
                 e.preventDefault();
                 setInfo({ ...info, rewardPrice: e.target.value })
               }

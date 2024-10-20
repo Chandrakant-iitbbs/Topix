@@ -251,7 +251,7 @@ const User = () => {
   const intervalId = setInterval(() => {
     getUser();
     return () => clearInterval(intervalId);
-  }, 30000);
+  }, 60000);
 
   const handleEdit = (e) => {
     e.preventDefault();

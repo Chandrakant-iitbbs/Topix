@@ -9,6 +9,7 @@ import showAlert from "../Functions/Alert";
 import { useDispatch, useSelector } from "react-redux";
 import { setToken } from "../Redux/Actions";
 import showPrompt from "../Functions/Prompt";
+import imageCompression from 'browser-image-compression';
 
 
 const SignUp = (props) => {
@@ -75,7 +76,6 @@ const SignUp = (props) => {
   const navigate = useNavigate();
 
   const ConvertToBase64 = (file) => {
-
     try {
       if (!file) {
         return;
@@ -98,7 +98,12 @@ const SignUp = (props) => {
   const HandleImage = async (e) => {
     try {
       const file = e.target.files[0];
-      const base64 = await ConvertToBase64(file);
+      const options = {
+        maxSizeMB: 0.4,
+        useWebWorker: true,
+      };
+      const compressedFile = await imageCompression(file, options);
+      const base64 = await ConvertToBase64(compressedFile);
       const res = base64.split(",")[1];
       setInfo({ ...info, dp: res });
     } catch (error) {
