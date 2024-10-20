@@ -10,6 +10,7 @@ import { useSelector } from "react-redux";
 
 const AskQuestion = () => {
   const navigate = useNavigate();
+  const baseURI = process.env.REACT_APP_BASE_URI_BACKEND;
   const token = useSelector((state) => state.Token);
   const animatedComponents = makeAnimated();
   const isWrap = window.innerWidth < 900;
@@ -78,7 +79,7 @@ const AskQuestion = () => {
       return;
     }
 
-    const res = await fetch("http://localhost:5000/api/v1/ques/addQuestion", {
+    const res = await fetch(`${baseURI}/api/v1/ques/addQuestion`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -111,7 +112,7 @@ const AskQuestion = () => {
 
   const getTags = async () => {
     const response = await fetch(
-      "http://localhost:5000/api/v1/tags/getAllTags",
+      `${baseURI}/api/v1/tags/getAllTags`,
       {
         method: "GET",
         headers: {
@@ -127,7 +128,7 @@ const AskQuestion = () => {
   };
 
   const addTag = async (tag) => {
-    const response = await fetch("http://localhost:5000/api/v1/tags/addTag", {
+    const response = await fetch(`${baseURI}/api/v1/tags/addTag`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

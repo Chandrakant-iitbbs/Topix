@@ -8,7 +8,7 @@ const UserMiddleWare = require('../middleWare/UserMiddleWare');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Fetchuser = require('../middleWare/FetchUser');
-const JWT_secret = "CK@K@nt";
+const JWT_secret = process.env.JWT_SECRET;
 const { v4 } = require('uuid');
 router.use(bodyParser.json());
 

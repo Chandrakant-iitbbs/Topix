@@ -9,7 +9,7 @@ const EditAnswer = () => {
     useEffect(() => {
         fetchAnswer();
     }, []);
-
+    const baseURI = process.env.REACT_APP_BASE_URI_BACKEND;
     const isWrap = window.innerWidth < 900;
     const [addAnswer, setAddAnswer] = useState("");
     const id = useSelector((state) => state.updateAnsId);
@@ -18,7 +18,7 @@ const EditAnswer = () => {
     const navigate = useNavigate();
 
     const fetchAnswer = async () => {
-        const res = await fetch(`http://localhost:5000/api/v1/answer/getAnswer/${id}`,
+        const res = await fetch(`${baseURI}/api/v1/answer/getAnswer/${id}`,
             {
                 method: "GET",
                 headers: {
@@ -58,7 +58,7 @@ const EditAnswer = () => {
             return;
         }
 
-        const res = await fetch(`http://localhost:5000/api/v1/answer/updateAnswer/${id}`,
+        const res = await fetch(`${baseURI}/api/v1/answer/updateAnswer/${id}`,
             {
                 method: "PUT",
                 headers: {

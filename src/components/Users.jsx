@@ -12,9 +12,10 @@ const Users = () => {
   const [pageId, setPageId] = useState(0);
   const [totalPages, setTotalPages] = useState([]);
   const pageSize = 5;
+  const baseURI = process.env.REACT_APP_BASE_URI_BACKEND;
 
   const getallusers = async () => {
-    const data = await fetch(`http://localhost:5000/api/v1/auth/getallusers/${pageId}/${pageSize}`, {
+    const data = await fetch(`${baseURI}/api/v1/auth/getallusers/${pageId}/${pageSize}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -37,7 +38,7 @@ const Users = () => {
   };
 
   const getAllUsersLength = async () => {
-    const data = await fetch(`http://localhost:5000/api/v1/auth/getallusersLength`, {
+    const data = await fetch(`${baseURI}/api/v1/auth/getallusersLength`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -92,7 +93,7 @@ const Users = () => {
           return <UserCard key={user._id} user={user} />;
         })}
       </div>
-     <Pagination totalPages={totalPages} setPageId={setPageId} pageId={pageId} />
+      <Pagination totalPages={totalPages} setPageId={setPageId} pageId={pageId} />
     </div>
   );
 };

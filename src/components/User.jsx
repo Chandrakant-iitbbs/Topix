@@ -18,7 +18,7 @@ const User = () => {
   const [user, setUser] = useState([]);
   const [likes, setLikes] = useState(0);
   const token = useSelector((state) => state.Token);
-
+  const baseURI = process.env.REACT_APP_BASE_URI_BACKEND;
   const [pageIdQues, setPageIdQues] = useState(0);
   const [totalPagesQues, setTotalPagesQues] = useState([]);
   const [pageIdAns, setPageIdAns] = useState(0);
@@ -38,7 +38,7 @@ const User = () => {
 
 
   const getLengthQuestions = async () => {
-    const data = await fetch("http://localhost:5000/api/v1/ques/getTotalQuestionsLength", {
+    const data = await fetch(`${baseURI}/api/v1/ques/getTotalQuestionsLength`, {
       headers: {
         "Content-Type": "application/json",
         "auth-header": token,
@@ -67,7 +67,7 @@ const User = () => {
 
   const getQues = async () => {
     const data = await fetch(
-      `http://localhost:5000/api/v1/ques/getAllQuestionsOfUser/${pageIdQues}/${pageSize}`,
+      `${baseURI}/api/v1/ques/getAllQuestionsOfUser/${pageIdQues}/${pageSize}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -104,7 +104,7 @@ const User = () => {
   const fetchQuestionById = async (id) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/v1/ques/getQuestion/${id}`,
+        `${baseURI}/api/v1/ques/getQuestion/${id}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -134,7 +134,7 @@ const User = () => {
 
   const getAns = async () => {
     const data = await fetch(
-      `http://localhost:5000/api/v1/answer/getAllAnswers`,
+      `${baseURI}/api/v1/answer/getAllAnswers`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -175,7 +175,7 @@ const User = () => {
   };
 
   const getUser = async () => {
-    const data = await fetch("http://localhost:5000/api/v1/auth/getuser", {
+    const data = await fetch(`${baseURI}/api/v1/auth/getuser`, {
       headers: {
         "Content-Type": "application/json",
         "auth-header": token,
@@ -204,7 +204,7 @@ const User = () => {
       user._id
     ) {
       const res = await fetch(
-        `http://localhost:5000/api/v1/auth/updateuserbyid/${user._id}`,
+        `${baseURI}/api/v1/auth/updateuserbyid/${user._id}`,
         {
           method: "PUT",
           headers: {
@@ -259,7 +259,7 @@ const User = () => {
   };
 
   const handleDelete = async () => {
-    const data = await fetch("http://localhost:5000/api/v1/auth/deleteuser", {
+    const data = await fetch(`${baseURI}/api/v1/auth/deleteuser`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",

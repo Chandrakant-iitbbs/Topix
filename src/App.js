@@ -29,10 +29,13 @@ const App = () => {
   const chatId = useSelector(state => state.ChatId);
   const chatIndex = useSelector(state => state.ChatIndex);
   const updateAnsId = useSelector(state => state.updateAnsId);
+  const baseURI = process.env.REACT_APP_BASE_URI_BACKEND;
+  const baseURIChat = process.env.REACT_APP_BASE_URI_CHAT_CLIENT;
+  
   useEffect(() => {
-    const newSocket = io('http://localhost:6006', { transports: ['websocket'], query: { chatId } });
+    const newSocket = io(baseURIChat, { transports: ['websocket'], query: { chatId } });
     dispatch(addSocket(newSocket));
-    return () =>{
+    return () => {
       newSocket.close();
     }
   }, [chatId]);
@@ -45,9 +48,9 @@ const App = () => {
     return () => socket.off('receive-message');
   }, [socket, dispatch]);
 
-  const setLastSeen = async() => {
-    await fetch("http://localhost:5000/api/v1/auth/lastseen", {
-      method:"PUT",
+  const setLastSeen = async () => {
+    await fetch(`${baseURI}/api/v1/auth/lastseen`, {
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
         "auth-header": token,
@@ -64,9 +67,9 @@ const App = () => {
   return (
     <>
       <Router>
-      {token!==null ? <NavbarAfterLogin /> : <NavBarBeforeLogin />}
+        {token !== null ? <NavbarAfterLogin /> : <NavBarBeforeLogin />}
         <Routes>
-          <Route exact path='/payment' element={<Payment  />} />
+          <Route exact path='/payment' element={<Payment />} />
           <Route exact path="/" element={<About />} />
           <Route exact path='/about' element={<About />} />
           <Route exact path='/login' element={<Login />} />

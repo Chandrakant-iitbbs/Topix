@@ -10,6 +10,7 @@ import showPrompt from "../Functions/Prompt";
 
 const EditQuestion = () => {
   const navigate = useNavigate();
+  const baseURI = process.env.REACT_APP_BASE_URI_BACKEND;
   const token = localStorage.getItem("auth-token") || "";
   const animatedComponents = makeAnimated();
   const isWrap = window.innerWidth < 900;
@@ -48,7 +49,7 @@ const EditQuestion = () => {
 
   const fetchQuestion = async () => {
     const data = await fetch(
-      `http://localhost:5000/api/v1/ques/getQuestion/${id}`,
+      `${baseURI}/api/v1/ques/getQuestion/${id}`,
       {
         method: "GET",
         headers: {
@@ -107,7 +108,7 @@ const EditQuestion = () => {
       return;
     }
 
-    const res = await fetch(`http://localhost:5000/api/v1/ques/updateQuestion/${id}`, {
+    const res = await fetch(`${baseURI}/api/v1/ques/updateQuestion/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -141,7 +142,7 @@ const EditQuestion = () => {
 
   const getTags = async () => {
     const response = await fetch(
-      "http://localhost:5000/api/v1/tags/getAllTags",
+      `${baseURI}/api/v1/tags/getAllTags`,
       {
         method: "GET",
         headers: {
@@ -157,7 +158,7 @@ const EditQuestion = () => {
   };
 
   const addTag = async (tag) => {
-    const response = await fetch("http://localhost:5000/api/v1/tags/addTag", {
+    const response = await fetch(`${baseURI}/api/v1/tags/addTag`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

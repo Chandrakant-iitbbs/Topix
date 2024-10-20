@@ -12,7 +12,7 @@ import Pagination from "./Pagination";
 
 const Question = () => {
   const dispatch = useDispatch();
-
+  const baseURI = process.env.REACT_APP_BASE_URI_BACKEND;
   const id = useSelector((state) => state.QuesId);
   const token = useSelector((state) => state.Token);
   const navigate = useNavigate();
@@ -31,7 +31,7 @@ const Question = () => {
 
   const getAnswersLength = async () => {
     const data = await fetch(
-      `http://localhost:5000/api/v1/answer/getAnswersLength/${id}`,
+      `${baseURI}/api/v1/answer/getAnswersLength/${id}`,
       {
         method: "GET",
         headers: {
@@ -72,7 +72,7 @@ const Question = () => {
   const deleteQuestion = async (e, id) => {
     e.preventDefault();
     const res = await fetch(
-      `http://localhost:5000/api/v1/ques/deleteQuestion/${id}`,
+      `${baseURI}/api/v1/ques/deleteQuestion/${id}`,
       {
         method: "DELETE",
         headers: {
@@ -102,7 +102,7 @@ const Question = () => {
 
   const getUserName = async (user) => {
     const data = await fetch(
-      `http://localhost:5000/api/v1/auth/getuserbyid/${user}`,
+      `${baseURI}/api/v1/auth/getuserbyid/${user}`,
       {
         method: "GET",
         headers: {
@@ -145,7 +145,7 @@ const Question = () => {
     }
 
     const res = await fetch(
-      `http://localhost:5000/api/v1/answer/addAnswer/${id}`,
+      `${baseURI}/api/v1/answer/addAnswer/${id}`,
       {
         method: "POST",
         headers: {
@@ -194,7 +194,7 @@ const Question = () => {
   const fetchAnswers = async () => {
     setAnswers([]);
     const data = await fetch(
-      `http://localhost:5000/api/v1/answer/getAnswers/${id}/${pageIdAns}/${pageSize}`,
+      `${baseURI}/api/v1/answer/getAnswers/${id}/${pageIdAns}/${pageSize}`,
       {
         method: "GET",
         headers: {
@@ -219,7 +219,7 @@ const Question = () => {
 
   const fetchQuestion = async () => {
     const data = await fetch(
-      `http://localhost:5000/api/v1/ques/getQuestion/${id}`,
+      `${baseURI}/api/v1/ques/getQuestion/${id}`,
       {
         method: "GET",
         headers: {

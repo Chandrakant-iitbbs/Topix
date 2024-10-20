@@ -18,6 +18,7 @@ const SignUp = (props) => {
   const animatedComponents = makeAnimated();
   const [passShow, setPassShow] = useState(false);
   const token = useSelector((state) => state.Token);
+  const baseURI = process.env.REACT_APP_BASE_URI_BACKEND;
   const [info, setInfo] = useState({
     name: "",
     email: "",
@@ -32,7 +33,7 @@ const SignUp = (props) => {
     }
   }, [edit]);
   const getuser = async () => {
-    const data = await fetch("http://localhost:5000/api/v1/auth/getuser", {
+    const data = await fetch(`${baseURI}/api/v1/auth/getuser`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -113,7 +114,7 @@ const SignUp = (props) => {
 
   const getTags = async () => {
     const response = await fetch(
-      "http://localhost:5000/api/v1/tags/getAllTags",
+      `${baseURI}/api/v1/tags/getAllTags`,
       {
         method: "GET",
         headers: {
@@ -129,7 +130,7 @@ const SignUp = (props) => {
   };
 
   const addTag = async (tag) => {
-    const response = await fetch("http://localhost:5000/api/v1/tags/addTag", {
+    const response = await fetch(`${baseURI}/api/v1/tags/addTag`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -147,7 +148,7 @@ const SignUp = (props) => {
     if (info.tags.length === 0) {
       setInfo({ ...info, tags: ["General"] });
     }
-    const res = await fetch("http://localhost:5000/api/v1/auth/createuser", {
+    const res = await fetch(`${baseURI}/api/v1/auth/createuser`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -195,7 +196,7 @@ const SignUp = (props) => {
       setInfo({ ...info, tags: ["General"] });
     }
 
-    const res = await fetch("http://localhost:5000/api/v1/auth/updateuser", {
+    const res = await fetch(`${baseURI}/api/v1/auth/updateuser`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

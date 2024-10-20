@@ -9,6 +9,7 @@ import { addContact, addConversations, SetPaymentInfo, setUserId, updateAnsId } 
 
 const Answer = (props) => {
   const { ans, rewardPrice, askedUserId } = props;
+  const baseURI = process.env.REACT_APP_BASE_URI_BACKEND;
 
   const dispatch = useDispatch();
   const token = localStorage.getItem("auth-token") || "";
@@ -25,7 +26,7 @@ const Answer = (props) => {
 
   const getUserName = async () => {
     const data = await fetch(
-      `http://localhost:5000/api/v1/auth/getuserbyid/${ans.user}`,
+      `${baseURI}/api/v1/auth/getuserbyid/${ans.user}`,
       {
         method: "GET",
         headers: {
@@ -53,7 +54,7 @@ const Answer = (props) => {
   const handleBestAnswerClick = async (e, id, userid) => {
     e.preventDefault();
     const data = await fetch(
-      "http://localhost:5000/api/v1/auth/bestanswer",
+      `${baseURI}/api/v1/auth/bestanswer`,
       {
         method: "PUT",
         headers: {
@@ -85,7 +86,7 @@ const Answer = (props) => {
 
   const handleDelete = async (e, id) => {
     e.preventDefault();
-    const data = await fetch(`http://localhost:5000/api/v1/answer/deleteAnswer/${id}`,
+    const data = await fetch(`${baseURI}/api/v1/answer/deleteAnswer/${id}`,
       {
         method: "DELETE",
         headers: {
@@ -142,7 +143,7 @@ const Answer = (props) => {
 
   const upVote = async (id) => {
     const data = await fetch(
-      `http://localhost:5000/api/v1/answer/upvote/${id}`,
+      `${baseURI}/api/v1/answer/upvote/${id}`,
       {
         method: "PUT",
         headers: {
@@ -169,7 +170,7 @@ const Answer = (props) => {
 
   const downVote = async (id) => {
     const data = await fetch(
-      `http://localhost:5000/api/v1/answer/downvote/${id}`,
+      `${baseURI}/api/v1/answer/downvote/${id}`,
       {
         method: "PUT",
         headers: {

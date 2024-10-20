@@ -10,7 +10,8 @@ const NavbarAfterLogin = () => {
     const dispatch = useDispatch();
     const [search, setSearch] = useState("");
     const token = useSelector((state) => state.Token);
-
+    const baseURI = process.env.REACT_APP_BASE_URI_BACKEND;
+    
     const handleSearch = (e) => {
       e.preventDefault();
       console.log(search);
@@ -31,7 +32,7 @@ const NavbarAfterLogin = () => {
       if(token===null){
         return;
       }
-      const res = await fetch("http://localhost:5000/api/v1/auth/getuser", {
+      const res = await fetch(`${baseURI}/api/v1/auth/getuser`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

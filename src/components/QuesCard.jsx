@@ -13,6 +13,7 @@ const QuesCard = (props) => {
   const dispatch = useDispatch();
   const PersonalObjectId = useSelector(state => state.personalObjectId);
   const token = useSelector(state => state.Token);
+  const baseURI = process.env.REACT_APP_BASE_URI_BACKEND; 
 
   const navigate = useNavigate();
   const handleQuesClick = (e) => {
@@ -23,7 +24,7 @@ const QuesCard = (props) => {
 
   const getUserName = async () => {
     const data = await fetch(
-      `http://localhost:5000/api/v1/auth/getuserbyid/${user}`,
+      `${baseURI}/api/v1/auth/getuserbyid/${user}`,
       {
         method: "GET",
         headers: {

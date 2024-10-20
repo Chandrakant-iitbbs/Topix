@@ -27,6 +27,7 @@ const Profile = () => {
   const [totalPagesAns, setTotalPagesAns] = useState([]);
   const pageSize = 5;
   const [fullAns, setFullAns] = useState([]);
+  const baseURI = process.env.REACT_APP_BASE_URI_BACKEND;
 
   const intervalId = setInterval(() => {
     getUser();
@@ -43,7 +44,7 @@ const Profile = () => {
 
 
   const getLengthQuestions = async () => {
-    const data = await fetch("http://localhost:5000/api/v1/ques/getTotalQuestionsLength", {
+    const data = await fetch(`${baseURI}/api/v1/ques/getTotalQuestionsLength`, {
       headers: {
         "Content-Type": "application/json",
         "auth-header": token,
@@ -72,7 +73,7 @@ const Profile = () => {
 
   const getQues = async () => {
     const data = await fetch(
-      `http://localhost:5000/api/v1/ques/getAllQuestionsByUser/${userId}/${pageIdQues}/${pageSize}`,
+      `${baseURI}/api/v1/ques/getAllQuestionsByUser/${userId}/${pageIdQues}/${pageSize}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -109,7 +110,7 @@ const Profile = () => {
   const fetchQuestionById = async (id) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/v1/ques/getQuestion/${id}`,
+        `${baseURI}/api/v1/ques/getQuestion/${id}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -139,7 +140,7 @@ const Profile = () => {
 
   const getAns = async () => {
     const data = await fetch(
-      `http://localhost:5000/api/v1/answer/getUserAnswers/${userId}`,
+      `${baseURI}/api/v1/answer/getUserAnswers/${userId}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -182,7 +183,7 @@ const Profile = () => {
   };
 
   const getUser = async () => {
-    const data = await fetch(`http://localhost:5000/api/v1/auth/getuserbyid/${userId}`, {
+    const data = await fetch(`${baseURI}/api/v1/auth/getuserbyid/${userId}`, {
       headers: {
         "Content-Type": "application/json",
         "auth-header": token,
@@ -204,7 +205,7 @@ const Profile = () => {
 
   const updateUser = async () => {
     if ((user.likes !== likes || user.questionsAsked !== ques.length || user.questionsAnswered !== ques.length) && user._id) {
-      const res = await fetch(`http://localhost:5000/api/v1/auth/updateuserbyid/${user._id}`, {
+      const res = await fetch(`${baseURI}/api/v1/auth/updateuserbyid/${user._id}`, {
         method: "PUT",
         headers:
         {

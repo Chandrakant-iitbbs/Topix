@@ -16,6 +16,7 @@ const Questions = () => {
   const [pageIdQues, setPageIdQues] = useState(0);
   const [totalPagesQues, setTotalPagesQues] = useState([]);
   const pageSize = 5;
+  const baseURI = process.env.REACT_APP_BASE_URI_BACKEND;
 
   useEffect(() => {
     getQuestions();
@@ -24,7 +25,7 @@ const Questions = () => {
 
   const getQuestions = async () => {
     const data = await fetch(
-      `http://localhost:5000/api/v1/ques/getAllQuestions/${pageIdQues}/${pageSize}`,
+      `${baseURI}/api/v1/ques/getAllQuestions/${pageIdQues}/${pageSize}`,
       {
         method: "GET",
         headers: {
@@ -48,7 +49,7 @@ const Questions = () => {
 
 
   const getAllTags = async () => {
-    const res = await fetch("http://localhost:5000/api/v1/tags/getAllTags", {
+    const res = await fetch(`${baseURI}/api/v1/tags/getAllTags`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -62,7 +63,7 @@ const Questions = () => {
   };
 
   const getTotalQuestionLength = async () => {
-    const res = await fetch("http://localhost:5000/api/v1/ques/getTotalQuestions", {
+    const res = await fetch(`${baseURI}/api/v1/ques/getTotalQuestions`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -97,7 +98,7 @@ const Questions = () => {
 
   const sortByTime = async () => {
     const data = await fetch(
-      "http://localhost:5000/api/v1/ques/getAllQuestionsByTime",
+      `${baseURI}/api/v1/ques/getAllQuestionsByTime`,
       {
         method: "GET",
         headers: {
@@ -123,7 +124,7 @@ const Questions = () => {
 
   const sortByReward = async () => {
     const data = await fetch(
-      "http://localhost:5000/api/v1/ques/getAllQuestionsByReward",
+      `${baseURI}/api/v1/ques/getAllQuestionsByReward`,
       {
         method: "GET",
         headers: {
@@ -153,7 +154,7 @@ const Questions = () => {
     }
     const tag = e.map((t) => t.value);
     const data = await fetch(
-      `http://localhost:5000/api/v1/ques/getAllQuestionsByTag/${tag}`,
+      `${baseURI}/api/v1/ques/getAllQuestionsByTag/${tag}`,
       {
         method: "GET",
         headers: {
