@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const FetchUser = require('../middleWare/FetchUser');
 const Ques = require('../models/Ques');
-
+const Answer = require('../models/Answer');
 
 // ROUTE 1
 // get all the questions of the user using : Get "/api/v1/ques/getAllQuestions". Login required
@@ -105,8 +105,9 @@ router.delete("/deleteQuestion/:id", FetchUser, async (req, res) => {
         if (ques.user.toString() !== req.user.id) {
             return res.status(401).send("Not Allowed");
         }
-
         ques = await Ques.findByIdAndDelete(req.params.id);
+        await Answer.deleteMany({ question: req.params.id });
+
         res.status(200).json({ "Success": "Question has been deleted", ques: ques });
     }
     catch (error) {
