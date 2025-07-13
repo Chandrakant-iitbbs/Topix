@@ -1,9 +1,9 @@
+require('dotenv').config();
 const connectToMongo = require("./db");
 const express = require('express');
 const app = express();
 const cors = require('cors');
 const startChatServer = require('./ChatServer/server');
-require('dotenv').config();
 const DATABASE_URL = process.env.DATABASE_URL;
 const CHAT_PORT = process.env.CHAT_PORT ;
 const BACKEND_PORT = process.env.BACKEND_PORT;

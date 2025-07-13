@@ -5,9 +5,13 @@ import logo from "../Assets/TopixLogo.png";
 const NavBarBeforeLogin = () => {
   const navigate = useNavigate();
   return (
-    <div style={{
-      width: "100%", padding: "16px"
-    }}>
+    <div
+      style={{
+        width: "100%",
+        padding: "6px 16px",
+        backgroundColor: "#9CE3D6",
+      }}
+    >
       <Navbar
         collapseOnSelect
         expand="sm"
@@ -18,7 +22,13 @@ const NavBarBeforeLogin = () => {
           <Image
             src={logo}
             alt="logo"
-            style={{ marginLeft: "10px", marginRight: "10px", width: "40px", height: "32px", marginTop: "-5px" }}
+            style={{
+              marginLeft: "10px",
+              marginRight: "10px",
+              width: "40px",
+              height: "32px",
+              marginTop: "-5px",
+            }}
           />
           <Link
             to="/"
@@ -47,20 +57,32 @@ const NavBarBeforeLogin = () => {
           >
             <Button
               variant="primary"
-              style={{ height: "40px", margin: "auto" }}
+              style={{
+                height: "40px",
+                margin: "auto",
+                color: "black",
+                fontSize: "18px",
+                backgroundColor: "#61a2ff",
+              }}
               onClick={(e) => {
                 e.preventDefault();
-                navigate("/login")
+                navigate("/login");
               }}
             >
               Login
             </Button>
             <Button
               variant="primary"
-              style={{ height: "40px", margin: "auto" }}
+              style={{
+                height: "40px",
+                margin: "auto",
+                color: "black",
+                fontSize: "18px",
+                backgroundColor: "#61a2ff",
+              }}
               onClick={(e) => {
                 e.preventDefault();
-                navigate("/signup")
+                navigate("/signup");
               }}
             >
               Sign up

@@ -64,7 +64,8 @@ const NavbarAfterLogin = () => {
 
   return (
     <div style={{
-        width: "100%", padding: "16px"
+        width: "100%", padding: "6px 16px",
+        backgroundColor: "#9CE3D6",
       }}>
     <Navbar
         collapseOnSelect
@@ -104,7 +105,7 @@ const NavbarAfterLogin = () => {
               flexWrap: "wrap"
             }}
           >
-            <Nav className="me-auto">
+            <Nav className="me-auto" >
               <Link
                 to="/users"
                 style={{
@@ -113,6 +114,9 @@ const NavbarAfterLogin = () => {
                   paddingRight: "10px",
                   textDecoration: "none",
                   display: "flex",
+                  color: "black",
+                  fontWeight: "500",
+                  fontSize: "18px",
                 }}
               >
                 Users
@@ -125,6 +129,9 @@ const NavbarAfterLogin = () => {
                   paddingRight: "10px",
                   textDecoration: "none",
                   display: "flex",
+                  color: "black",
+                  fontWeight: "500",
+                  fontSize: "18px",
                 }}
               >
                 Questions
@@ -137,6 +144,9 @@ const NavbarAfterLogin = () => {
                   paddingRight: "10px",
                   textDecoration: "none",
                   display: "flex",
+                  color: "black",
+                  fontWeight: "500",
+                  fontSize: "18px",
                 }}
               >
                 Chat
@@ -149,6 +159,9 @@ const NavbarAfterLogin = () => {
                   paddingRight: "10px",
                   textDecoration: "none",
                   display: "flex",
+                  color: "black",
+                  fontWeight: "500",
+                  fontSize: "18px",
                 }}
               >
                 About
@@ -202,8 +215,7 @@ const NavbarAfterLogin = () => {
               </span>
             )}
             <Button
-              variant="primary"
-              style={{ margin: "auto", width: "100px" }}
+              style={{ margin: "auto", width: "90px",color: "black",backgroundColor:"#dd2f2f", border: "1px solid #dd2f2f", fontWeight: "500", font:"18px" }}
               onClick={(e) => handleLogOut(e)}
             >
               Log out
@@ -214,5 +226,7 @@ const NavbarAfterLogin = () => {
     </div>
   );
 }
+
+
 
 export default NavbarAfterLogin;

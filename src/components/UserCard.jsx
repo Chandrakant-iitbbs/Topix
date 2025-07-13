@@ -22,16 +22,18 @@ const UserCard = (props) => {
         textWrap: "wrap",
         display: "flex",
         flexDirection: "row",
-        border: "1.4px solid gray",
-        borderRadius: "5px",
+        border: "1px solid gray",
+        borderRadius: "10px",
+        backgroundColor: "#E3F2FD"
       }}
     >
       <div
         style={{
           display: "flex",
           justifyContent: "center",
-          alignItems: "flex-start",
+          alignItems: "center",
           width: "90px",
+          height:"100%"
         }}
       >
         {dp ? <img
@@ -39,11 +41,12 @@ const UserCard = (props) => {
           alt=""
           width="70px"
           height="70px"
-        /> : <span style={{ width:"70px", height:"70px",fontSize: "2rem", fontWeight: "bold" , display:"flex", alignItems:"center", justifyContent:"center", backgroundColor:"cyan",}}>{name[0].toUpperCase()}</span>}
-        
+          style={{ borderRadius: "50%", border: "1px solid grey" }}
+        /> : <span style={{ width:"70px", height:"70px",fontSize: "2rem", fontWeight: "bold" , display:"flex", alignItems:"center", justifyContent:"center", backgroundColor:"#61a2ff",borderRadius:"50%"}}>{name[0].toUpperCase()}</span>}
       </div>
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        <span style={{ fontSize: "20px", cursor:"pointer" }} onClick={ (e) => {
+      <div style={{ display: "flex", flexDirection: "column", marginLeft: "10px",justifyContent:"center" }}>
+        <span style={{ fontSize: "20px", cursor:"pointer", fontWeight: "500"
+         }} onClick={ (e) => {
           e.preventDefault();
           dispatch(setUserId(user._id));
           navigate(`/profile/${user._id}`);

@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const tags = require('../models/Tags');
-const Fetchuser = require('../middleWare/FetchUser');
 
 // ROUTE 1
 // get all the tags using : Get "/api/v1/tags/getAllTags"
