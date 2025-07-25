@@ -279,9 +279,10 @@ const Profile = () => {
           }}
         >
           {user.dp ? (
-            <Image
-              src={`data:image/jpeg;base64,${user.dp}`}
-              roundedCircle
+            <img
+              src={user.d}
+              alt="User Profile"
+              className="rounded-circle"
               width="100%"
               height="100%"
             />

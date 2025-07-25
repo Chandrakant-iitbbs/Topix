@@ -262,7 +262,63 @@ router.get('/getallusersLength', Fetchuser, async (req, res) => {
 }
 );
 
-
-
+// ROUTE 12
+// Login using Google OAuth2.0 : post "/api/v1/auth/googlelogin". No login required
+router.post('/googlelogin', async (req, res) => {
+    const { name, email, dp, googleId, isGoogleUser } = req.body;
+    try {
+        if (!email) {
+            return res.status(400).json({ error: "Please provide an email" });
+        }
+        let user = await User.findOne({ email });
+        if (user && user.isGoogleUser) {
+            // If user already exists and is a Google user
+            const data = {
+                user: {
+                    id: user.id
+                }
+            }
+            const auto_token = jwt.sign(data, JWT_secret);
+            return res.status(200).json({ auto_token });
+        } else if (user && !user.isGoogleUser) {
+            // If user exists but is not a Google user
+            return res.status(400).json({ error: "This email is already registered with a password. Please use password login." });
+        }
+        // If user does not exist, create a new Google user
+        if (!googleId) {
+            return res.status(400).json({ error: "Google ID is required for Google login" });
+        }
+        user = await User.findOne({ googleId });
+        if (user) {
+            // If user already exists with Google ID
+            const data = {
+                user: {
+                    id: user.id
+                }
+            }
+            const auto_token = jwt.sign(data, JWT_secret);
+            return res.status(200).json({ auto_token });
+        }
+        // Create a new user with Google details
+        let info = { name, email, googleId, isGoogleUser };
+        if (dp) {
+            info.dp = dp;
+        }
+        info.ChatId = v4();
+        user = await User(info);
+        user.save();
+        const data = {
+            user: {
+                id: user.id
+            }
+        }
+        const auto_token = jwt.sign(data, JWT_secret);
+        res.status(200).json({ auto_token });
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json("Internal server error");
+    }
+}
+);
 
 module.exports = router

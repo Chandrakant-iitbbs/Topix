@@ -15,7 +15,15 @@ const UserSchema = new Schema({
     },
     password: {
         type: String,
-        required: true,
+        required: false,
+    },
+    googleId: {
+        type: String,
+        default: null
+    },
+    isGoogleUser: {
+        type: Boolean,
+        default: false 
     },
     interestedTopics: {
         type: [String],
@@ -56,9 +64,11 @@ const UserSchema = new Schema({
 
 UserSchema.pre('save', async function (next) {
     try {
-        const salt = await bcrypt.genSalt(saltRounds);
-        const hash = await bcrypt.hash(this.password, salt);
-        this.password = hash;
+        if (this.password && this.isModified('password')) {
+            const salt = await bcrypt.genSalt(saltRounds);
+            const hash = await bcrypt.hash(this.password, salt);
+            this.password = hash;
+        }
         next();
     } catch (error) {
         next(error);

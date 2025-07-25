@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import showAlert from "../Functions/Alert";
 import { setToken } from "../Redux/Actions";
 import { useDispatch } from "react-redux";
+import LoginByGoogle from "./LoginByGoogle";
 
 const Login = () => {
   const [info, setInfo] = useState({ email: "", password: "" });
@@ -27,8 +28,8 @@ const Login = () => {
     if (res.status === 200) {
       dispatch(setToken(data.auto_token));
       navigate("/questions");
-    } 
-    else{
+    }
+    else {
       showAlert({
         title: data.error ? data.error : data ? data : "Something went wrong",
         icon: "error",
@@ -95,8 +96,14 @@ const Login = () => {
       >
         Login Now
       </Button>
-      Don't have an account? <Link to="/signup">Sign Up</Link>
+      <div >
+        Don't have an account? <Link to="/signup">Sign Up</Link>
+      </div>
+      <div style={{ margin: "1rem 0", textAlign: "center", width: "100%" }}>
+        <LoginByGoogle />
+      </div>
     </div>
+
   );
 };
 

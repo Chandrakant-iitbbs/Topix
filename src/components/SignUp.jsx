@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setToken } from "../Redux/Actions";
 import showPrompt from "../Functions/Prompt";
 import imageCompression from 'browser-image-compression';
-
+import LoginByGoogle from "./LoginByGoogle";
 
 const SignUp = (props) => {
   const dispatch = useDispatch();
@@ -105,8 +105,7 @@ const SignUp = (props) => {
       };
       const compressedFile = await imageCompression(file, options);
       const base64 = await ConvertToBase64(compressedFile);
-      const res = base64.split(",")[1];
-      setInfo({ ...info, dp: res });
+      setInfo({ ...info, dp: base64 });
     } catch (error) {
       console.log(error);
     }
@@ -181,7 +180,7 @@ const SignUp = (props) => {
         upiId: "",
         dp: "",
       });
-     
+
     } else {
       showAlert({
         title: data.error ? data.error : data ? data : "Something went wrong",
@@ -380,6 +379,9 @@ const SignUp = (props) => {
           Sign up Now
         </Button>
         <div>Already have an account? <Link to="/login">Login</Link></div>
+        <div style={{ margin: "1rem 0", textAlign: "center", width: "100%" }}>
+          <LoginByGoogle />
+        </div>
       </>}
     </div>
   );

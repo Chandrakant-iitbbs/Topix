@@ -187,9 +187,10 @@ const NavbarAfterLogin = () => {
 
           <Col sm={2} style={{ minWidth: "150px", cursor: "pointer", alignItems: "center", display: "flex", paddingLeft: 0, justifyContent: "center" }} >
             {dp ? (
-              <Image
-                src={`data:image/jpeg;base64,${dp}`}
-                roundedCircle
+              <img
+                src={dp}
+                alt="User Profile"
+                className="rounded-circle"
                 width={35}
                 height={35}
                 style={{ marginLeft: "10px", marginRight: "10px", display: "flex" }}

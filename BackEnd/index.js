@@ -3,6 +3,7 @@ const connectToMongo = require("./db");
 const express = require('express');
 const app = express();
 const cors = require('cors');
+const bodyParser = require('body-parser');
 const startChatServer = require('./ChatServer/server');
 const DATABASE_URL = process.env.DATABASE_URL;
 const CHAT_PORT = process.env.CHAT_PORT ;
@@ -11,6 +12,7 @@ const BACKEND_PORT = process.env.BACKEND_PORT;
 connectToMongo(DATABASE_URL);
 startChatServer(CHAT_PORT);
 
+app.use(bodyParser.json());
 app.use(cors());
 app.use(express.json({ limit: '5mb' }));
 app.use(express.urlencoded({ limit: '5mb', extended: true }));

@@ -37,8 +37,9 @@ const UserCard = (props) => {
         }}
       >
         {dp ? <img
-          src={`data:image/jpeg;base64,${dp}`}
-          alt=""
+          src={dp}
+          alt="User Profile"
+          className="rounded-circle"
           width="70px"
           height="70px"
           style={{ borderRadius: "50%", border: "1px solid grey" }}
