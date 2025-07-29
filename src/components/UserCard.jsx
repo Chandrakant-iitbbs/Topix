@@ -10,11 +10,13 @@ const UserCard = (props) => {
   let { name, interestedTopics, dp, questionsAnswered, questionsAsked, totalLikes } = user;
   if (interestedTopics.length > 3) {
     interestedTopics = interestedTopics.slice(0, 3);
+    interestedTopics.push("...");
   }
 
   return (
     <div
       style={{
+        minHeight: "100px",
         minWidth: "300px",
         width: "21rem",
         margin: "10px 10px",

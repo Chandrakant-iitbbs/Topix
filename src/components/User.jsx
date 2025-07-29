@@ -35,8 +35,6 @@ const User = () => {
     getLengthQuestions();
   }, []);
 
-
-
   const getLengthQuestions = async () => {
     const data = await fetch(`${baseURI}/api/v1/ques/getTotalQuestionsLength`, {
       headers: {

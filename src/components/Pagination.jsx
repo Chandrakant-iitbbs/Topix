@@ -1,9 +1,8 @@
-import React from 'react';
 
 const Pagination = (props) => {
   const { pageId, totalPages, setPageId } = props;    
   return (
-    <div className="d-flex justify-content-center">
+    totalPages.length!==1 && (<div className="d-flex justify-content-center">
       <nav aria-label="Page navigation example">
         <ul className="pagination">
           <li className={`page-item ${pageId === 0 ? 'disabled' : ''}`}>
@@ -17,7 +16,7 @@ const Pagination = (props) => {
           </li>
         </ul>
       </nav>
-    </div>
+    </div>)
   );
 }
 

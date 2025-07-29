@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Row, Col, Image, Card } from "react-bootstrap";
+import { Button, Row, Col, Card } from "react-bootstrap";
 import HtmlToText from "./HtmlToText";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -52,7 +52,6 @@ const Profile = () => {
     });
     const res = await data.json();
     if (data.status === 200) {
-      console.log(res);
       let arr = [];
       for (let i = 0; i < Math.ceil(res / pageSize); i++) {
         arr.push(i);
@@ -280,7 +279,7 @@ const Profile = () => {
         >
           {user.dp ? (
             <img
-              src={user.d}
+              src={user.dp}
               alt="User Profile"
               className="rounded-circle"
               width="100%"

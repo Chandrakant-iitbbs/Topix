@@ -11,8 +11,13 @@ const Users = () => {
   const token = useSelector((state) => state.Token);
   const [pageId, setPageId] = useState(0);
   const [totalPages, setTotalPages] = useState([]);
-  const pageSize = 5;
+  
   const baseURI = process.env.REACT_APP_BASE_URI_BACKEND;
+  const AvailableHeightForCards = window.innerHeight-170;
+  const AvailableWidthForCards = window.innerWidth-40;
+  const CardsInRow = Math.max(1,Math.floor(AvailableWidthForCards / 356));
+  const CardsInColumn = Math.max(1,Math.floor(AvailableHeightForCards / 124));
+  const pageSize = CardsInRow * CardsInColumn;
 
   const getallusers = async () => {
     const data = await fetch(`${baseURI}/api/v1/auth/getallusers/${pageId}/${pageSize}`, {
@@ -93,7 +98,9 @@ const Users = () => {
           return <UserCard key={user._id} user={user} />;
         })}
       </div>
-      <Pagination totalPages={totalPages} setPageId={setPageId} pageId={pageId} />
+      <div style={{marginTop:"10px"}}>
+        <Pagination totalPages={totalPages} setPageId={setPageId} pageId={pageId} />
+      </div>
     </div>
   );
 };
