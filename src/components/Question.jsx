@@ -67,8 +67,6 @@ const Question = () => {
     fetchAnswers();
   }, [pageIdAns]);
 
-
-
   const deleteQuestion = async (e, id) => {
     e.preventDefault();
     const res = await fetch(
@@ -376,7 +374,7 @@ const Question = () => {
             {answers.map((ans, index) => {
               return <Answer ans={ans} key={index} rewardPrice={ques.rewardPrice} askedUserId={askedUserId} />;
             })}
-           <Pagination totalPages={totalPagesAns} setPageId={setPageIdAns} pageId={pageIdAns} />
+            <Pagination totalPages={totalPagesAns} setPageId={setPageIdAns} pageId={pageIdAns} />
           </div>
         ) : (
           <h1>No answers till now...</h1>

@@ -15,37 +15,22 @@ const Questions = () => {
   const [questions, setQuestions] = useState([]);
   const [pageIdQues, setPageIdQues] = useState(0);
   const [totalPagesQues, setTotalPagesQues] = useState([]);
+  const [sortBy, setSortBy] = useState("time");
+  const [TagsSortBy, setTagsSortBy] = useState([]);
   const pageSize = 5;
   const baseURI = process.env.REACT_APP_BASE_URI_BACKEND;
 
   useEffect(() => {
-    getQuestions();
-  }, [pageIdQues]);
-
-
-  const getQuestions = async () => {
-    const data = await fetch(
-      `${baseURI}/api/v1/ques/getAllQuestions/${pageIdQues}/${pageSize}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "auth-header": token,
-        },
-      }
-    );
-    const ques = await data.json();
-    if (data.status === 200) {
-      setQuestions(ques);
-    } else if (ques.error === "Enter the token" || ques.error === "Please authenticate using a valid token") {
-      navigate("/login");
-    } else {
-      showAlert({
-        title: ques.error ? ques.error : ques ? ques : "Internal server error",
-        icon: "error",
-      });
+    if (sortBy === "time") {
+      sortByTimePageChangeHandler();
     }
-  };
+    else if (sortBy === "reward") {
+      sortByRewardPageChangeHandler();
+    }
+    else if (sortBy === "tag" && TagsSortBy.length > 0) {
+      sortByTagPageChangeHandler(TagsSortBy);
+    }
+  }, [pageIdQues, sortBy]);
 
 
   const getAllTags = async () => {
@@ -62,6 +47,15 @@ const Questions = () => {
     }
   };
 
+  const setTotalPages = (l) => {
+    const totalPages = Math.ceil(l / pageSize);
+    const pages = [];
+    for (let i = 0; i < totalPages; i++) {
+      pages.push(i);
+    }
+    setTotalPagesQues(pages);
+  };
+
   const getTotalQuestionLength = async () => {
     const res = await fetch(`${baseURI}/api/v1/ques/getTotalQuestions`, {
       method: "GET",
@@ -73,13 +67,8 @@ const Questions = () => {
 
     const a = await res.json();
     if (res.status === 200) {
-      const totalPages = Math.ceil(a / pageSize);
-      const pages = [];
-      for (let i = 0; i < totalPages; i++) {
-        pages.push(i);
-      }
-      setTotalPagesQues(pages);
-    } else if (res.error && (res.error == "Enter the token" || res.error == "Please authenticate using a valid token")) {
+      setTotalPages(a);
+    } else if (res.error && (res.error === "Enter the token" || res.error === "Please authenticate using a valid token")) {
       navigate("/login");
     }
     else {
@@ -90,15 +79,19 @@ const Questions = () => {
     }
   };
 
-
   useEffect(() => {
     getAllTags();
-    getTotalQuestionLength();
   }, []);
 
-  const sortByTime = async () => {
+  const sortByTimePageChangeHandler = async () => {
+    let url = `${baseURI}/api/v1/ques/getAllQuestions/${pageIdQues}/${pageSize}`;
+    if (TagsSortBy.length > 0) {
+      const tag = TagsSortBy;
+      url = `${baseURI}/api/v1/ques/getAllQuestionsByTag/${tag
+        }/${pageIdQues}/${pageSize}`;
+    }
     const data = await fetch(
-      `${baseURI}/api/v1/ques/getAllQuestionsByTime`,
+      url,
       {
         method: "GET",
         headers: {
@@ -108,10 +101,49 @@ const Questions = () => {
       }
     );
     const ques = await data.json();
-
     if (data.status === 200) {
       setQuestions(ques);
-    } else if (ques.error && (ques.error == "Enter the token" || ques.error == "Please authenticate using a valid token")) {
+    } else if (ques.error && (ques.error === "Enter the token" || ques.error === "Please authenticate using a valid token")) {
+      navigate("/login");
+    } else {
+      showAlert({
+        title: ques.error ? ques.error : ques ? ques : "Internal server error",
+        icon: "error",
+      });
+    }
+  };
+
+  const sortByTime = async () => {
+    setPageIdQues(0);
+    setSortBy("time");
+    sortByTimePageChangeHandler();
+    if (TagsSortBy.length > 0) {
+      getLengthFromTag(TagsSortBy);
+    }
+    else {
+      getTotalQuestionLength();
+    }
+  };
+
+  const sortByRewardPageChangeHandler = async () => {
+    let url = `${baseURI}/api/v1/ques/getAllQuestionsByReward/${pageIdQues}/${pageSize}`;
+    if (TagsSortBy.length > 0) {
+      const tag = TagsSortBy;
+      url = `${baseURI}/api/v1/ques/getAllQuestionsByTagByReward/${tag}/${pageIdQues}/${pageSize}}`;
+    }
+    const data = await fetch(url,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "auth-header": token,
+        },
+      }
+    );
+    const ques = await data.json();
+    if (data.status === 200) {
+      setQuestions(ques);
+    } else if (ques.error && (ques.error === "Enter the token" || ques.error === "Please authenticate using a valid token")) {
       navigate("/login");
     }
     else {
@@ -120,11 +152,23 @@ const Questions = () => {
         icon: "error",
       });
     }
-  };
+  }
 
   const sortByReward = async () => {
-    const data = await fetch(
-      `${baseURI}/api/v1/ques/getAllQuestionsByReward`,
+    setPageIdQues(0);
+    setSortBy("reward");
+    sortByRewardPageChangeHandler();
+    if (TagsSortBy.length > 0) {
+      getLengthFromTag(TagsSortBy);
+    }
+    else {
+      getTotalQuestionLength();
+    }
+  };
+
+  const sortByTagPageChangeHandler = async (t) => {
+    const tag = t;
+    const data = await fetch(`${baseURI}/api/v1/ques/getAllQuestionsByTag/${tag}/${pageIdQues}/${pageSize}`,
       {
         method: "GET",
         headers: {
@@ -136,45 +180,51 @@ const Questions = () => {
     const ques = await data.json();
     if (data.status === 200) {
       setQuestions(ques);
-    } else if (ques.error && (ques.error == "Enter the token" || ques.error == "Please authenticate using a valid token")) {
+    } else if (ques.error && (ques.error === "Enter the token" || ques.error === "Please authenticate using a valid token")) {
       navigate("/login");
-    }
-    else {
+    } else {
       showAlert({
         title: ques.error ? ques.error : ques ? ques : "Internal server error",
         icon: "error",
       });
     }
   };
+
+  const getLengthFromTag = async (t) => {
+    const tag = t;
+    const data = await fetch(`${baseURI}/api/v1/ques/getLengthFromTags/${tag}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "auth-header": token,
+      },
+    });
+    const length = await data.json();
+    if (data.status === 200) {
+      setTotalPages(length);
+    } else if (length.error && (length.error === "Enter the token" || length.error === "Please authenticate using a valid token")) {
+      navigate("/login");
+    } else {
+      showAlert({
+        title: length.error ? length.error : length ? length : "Internal server error",
+        icon: "error",
+      });
+    }
+  }
 
   const sortByTag = async (e) => {
     if (e.length === 0) {
-      getQuestions();
+      setTagsSortBy([]);
+      sortByTime();
+      getTotalQuestionLength();
       return;
     }
+    setSortBy("tag");
     const tag = e.map((t) => t.value);
-    const data = await fetch(
-      `${baseURI}/api/v1/ques/getAllQuestionsByTag/${tag}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "auth-header": token,
-        },
-      }
-    );
-    const ques = await data.json();
-    if (data.status === 200) {
-      setQuestions(ques);
-    } else if (ques.error && (ques.error == "Enter the token" || ques.error == "Please authenticate using a valid token")) {
-      navigate("/login");
-    }
-    else {
-      showAlert({
-        title: ques.error ? ques.error : ques ? ques : "Internal server error",
-        icon: "error",
-      });
-    }
+    setTagsSortBy(tag);
+    getLengthFromTag(tag);
+    setPageIdQues(0);
+    sortByTagPageChangeHandler(tag);
   };
 
   return (

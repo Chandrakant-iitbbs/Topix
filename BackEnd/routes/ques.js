@@ -154,9 +154,11 @@ router.get("/getAllQuestions/:pageIdQues/:pageSize", FetchUser, async (req, res)
 
 // ROUTE 7
 // get all the questions in decreasing order of reward price using : Get "/api/v1/ques/getAllQuestionsByReward". Login required
-router.get("/getAllQuestionsByReward", FetchUser, async (req, res) => {
+router.get("/getAllQuestionsByReward/:pageIdQues/:pageSize", FetchUser, async (req, res) => {
     try {
-        const questions = await Ques.find().sort({ rewardPrice: -1 });
+        const pageIdQues = parseInt(req.params.pageIdQues);
+        const pageSize = parseInt(req.params.pageSize);
+        const questions = await Ques.find().sort({ rewardPrice: -1 }).skip(pageIdQues * pageSize).limit(pageSize);
         res.status(200).json(questions);
     }
     catch (error) {
@@ -166,10 +168,15 @@ router.get("/getAllQuestionsByReward", FetchUser, async (req, res) => {
 });
 
 // ROUTE 8
-// get all questions from a particular tag in decreasing order of reward price using : Get "/api/v1/ques/getAllQuestionsByTagByReward". Login required
-router.get("/getAllQuestionsByTagByReward/:tag", FetchUser, async (req, res) => {
+// get all questions from tags in decreasing order of reward price using : Get "/api/v1/ques/getAllQuestionsByTagByReward". Login required
+router.get("/getAllQuestionsByTagByReward/:tag/:pageIdQues/:pageSize", FetchUser, async (req, res) => {
     try {
-        const questions = await Ques.find({ tags: req.params.tag }).sort({ rewardPrice: -1 });
+        const tag = req.params.tag;
+        const pageIdQues = parseInt(req.params.pageIdQues);
+        const pageSize = parseInt(req.params.pageSize);
+        const tags = tag.split(",");
+
+        const questions = await Ques.find({ tags: { $all: tags } }).sort({ rewardPrice: -1 }).skip(pageIdQues * pageSize).limit(pageSize);
         res.status(200).json(questions);
     }
     catch (error) {
@@ -180,15 +187,15 @@ router.get("/getAllQuestionsByTagByReward/:tag", FetchUser, async (req, res) => 
 );
 
 // ROUTE 9
-// get all questions from a particular tag using : Get "/api/v1/ques/getAllQuestionsByTag". Login required
-router.get("/getAllQuestionsByTag/:tag", FetchUser, async (req, res) => {
+// get all questions from tags using : Get "/api/v1/ques/getAllQuestionsByTag". Login required
+router.get("/getAllQuestionsByTag/:tag/:pageIdQues/:pageSize", FetchUser, async (req, res) => {
     try {
-        const { tag } = req.params;
-        let tags = tag.split(",");
-        let questions = await Ques.find();
-        questions = questions.filter((ques) => {
-            return tags.every((tag) => ques.tags.includes(tag));
-        });
+        const tag = req.params.tag;
+        const tags = tag.split(",");
+        const pageIdQues = parseInt(req.params.pageIdQues);
+        const pageSize = parseInt(req.params.pageSize);
+
+        const questions = await Ques.find({ tags: { $all: tags } }).skip(pageIdQues * pageSize).limit(pageSize).sort({ date: -1 });
         res.status(200).json(questions);
     }
     catch (error) {
@@ -270,5 +277,19 @@ router.get("/getTotalQuestions", FetchUser, async (req, res) => {
 }
 );
 
+// ROUTE 15
+// get the length from the tags using : Get "/api/v1/ques/getLengthFromTags". Login required
+router.get("/getLengthFromTags/:tag", FetchUser, async (req, res) => {
+    try {
+        const { tag } = req.params;
+        const tags = tag.split(",");
+        const length = await Ques.countDocuments({ tags: { $all: tags } });
+        res.status(200).json(length);
+    }
+    catch (error) {
+        console.error(error.message);
+        res.status(500).send("Internal server error");
+    }
+});
 
 module.exports = router;
