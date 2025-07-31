@@ -2,7 +2,7 @@
 const Pagination = (props) => {
   const { pageId, totalPages, setPageId } = props;    
   return (
-    totalPages.length!==1 && (<div className="d-flex justify-content-center">
+    <div className="d-flex justify-content-center">
       <nav aria-label="Page navigation example">
         <ul className="pagination">
           <li className={`page-item ${pageId === 0 ? 'disabled' : ''}`}>
@@ -16,7 +16,7 @@ const Pagination = (props) => {
           </li>
         </ul>
       </nav>
-    </div>)
+    </div>
   );
 }
 

@@ -86,7 +86,6 @@ const Question = () => {
         icon: "success",
       });
       navigate("/questions");
-      // todo : remove the answers of the question
     } else if (a.error && (a.error === "Enter the token" || a.error === "Please authenticate using a valid token")) {
       navigate("/login");
     } else {
@@ -374,7 +373,7 @@ const Question = () => {
             {answers.map((ans, index) => {
               return <Answer ans={ans} key={index} rewardPrice={ques.rewardPrice} askedUserId={askedUserId} />;
             })}
-            <Pagination totalPages={totalPagesAns} setPageId={setPageIdAns} pageId={pageIdAns} />
+            {totalPagesAns.length > 1 && <Pagination totalPages={totalPagesAns} setPageId={setPageIdAns} pageId={pageIdAns} />}
           </div>
         ) : (
           <h1>No answers till now...</h1>

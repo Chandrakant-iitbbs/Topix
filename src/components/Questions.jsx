@@ -47,7 +47,11 @@ const Questions = () => {
     }
   };
 
-  const setTotalPages = (l) => {
+  const setTotalPages = (l) => {  
+    if (l === 0) {
+      setTotalPagesQues([]);
+      return;
+    }
     const totalPages = Math.ceil(l / pageSize);
     const pages = [];
     for (let i = 0; i < totalPages; i++) {
@@ -56,7 +60,7 @@ const Questions = () => {
     setTotalPagesQues(pages);
   };
 
-  const getTotalQuestionLength = async () => {
+  const getTotalQuestionLength = async () => {    
     const res = await fetch(`${baseURI}/api/v1/ques/getTotalQuestions`, {
       method: "GET",
       headers: {
@@ -81,6 +85,7 @@ const Questions = () => {
 
   useEffect(() => {
     getAllTags();
+    getTotalQuestionLength();
   }, []);
 
   const sortByTimePageChangeHandler = async () => {
@@ -297,15 +302,19 @@ const Questions = () => {
           width: "90%",
         }}
       >
-        {questions.map((question) => {
+      {questions.length > 0 ? questions.map((question) => {
           return (
             <QuesCard
               key={question._id}
               ques={question}
             />
           );
-        })}
-        <Pagination totalPages={totalPagesQues} pageId={pageIdQues} setPageId={setPageIdQues} />
+        }) : (
+          <div className="d-flex mt-2">
+            <h3>No question found</h3>
+          </div>
+        )}
+        {totalPagesQues.length > 1 && <Pagination totalPages={totalPagesQues} pageId={pageIdQues} setPageId={setPageIdQues} />}
       </div>
     </div>
   );

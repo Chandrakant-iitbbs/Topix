@@ -428,7 +428,7 @@ const User = () => {
                 </Card.Body>
               </Card>
             ))}
-             <Pagination totalPages={totalPagesQues} pageId={pageIdQues} setPageId={setPageIdQues} />
+            {totalPagesQues.length > 1 && <Pagination totalPages={totalPagesQues} pageId={pageIdQues} setPageId={setPageIdQues} />}
             </>
           }
         </Col>
@@ -470,7 +470,7 @@ const User = () => {
                   </Card.Body>
                 </Card>
               ))}
-               <Pagination totalPages={totalPagesAns} pageId={pageIdAns} setPageId={setPageIdAns} />
+               {totalPagesAns.length > 1 && <Pagination totalPages={totalPagesAns} pageId={pageIdAns} setPageId={setPageIdAns} />}
               </>}
           </div>
         </Col>

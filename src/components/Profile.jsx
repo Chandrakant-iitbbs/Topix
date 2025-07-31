@@ -10,11 +10,12 @@ import { getStars } from "../Functions/GetStars";
 import { addContact } from "../Redux/Actions";
 import copy from "../Assets/clone-regular.svg";
 import Pagination from "./Pagination";
+import QuesCardProfile from "./QuescardProfile";
 
 const Profile = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [ques, setQues] = useState([]);
+  const [quesLength, setQuesLength] = useState(0);
   const [answered, setAnswered] = useState([]);
   const [user, setUser] = useState([]);
   const [likes, setLikes] = useState(0);
@@ -27,6 +28,7 @@ const Profile = () => {
   const [totalPagesAns, setTotalPagesAns] = useState([]);
   const pageSize = 5;
   const [fullAns, setFullAns] = useState([]);
+  const [currQues, setCurrQues] = useState([]);
   const baseURI = process.env.REACT_APP_BASE_URI_BACKEND;
 
   const intervalId = setInterval(() => {
@@ -35,7 +37,7 @@ const Profile = () => {
   }, 30000);
 
   useEffect(() => {
-    getQues();
+    getCurrQues();
   }, [pageIdQues]);
 
   useEffect(() => {
@@ -44,7 +46,7 @@ const Profile = () => {
 
 
   const getLengthQuestions = async () => {
-    const data = await fetch(`${baseURI}/api/v1/ques/getTotalQuestionsLength`, {
+    const data = await fetch(`${baseURI}/api/v1/ques/getTotalQuestions/${userId}`, {
       headers: {
         "Content-Type": "application/json",
         "auth-header": token,
@@ -52,6 +54,7 @@ const Profile = () => {
     });
     const res = await data.json();
     if (data.status === 200) {
+      setQuesLength(res);
       let arr = [];
       for (let i = 0; i < Math.ceil(res / pageSize); i++) {
         arr.push(i);
@@ -69,8 +72,7 @@ const Profile = () => {
     }
   };
 
-
-  const getQues = async () => {
+  const getCurrQues = async () => {
     const data = await fetch(
       `${baseURI}/api/v1/ques/getAllQuestionsByUser/${userId}/${pageIdQues}/${pageSize}`,
       {
@@ -82,7 +84,7 @@ const Profile = () => {
     );
     const res = await data.json();
     if (data.status === 200) {
-      setQues(res);
+      setCurrQues(res);
     }
     else if (res.error && (res.error === "Enter the token" || res.error === "Please authenticate using a valid token")) {
       navigate("/login");
@@ -203,7 +205,7 @@ const Profile = () => {
   };
 
   const updateUser = async () => {
-    if ((user.likes !== likes || user.questionsAsked !== ques.length || user.questionsAnswered !== ques.length) && user._id) {
+    if ((user.likes !== likes || user.questionsAsked !== quesLength || user.questionsAnswered !== fullAns.length) && user._id) {
       const res = await fetch(`${baseURI}/api/v1/auth/updateuserbyid/${user._id}`, {
         method: "PUT",
         headers:
@@ -214,8 +216,8 @@ const Profile = () => {
         body:
           JSON.stringify({
             totalLikes: likes,
-            questionsAnswered: answered.length,
-            questionsAsked: ques.length
+            questionsAnswered: fullAns.length,
+            questionsAsked: quesLength,
           })
       });
       const data = await res.json();
@@ -226,13 +228,14 @@ const Profile = () => {
   }
 
   const GetData = async () => {
-    await Promise.all([getUser(), getQues(), getAns()]);
+    await Promise.all([getUser(), getAns()]);
     await updateUser();
   }
   useEffect(() => {
     GetData();
     getLengthQuestions();
-  }, []);
+    getAns();
+  }, [userId]);
 
   const handleChat = () => {
     const contact = contacts.find((contact) => contact.chatId === user.ChatId);
@@ -311,7 +314,7 @@ const Profile = () => {
           }}
         >
           <div>{user.name}</div>
-          <div>Rating : {getStars(answered.length, likes, ques.length)}</div>
+          <div>Rating : {getStars(fullAns.length, likes, quesLength)}</div>
           <div>{getTimeDiff(user.LastActive) < 60001 ? "Online" : "Offline"}</div>
           <div>{user.email}</div>
           <div>{user.interestedTopics && user.interestedTopics.join(", ")}</div>
@@ -338,8 +341,8 @@ const Profile = () => {
       >
         <div style={{ marginBottom: "1rem" }}>
           Member of {getMembershipTime(user.date)}, Till now {user && user.name} have asked{" "}
-          {ques && ques.length} questions and answered{" "}
-          {answered && answered.length} questions, and recived {likes} likes.
+          {quesLength} questions and answered{" "}
+          {fullAns && fullAns.length} questions, and recived {likes} likes.
         </div>
         <Button
           variant="primary"
@@ -359,42 +362,14 @@ const Profile = () => {
       <Row style={{ margin: "2rem 0" }}>
         <Col>
           <h3>Question Asked</h3>
-          {ques.length === 0
+          {quesLength === 0
             ? "No question asked"
-            : <>{ques.map((question, index) => (
-              <Card
-                style={{
-                  width: "100%",
-                  marginTop: "1rem",
-                }}
-                key={index}
-              >
-                <Card.Body>
-                  <Card.Title style={{ cursor: "pointer" }} onClick={(e) => {
-                    e.preventDefault();
-                    handleQuestionClick(question._id)
-                  }}>
-                    {
-                      <HtmlToText
-                        html={question.question}
-                        index={question._id}
-                      />
-                    }
-                  </Card.Title>
-                  <Card.Text>
-                    <div style={{
-                      display: "flex", justifyContent: "space-between", flexWrap: "wrap",
-                      gap: "10px"
-                    }}>
-                      <div style={{ margin: "10px", marginLeft: 0 }}>{question.views.length} views
-                      </div>
-                      <div style={{ margin: "10px" }}>{getTimeDifference(question.date)}</div>
-                    </div>
-                  </Card.Text>
-                </Card.Body>
-              </Card>
-            ))}
-            <Pagination pageId={pageIdQues} totalPages={totalPagesQues} setPageId={setPageIdQues} />
+            : <>{currQues.map((question, index) =>
+              <QuesCardProfile key={index} ques={question} />
+            )}
+              {totalPagesQues.length > 1 && <div style={{margin: "1rem"}}>
+                <Pagination pageId={pageIdQues} totalPages={totalPagesQues} setPageId={setPageIdQues} />
+                </div>}
             </>
           }
         </Col>
@@ -403,9 +378,9 @@ const Profile = () => {
         <Col>
           <h3>Answered Questions</h3>
           <div>
-            {answered.length === 0
+            {fullAns.length === 0
               ? "No answer given from you"
-              : <>{answered.map((answer, index) => (
+              : <>{fullAns.map((answer, index) => (
                 <Card
                   key={index}
                   style={{
@@ -439,7 +414,7 @@ const Profile = () => {
                   </Card.Body>
                 </Card>
               ))}
-                <Pagination pageId={pageIdAns} totalPages={totalPagesAns} setPageId={setPageIdAns} />
+                {totalPagesAns.length > 1 && <Pagination pageId={pageIdAns} totalPages={totalPagesAns} setPageId={setPageIdAns} />}
               </>}
           </div>
         </Col>

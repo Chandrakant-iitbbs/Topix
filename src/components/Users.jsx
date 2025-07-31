@@ -98,9 +98,9 @@ const Users = () => {
           return <UserCard key={user._id} user={user} />;
         })}
       </div>
-      <div style={{marginTop:"10px"}}>
+      {totalPages.length > 1 && <div style={{marginTop:"10px"}}>
         <Pagination totalPages={totalPages} setPageId={setPageId} pageId={pageId} />
-      </div>
+      </div>}
     </div>
   );
 };

@@ -19,7 +19,7 @@ const HtmlToText = (props) => {
   };
   useEffect(() => {
     convertToText();
-  }, []);
+  }, [html, index, isfull]);
 
   return <div id={index}></div>;
 };

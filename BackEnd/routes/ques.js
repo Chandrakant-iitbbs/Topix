@@ -97,7 +97,8 @@ router.put("/updateQuestion/:id", FetchUser, async (req, res) => {
 // delete an existing question of the user, corresponing to given id  using : delete "/api/v1/ques/deleteQuestion". Login required
 router.delete("/deleteQuestion/:id", FetchUser, async (req, res) => {
     try {
-        let ques = await Ques.findById(req.params.id);  // finding the question by id
+        const id = req.params.id;
+        let ques = await Ques.findById(id);  // finding the question by id
         if (!ques) {
             return res.status(404).send("Not Found");
         }
@@ -105,8 +106,8 @@ router.delete("/deleteQuestion/:id", FetchUser, async (req, res) => {
         if (ques.user.toString() !== req.user.id) {
             return res.status(401).send("Not Allowed");
         }
-        ques = await Ques.findByIdAndDelete(req.params.id);
-        await Answer.deleteMany({ question: req.params.id });
+        ques = await Ques.findByIdAndDelete(id);
+        await Answer.deleteMany({ question: id });
 
         res.status(200).json({ "Success": "Question has been deleted", ques: ques });
     }
@@ -221,11 +222,12 @@ router.get("/getAllQuestionsByTime", FetchUser, async (req, res) => {
 
 // ROUTE 11
 // get all question by user id using : Get "/api/v1/ques/getAllQuestionsByUser". Login required
-router.get("/getAllQuestionsByUser/:id/:pageIdQues/:pageSize", FetchUser, async (req, res) => {
+router.get("/getAllQuestionsByUser/:userId/:pageIdQues/:pageSize", FetchUser, async (req, res) => {
     try {
         const pageIdQues = parseInt(req.params.pageIdQues);
         const pageSize = parseInt(req.params.pageSize);
-        const questions = await Ques.find({ user: req.params.id }).skip(pageIdQues * pageSize).limit(pageSize).sort({ date: -1 });
+        const id = req.params.userId;
+        const questions = await Ques.find({ user: id }).skip(pageIdQues * pageSize).limit(pageSize).sort({ date: -1 });
         res.status(200).json(questions);
     }
     catch (error) {
@@ -253,8 +255,8 @@ router.get("/getTotalQuestionsLength", FetchUser, async (req, res) => {
 // get Total number of questions of user by id : Get "/api/v1/ques/getTotalQuestions/:userId". Login required
 router.get("/getTotalQuestions/:userId", FetchUser, async (req, res) => {
     try {
-        const questions = await Ques.find({ user: req.params.userId });
-        res.status(200).json(questions.length);
+        const quesLength = await Ques.countDocuments({ user: req.params.userId });
+        res.status(200).json(quesLength);
     }
     catch (error) {
         console.error(error.message);

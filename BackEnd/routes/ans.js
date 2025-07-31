@@ -174,10 +174,11 @@ router.put("/downvote/:id", FetchUser, async (req, res) => {
 });
 
 // Route 9
-// Get all the answers by user id using : Get "api/v1/answer/getUserAnswers/:id". Login required
-router.get("/getUserAnswers/:id", FetchUser, async (req, res) => {
+// Get all the answers by user id using : Get "api/v1/answer/getUserAnswers". Login required
+router.get("/getUserAnswers/:userId", FetchUser, async (req, res) => {
     try {
-        const answers = await Answer.find({ user: req.params.id });
+        const userId = req.params.userId;
+        const answers = await Answer.find({ user: userId });
         res.status(200).json(answers);
     }
     catch (error) {
@@ -202,4 +203,5 @@ router.get("/getAnswersLength/:QId", FetchUser, async (req, res) => {
         res.status(500).json("Internal server error");
     }
 });
+
 module.exports = router;
