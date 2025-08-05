@@ -10,7 +10,7 @@ const Users = () => {
   const [users, setUsers] = useState([]);
   const token = useSelector((state) => state.Token);
   const [pageId, setPageId] = useState(0);
-  const [totalPages, setTotalPages] = useState([]);
+  const [totalPages, setTotalPages] = useState(0);
   
   const baseURI = process.env.REACT_APP_BASE_URI_BACKEND;
   const AvailableHeightForCards = window.innerHeight-170;
@@ -52,10 +52,7 @@ const Users = () => {
     });
     const Userslength = await data.json();
     if (data.status === 200) {
-      let length = Math.ceil(Userslength / pageSize);
-      for (let i = 1; i <= length; i++) {
-        setTotalPages((old) => [...old, i]);
-      }
+      setTotalPages(Math.ceil(Userslength / pageSize));
     }
     else if (users.error && (users.error === "Enter the token" || users.error === "Please authenticate using a valid token")) {
       navigate("/login");
@@ -98,7 +95,7 @@ const Users = () => {
           return <UserCard key={user._id} user={user} />;
         })}
       </div>
-      {totalPages.length > 1 && <div style={{marginTop:"10px"}}>
+      {totalPages > 1 && <div style={{marginTop:"10px"}}>
         <Pagination totalPages={totalPages} setPageId={setPageId} pageId={pageId} />
       </div>}
     </div>

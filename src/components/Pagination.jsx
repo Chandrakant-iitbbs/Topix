@@ -11,7 +11,7 @@ const Pagination = (props) => {
             <li className="page-item">
                 <button className="page-link">{pageId+1}</button>
             </li>
-          <li className={`page-item ${pageId === totalPages.length-1 ? 'disabled' : ''}`}>
+          <li className={`page-item ${pageId === totalPages - 1 ? 'disabled' : ''}`}>
             <button className="page-link" onClick={() => setPageId(pageId + 1)}>Next</button>
           </li>
         </ul>

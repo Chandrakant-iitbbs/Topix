@@ -72,6 +72,7 @@ const QuesCardProfile = (props) => {
             <HtmlToText
               html={question}
               index={_id}
+              isfull={false}
             />
           }
         </Card.Title>

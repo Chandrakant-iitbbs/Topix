@@ -241,8 +241,8 @@ router.get("/getAllQuestionsByUser/:userId/:pageIdQues/:pageSize", FetchUser, as
 // get Total number of questions of user using : Get "/api/v1/ques/getTotalQuestionsLength". Login required
 router.get("/getTotalQuestionsLength", FetchUser, async (req, res) => {
     try {
-        const questions = await Ques.find({ user: req.user.id });
-        res.status(200).json(questions.length);
+        const length = await Ques.countDocuments({ user: req.user.id });
+        res.status(200).json(length);
     }
     catch (error) {
         console.error(error.message);

@@ -1,35 +1,37 @@
 import { useEffect, useState } from "react";
-import { Button, Row, Col, Image, Card } from "react-bootstrap";
-import HtmlToText from "./HtmlToText";
+import { Button, Row, Col, Image } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { deletetoken, setQuesId, setToken } from "../Redux/Actions";
+import { deletetoken } from "../Redux/Actions";
 import { useDispatch, useSelector } from "react-redux";
 import showAlert from "../Functions/Alert";
-import { getMembershipTime, getTimeDifference, getTimeDiff } from "../Functions/GetTime";
+import { getMembershipTime, getTimeDiff } from "../Functions/GetTime";
 import { getStars } from "../Functions/GetStars";
 import copy from "../Assets/clone-regular.svg";
 import Pagination from "./Pagination";
+import QuesCardProfile from "./QuescardProfile";
+import AnsCard from "./AnsCard";
 
 const User = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [ques, setQues] = useState([]);
-  const [answered, setAnswered] = useState([]);
+  const [quesLength, setQuesLength] = useState(0);
   const [user, setUser] = useState([]);
   const [likes, setLikes] = useState(0);
   const token = useSelector((state) => state.Token);
   const baseURI = process.env.REACT_APP_BASE_URI_BACKEND;
   const [pageIdQues, setPageIdQues] = useState(0);
-  const [totalPagesQues, setTotalPagesQues] = useState([]);
   const [pageIdAns, setPageIdAns] = useState(0);
-  const [totalPagesAns, setTotalPagesAns] = useState([]);
-  const pageSize = 5;
+  const pageSize = 2;
   const [fullAns, setFullAns] = useState([]);
-
+  const [currAns, setCurrAns] = useState([]);
+  const [currQues, setCurrQues] = useState([]);
 
   useEffect(() => {
-    setAnswered(fullAns.slice(pageIdAns * pageSize, (pageIdAns + 1) * pageSize));
-  }, [pageIdAns]);
+    const intervalId = setInterval(() => {
+      getUser();
+    }, 30000);
+    return () => clearInterval(intervalId);
+  }, []);
 
   useEffect(() => {
     getLengthQuestions();
@@ -44,12 +46,7 @@ const User = () => {
     });
     const res = await data.json();
     if (data.status === 200) {
-      let arr = [];
-      for (let i = 0; i < Math.ceil(res / pageSize); i++) {
-        arr.push(i);
-      }
-      setTotalPagesQues(arr);
-
+      setQuesLength(res);
     } else if (res.error && (res.error === "Enter the token" ||
       res.error === "Please authenticate using a valid token"
     )) {
@@ -61,7 +58,6 @@ const User = () => {
       });
     }
   };
-
 
   const getQues = async () => {
     const data = await fetch(
@@ -75,7 +71,7 @@ const User = () => {
     );
     const res = await data.json();
     if (data.status === 200) {
-      setQues(res);
+      setCurrQues(res);
     } else if (res.error && (res.error === "Enter the token" ||
       res.error === "Please authenticate using a valid token"
     )) {
@@ -145,21 +141,22 @@ const User = () => {
       const totalLikes = getLikes(res);
       setLikes(totalLikes);
       const uniqueAnswers = removeDuplicateAnswers(res);
-      for (let answer of uniqueAnswers) {
-        const id = answer.question;
-        const question = await fetchQuestionById(id);
-        if (question) {
-          answer.question = {
-            id: id,
-            html: question,
+
+      const uniqueAnswersWithQuestions = await Promise.all(
+        uniqueAnswers.map(async (answer) => {
+          const id = answer.question;
+          const questionHtml = await fetchQuestionById(id);
+          return {
+            ...answer,
+            question: {
+              id,
+              html: questionHtml,
+            },
           };
-        }
-      }
-      setFullAns(uniqueAnswers);
-      const totalPages = Math.ceil(uniqueAnswers.length / pageSize);
-      for (let i = 0; i < totalPages; i++) {
-        setTotalPagesAns((prev) => [...prev, i]);
-      }
+        })
+      );
+      setFullAns(uniqueAnswersWithQuestions);
+      setanswers(uniqueAnswersWithQuestions);
     } else if (res.error && (res.error === "Enter the token" ||
       res.error === "Please authenticate using a valid token"
     )) {
@@ -171,6 +168,22 @@ const User = () => {
       });
     }
   };
+
+  const setanswers = (uniqueAnswers) => {
+    let paginatedAnswers = [];
+    let currAnsArr = [];
+    for (let i = 0; i < uniqueAnswers.length; i++) {
+      currAnsArr.push(uniqueAnswers[i]);
+      if (currAnsArr.length === pageSize) {
+        paginatedAnswers.push(currAnsArr);
+        currAnsArr = [];
+      }
+    }
+    if (currAnsArr.length > 0) {
+      paginatedAnswers.push(currAnsArr);
+    }
+    setCurrAns(paginatedAnswers[pageIdAns] || []);
+  }
 
   const getUser = async () => {
     const data = await fetch(`${baseURI}/api/v1/auth/getuser`, {
@@ -197,8 +210,8 @@ const User = () => {
   const updateUser = async () => {
     if (
       (user.likes !== likes ||
-        user.questionsAsked !== ques.length ||
-        user.questionsAnswered !== ques.length) &&
+        user.questionsAsked !== quesLength ||
+        user.questionsAnswered !== fullAns.length) &&
       user._id
     ) {
       const res = await fetch(
@@ -209,11 +222,12 @@ const User = () => {
             "Content-Type": "application/json",
             "auth-header": token,
           },
-          body: JSON.stringify({
-            totalLikes: likes,
-            questionsAnswered: answered.length,
-            questionsAsked: ques.length,
-          }),
+          body:
+            JSON.stringify({
+              totalLikes: likes,
+              questionsAnswered: fullAns.length,
+              questionsAsked: quesLength,
+            })
         }
       );
       const data = await res.json();
@@ -246,10 +260,9 @@ const User = () => {
     getQues();
   }, [pageIdQues]);
 
-  const intervalId = setInterval(() => {
-    getUser();
-    return () => clearInterval(intervalId);
-  }, 60000);
+  useEffect(() => {
+    setanswers(fullAns);
+  }, [pageIdAns]);
 
   const handleEdit = (e) => {
     e.preventDefault();
@@ -282,11 +295,6 @@ const User = () => {
         icon: "error",
       });
     }
-  };
-
-  const handleQuestionClick = (id) => {
-    dispatch(setQuesId(id));
-    navigate(`/question/${id}`);
   };
 
   return (
@@ -342,7 +350,7 @@ const User = () => {
           }}
         >
           <div>{user.name}</div>
-          <div>Rating : {getStars(answered.length, likes, ques.length)}</div>
+          <div>Rating : {getStars(fullAns.length, likes, quesLength)}</div>
           <div>{getTimeDiff(user.LastActive) < 60001 ? "Online" : "Offline"}</div>
           <div>{user.email}</div>
           <div>{user.interestedTopics && user.interestedTopics.join(", ")}</div>
@@ -388,47 +396,21 @@ const User = () => {
       >
         <div style={{ marginBottom: "1rem" }}>
           Member of {getMembershipTime(user.date)}, Till now you have asked{" "}
-          {ques && ques.length} questions and answered{" "}
-          {answered && answered.length} questions, you recived {likes} likes.
+          {quesLength} questions and answered{" "}
+          {fullAns.length} questions, you recived {likes} likes.
         </div>
       </Row>
       <Row style={{ margin: "2rem 0" }}>
         <Col>
           <h3>Question Asked</h3>
-          {ques.length === 0
+          {currQues.length === 0
             ? "No question asked"
-            : <> {ques.map((question, index) => (
-              <Card
-                style={{
-                  width: "100%",
-                  marginTop: "1rem",
-                }}
-                key={index}
-              >
-                <Card.Body>
-                  <Card.Title style={{ cursor: "pointer" }} onClick={() => handleQuestionClick(question._id)}>
-                    {
-                      <HtmlToText
-                        html={question.question}
-                        index={question._id}
-                        isfull={false}
-                      />
-                    }
-                  </Card.Title>
-                  <Card.Text>
-                    <div style={{
-                      display: "flex", justifyContent: "space-between", flexWrap: "wrap",
-                      gap: "10px"
-                    }}>
-                      <div style={{ margin: "10px", marginLeft: 0 }}>{question.views.length} views
-                      </div>
-                      <div style={{ margin: "10px" }}>{getTimeDifference(question.date)}</div>
-                    </div>
-                  </Card.Text>
-                </Card.Body>
-              </Card>
+            : <> {currQues.map((question, index) => (
+              <QuesCardProfile key={index} ques={question} />
             ))}
-            {totalPagesQues.length > 1 && <Pagination totalPages={totalPagesQues} pageId={pageIdQues} setPageId={setPageIdQues} />}
+              {(quesLength > pageSize) && <div style={{ margin: "1rem" }}>
+                <Pagination pageId={pageIdQues} totalPages={Math.ceil(quesLength / pageSize)} setPageId={setPageIdQues} />
+              </div>}
             </>
           }
         </Col>
@@ -436,43 +418,16 @@ const User = () => {
       <Row style={{ margin: "2rem 0" }}>
         <Col>
           <h3>Answered Questions</h3>
-          <div>
-            {answered.length === 0
-              ? "No answer given from you"
-              : <> {answered.map((answer, index) => (
-                <Card
-                  key={index}
-                  style={{
-                    width: "100%",
-                    marginTop: "1rem"
-                  }}
-                >
-                  <Card.Body>
-                    <Card.Title style={{ cursor: "pointer" }} onClick={() => handleQuestionClick(answer.question.id)}>
-                      {
-                        <HtmlToText
-                          html={answer.question.html}
-                          index={answer._id}
-                          isfull={false}
-                        />
-                      }
-                    </Card.Title>
-                    <Card.Text>
-                      <div style={{
-                        display: "flex", justifyContent: "space-between", flexWrap: "wrap",
-                        gap: "10px"
-                      }}>
-                        <div style={{ margin: "10px", marginLeft: 0 }}>{answer.upVotes.length - answer.downVotes.length} likes received</div>
-                        {user.BestAnswers && user.BestAnswers.includes(answer._id) ? <div style={{ margin: "10px" }}>Best Answer</div> : null}
-                        <div style={{ margin: "10px" }}>{getTimeDifference(answer.date)}</div>
-                      </div>
-                    </Card.Text>
-                  </Card.Body>
-                </Card>
+          <div>{fullAns.length === 0
+            ? "No answer given from you"
+            : <>{
+              currAns.map((answer, index) => (
+                <AnsCard key={index} answer={answer} user={user} />
               ))}
-               {totalPagesAns.length > 1 && <Pagination totalPages={totalPagesAns} pageId={pageIdAns} setPageId={setPageIdAns} />}
-              </>}
-          </div>
+              {(fullAns.length > pageSize) && <div style={{ margin: "1rem" }}>
+                <Pagination pageId={pageIdAns} totalPages={Math.ceil(fullAns.length / pageSize)} setPageId={setPageIdAns} />
+              </div>}
+            </>}</div>
         </Col>
       </Row>
     </div>

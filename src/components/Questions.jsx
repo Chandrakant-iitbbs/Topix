@@ -7,14 +7,15 @@ import { useNavigate } from "react-router-dom";
 import showAlert from "../Functions/Alert";
 import { useSelector } from "react-redux";
 import Pagination from "./Pagination";
+
 const Questions = () => {
   const navigate = useNavigate();
   const token = useSelector((state) => state.Token);
   const animatedComponents = makeAnimated();
   const [allTags, setAllTags] = useState([]);
-  const [questions, setQuestions] = useState([]);
+  const [currQuestions, setCurrQuestions] = useState([]);
   const [pageIdQues, setPageIdQues] = useState(0);
-  const [totalPagesQues, setTotalPagesQues] = useState([]);
+  const [totalPagesQues, setTotalPagesQues] = useState(0);
   const [sortBy, setSortBy] = useState("time");
   const [TagsSortBy, setTagsSortBy] = useState([]);
   const pageSize = 5;
@@ -47,20 +48,7 @@ const Questions = () => {
     }
   };
 
-  const setTotalPages = (l) => {  
-    if (l === 0) {
-      setTotalPagesQues([]);
-      return;
-    }
-    const totalPages = Math.ceil(l / pageSize);
-    const pages = [];
-    for (let i = 0; i < totalPages; i++) {
-      pages.push(i);
-    }
-    setTotalPagesQues(pages);
-  };
-
-  const getTotalQuestionLength = async () => {    
+  const getTotalQuestionLength = async () => {
     const res = await fetch(`${baseURI}/api/v1/ques/getTotalQuestions`, {
       method: "GET",
       headers: {
@@ -71,7 +59,7 @@ const Questions = () => {
 
     const a = await res.json();
     if (res.status === 200) {
-      setTotalPages(a);
+      setTotalPagesQues(Math.ceil(a / pageSize));
     } else if (res.error && (res.error === "Enter the token" || res.error === "Please authenticate using a valid token")) {
       navigate("/login");
     }
@@ -107,7 +95,7 @@ const Questions = () => {
     );
     const ques = await data.json();
     if (data.status === 200) {
-      setQuestions(ques);
+      setCurrQuestions(ques);
     } else if (ques.error && (ques.error === "Enter the token" || ques.error === "Please authenticate using a valid token")) {
       navigate("/login");
     } else {
@@ -147,7 +135,7 @@ const Questions = () => {
     );
     const ques = await data.json();
     if (data.status === 200) {
-      setQuestions(ques);
+      setCurrQuestions(ques);
     } else if (ques.error && (ques.error === "Enter the token" || ques.error === "Please authenticate using a valid token")) {
       navigate("/login");
     }
@@ -184,7 +172,7 @@ const Questions = () => {
     );
     const ques = await data.json();
     if (data.status === 200) {
-      setQuestions(ques);
+      setCurrQuestions(ques);
     } else if (ques.error && (ques.error === "Enter the token" || ques.error === "Please authenticate using a valid token")) {
       navigate("/login");
     } else {
@@ -206,7 +194,7 @@ const Questions = () => {
     });
     const length = await data.json();
     if (data.status === 200) {
-      setTotalPages(length);
+      setTotalPagesQues(Math.ceil(length / pageSize));
     } else if (length.error && (length.error === "Enter the token" || length.error === "Please authenticate using a valid token")) {
       navigate("/login");
     } else {
@@ -302,7 +290,7 @@ const Questions = () => {
           width: "90%",
         }}
       >
-      {questions.length > 0 ? questions.map((question) => {
+      {currQuestions.length > 0 ? currQuestions.map((question) => {
           return (
             <QuesCard
               key={question._id}
@@ -314,7 +302,7 @@ const Questions = () => {
             <h3>No question found</h3>
           </div>
         )}
-        {totalPagesQues.length > 1 && <Pagination totalPages={totalPagesQues} pageId={pageIdQues} setPageId={setPageIdQues} />}
+        {totalPagesQues > 1 && <Pagination totalPages={totalPagesQues} pageId={pageIdQues} setPageId={setPageIdQues} />}
       </div>
     </div>
   );
